@@ -1,0 +1,17 @@
+<?php
+$mysql_connections = array(
+	'main' => array(
+		'host'=>'localhost',
+		'username'=>'root',
+		'password'=>'',
+		'database'=>'test'
+	)
+);
+
+$mongo_connections = array(
+	'main' => array(
+		'host'=>'localhost',
+		'port'=>'27017'
+	)
+);
+?>
