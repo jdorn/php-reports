@@ -1,0 +1,115 @@
+<script src='lib/jquery-1.7.2.min.js'></script>
+<style>
+body {
+	padding-bottom: 200px;
+}
+.database_message {
+	color: #999;
+}
+#result_table {
+	border: 1px solid black;
+	border-width: 1px 1px 0 0;
+	margin: 15px 0;
+	border-collapse:collapse
+}
+#result_table td, #result_table th {
+	border: 1px solid black;
+	border-width: 0 0 1px 1px;
+	padding: 5px 8px;
+}
+#result_table th {
+	background-color: #cfc;
+}
+.currency {
+	text-align:right;
+}
+.right, .rpad2 {
+	text-align:right;
+}
+.center {
+	text-align:center;
+}
+.show_query {
+	font-size: .8em;
+}
+</style>
+<h1>{{Name}}</h1>
+
+{{#Description}}
+	<p>{{Description}}</p>
+{{/Description}}
+
+<em class='database_message'>Running on database
+<select id='database_select'>
+{{#Databases}}
+	<option value='{{name}}' {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
+{{/Databases}}
+</select>
+</em>
+
+{{#Query}}
+<a href='#' class='show_query'>show query</a>
+{{/Query}}
+
+<table id='result_table'>
+	{{#Rows}}
+		{{#first}}
+		<tr class='header'>
+			{{#values}}
+				<th class="{{class}}">{{key}}</th>
+			{{/values}}
+		</tr>
+		{{/first}}
+		<tr>
+			{{#values}}
+				{{#value}}
+					<td class="{{class}}">{{value}}</td>
+				{{/value}}
+				{{^value}}
+					<td class="{{class}}">&nbsp;</td>
+				{{/value}}
+			{{/values}}
+		</tr>
+	{{/Rows}}
+</table>
+
+<p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
+
+
+{{#Query}}
+<a href='#' class='show_query'>show query</a>
+<div id='query_holder' style='display:none;'>
+	{{#Query_Formatted}}
+		{{{Query_Formatted}}}
+	{{/Query_Formatted}}
+	{{^Query_Formatted}}
+		{{Query}}
+	{{/Query_Formatted}}
+</div>
+<script>
+$('.show_query').click(function() {
+	showing = $('#query_holder').css('display') == 'none';
+	
+	$('#query_holder').toggle(500);
+	
+	if(showing) {
+		$('html, body').animate({scrollTop: $("#query_holder").offset().top}, 1000);
+	}
+	
+	return false;
+});
+</script>
+{{/Query}}
+
+<script>
+$('#database_select').change(function() {
+	var url = window.location.href.split('?')[0];
+	var querystring = window.location.href.split('?')[1].split('#')[0];
+	
+	querystring = querystring.replace(/&?database=[^&]*/,'');
+	querystring += '&database='+$(this).val();
+	
+	window.location.href = url+'?'+querystring;
+	return false;
+});
+</script>

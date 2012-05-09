@@ -1,0 +1,17 @@
+<form method='get'>
+	<input type='hidden' name='report' value='{{report}}' />
+	{{#database}}
+		<input type='hidden' name='database' value='{{database}}' />
+	{{/database}}
+	
+	{{#vars}}
+		<div>
+			<label for='var_{{key}}'>{{name}}</label>
+			<input type='hidden' name='macro_names[]' value='{{key}}' />	
+			<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}' />	
+		</div>
+	{{/vars}}
+	
+	<input type='submit' value='Run Report' />
+</form>
+<hr />
