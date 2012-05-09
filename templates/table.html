@@ -1,4 +1,3 @@
-<script src='lib/jquery-1.7.2.min.js'></script>
 <style>
 body {
 	padding-bottom: 200px;
@@ -32,6 +31,10 @@ body {
 .show_query {
 	font-size: .8em;
 }
+.csv_link {
+	font-size: .9em;
+	margin-left: 20px;
+}
 </style>
 <h1>{{Name}}</h1>
 
@@ -47,9 +50,9 @@ body {
 </select>
 </em>
 
-{{#Query}}
-<a href='#' class='show_query'>show query</a>
-{{/Query}}
+{{#csv_link}}
+<a href='{{csv_link}}' class='csv_link'>export to csv</a>
+{{/csv_link}}
 
 <table id='result_table'>
 	{{#Rows}}

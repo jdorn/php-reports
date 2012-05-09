@@ -1,17 +1,52 @@
-<form method='get'>
+<style>
+#variable_form {
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 10px 0;
+	font-family: arial;
+}
+#variable_form .input-row {
+	margin: 5px 0;
+}
+#variable_form h2 {
+	font-size: 1.3em;
+	padding: 0 0 15px 0;
+	margin: 0;
+}
+#variable_form .input, #variable_form select {
+	padding: 3px 6px;
+	border-radius: 5px;
+	border: 1px solid #aaa;
+}
+#variable_form .submit {
+	padding: 5px 10px;
+	border-radius: 8px;
+	border: 1px solid #aaa;
+	margin-top: 10px;
+}
+</style>
+<form method='get' id='variable_form'>
+	<h2>Configure Report</h2>
+	
 	<input type='hidden' name='report' value='{{report}}' />
-	{{#database}}
-		<input type='hidden' name='database' value='{{database}}' />
-	{{/database}}
+	
+	<div class='input-row'>
+		<label for='var_database'>Database</label>
+		<select name='database' id='var_database'>
+		{{#databases}}
+			<option value='{{name}}' {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
+		{{/databases}}
+		</select>
+	</div>
 	
 	{{#vars}}
-		<div>
+		<div class='input-row'>
 			<label for='var_{{key}}'>{{name}}</label>
 			<input type='hidden' name='macro_names[]' value='{{key}}' />	
-			<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}' />	
+			<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}'  class='input'/>	
 		</div>
 	{{/vars}}
 	
-	<input type='submit' value='Run Report' />
+	<input type='submit' value='Run Report' class='submit' />
 </form>
-<hr />

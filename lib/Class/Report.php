@@ -103,7 +103,11 @@ class Report {
 				}
 				elseif(!isset($this->macros[$var])) {
 					$this->macros[$var] = '';
-					$this->is_ready = false;
+				}
+				
+				//if the macro value is empty and empty isn't allowed
+				if(trim($this->macros[$var])==='' && (!isset($params['empty']) || !$params['empty'])) {
+					$this->is_ready =false;
 				}
 			}
 			//this is a filter
@@ -213,11 +217,12 @@ class Report {
 			$template_vars = array(
 				'vars'=>array(),
 				'database'=>$this->options['Database'],
+				'databases'=>$this->options['Databases'],
 				'report'=>$this->report
 			);
 			
 			foreach($this->options['Variables'] as $var => $params) {
-				if(!isset($params['name'])) $params['name'] = $var;
+				if(!isset($params['name'])) $params['name'] = ucwords(str_replace(array('_','-'),' ',$var));
 				if(!isset($params['type'])) $params['type'] = 'string';
 				if(!isset($params['options'])) $params['options'] = false;
 				$params['value'] = $this->macros[$var];
@@ -329,7 +334,7 @@ class Report {
 						break;
 				}
 				
-				$rowval[] = array('key'=>$key,'value'=>$value, 'alt'=>$alt, 'class'=>$class);
+				$rowval[] = array('key'=>$key,'value'=>$value, 'alt'=>$alt, 'class'=>$class, 'first'=>$i===1);
 				$i++;
 			}
 			
@@ -347,7 +352,7 @@ class Report {
 		$this->runReport();
 		$this->applyFilters();
 		
-		if(isset($options['Template'])) $template = $options['Template'];
+		if(isset($this->options['Template'])) $template = $this->options['Template'];
 		else $template = 'table';
 		
 		if(!file_exists('templates/'.$template.'.html')) {

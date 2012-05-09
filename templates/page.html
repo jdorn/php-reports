@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{title}}</title>
+	<script src='lib/jquery-1.7.2.min.js'></script>
+	<style>
+	.error {
+		color: red;
+		padding: 20px;
+		border: 1px solid red;
+		background-color: #fdd;
+		border-radius: 6px;
+	}
+	.notice {
+		color: #34e;
+		padding: 20px;
+		border: 1px solid #34e;
+		background-color: #ffd;
+		border-radius: 6px;
+	}
+	</style>
+</head>
+<body>
+{{{variable_form}}}
+
+{{#error}}
+	<div class='error'>
+		{{error}}
+	</div>
+{{/error}}
+
+{{#notice}}
+	<div class='notice'>
+		{{notice}}
+	</div>
+{{/notice}}
+
+{{{report}}}
+
+{{{content}}}
+</body>
+</html>
