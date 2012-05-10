@@ -39,7 +39,7 @@ body {
 <h1>{{Name}}</h1>
 
 {{#Description}}
-	<p>{{Description}}</p>
+	<div>{{{Description}}}</div>
 {{/Description}}
 
 <em class='database_message'>Running on database
@@ -53,6 +53,7 @@ body {
 {{#csv_link}}
 <a href='{{csv_link}}' class='csv_link'>export to csv</a>
 {{/csv_link}}
+
 
 <table id='result_table'>
 	{{#Rows}}
@@ -78,6 +79,29 @@ body {
 
 <p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
 
+{{#Chart}}
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+	google.load("visualization", "1", {packages:["corechart"]});
+	google.setOnLoadCallback(drawCharts);
+
+	function drawCharts() {
+		var data = google.visualization.arrayToDataTable([
+			{{#Rows}}{{#first}}[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
+			{{/first}},[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
+			{{/Rows}}
+		]);
+
+		var options = {
+			title: '{{title}}'
+		};
+
+		var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+		chart.draw(data, options);
+	}
+	</script>
+	<div id='chart_div' style='{{#width}}width: {{width}}px;{{/width}}{{#height}}height: {{height}}px;{{/height}}'></div>
+{{/Chart}}
 
 {{#Query}}
 <a href='#' class='show_query'>show query</a>

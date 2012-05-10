@@ -65,6 +65,12 @@ class Report {
 				$name = 'Name';
 				$value = trim($line);
 			}
+			//if this is after the first header and not in the format name:value, assume it is part of the description
+			elseif(strpos($line,':') === false) {
+				if(!isset($this->options['Description'])) $this->options['Description'] = '';
+				$this->options['Description'] .= "\n".$line;
+				continue;
+			}
 			//otherwise skip if not in name:value format
 			elseif(strpos($line,':')===false) {
 				continue;
@@ -126,7 +132,29 @@ class Report {
 				}
 				
 				$this->options['Filters'][$col] = $params;
-			}			
+			}
+			//a chart
+			elseif($name === 'Plot' || $name === 'Chart') {
+				//chart parameters in JSON format
+				if($temp = json_decode($value,true)) {
+					$value = $temp;
+				}
+				//chart parameters in key=value,key2=value2 format
+				else {
+					$params = explode(',',$value);
+					$value = array();
+					foreach($params as $param) {
+						if(strpos($param,'=') !== false) {
+							list($key,$val) = explode('=',$param,2);
+							$value[trim($key)] = trim($val);
+						}
+						else {
+							$value['options'][trim($param)] = true;
+						}
+					}
+				}
+				$this->options['Chart'] = $value;
+			}
 			//this is another option
 			else {
 				if($temp = json_decode($value,true)) {
