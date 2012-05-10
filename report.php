@@ -38,6 +38,7 @@ else {
 	}
 	catch(Exception $e) {
 		$page_template['error'] = $e->getMessage();
+		if(isset($report->options['Query_Formatted'])) $page_template['content'] = $report->options['Query_Formatted'];
 	}
 }
 

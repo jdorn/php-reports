@@ -15,6 +15,7 @@ body {
 	border: 1px solid black;
 	border-width: 0 0 1px 1px;
 	padding: 5px 8px;
+	vertical-align:top;
 }
 #result_table th {
 	background-color: #cfc;
@@ -67,7 +68,19 @@ body {
 		<tr>
 			{{#values}}
 				{{#value}}
-					<td class="{{class}}">{{value}}</td>
+					<td class="{{class}}">
+						{{#raw}}
+							{{{value}}}
+						{{/raw}}
+						{{^raw}}
+							{{#pre}}
+								<pre>{{value}}</pre>
+							{{/pre}}
+							{{^pre}}
+								{{value}}
+							{{/pre}}
+						{{/raw}}
+					</td>
 				{{/value}}
 				{{^value}}
 					<td class="{{class}}">&nbsp;</td>
@@ -87,9 +100,12 @@ body {
 
 	function drawCharts() {
 		var data = google.visualization.arrayToDataTable([
-			{{#Rows}}{{#first}}[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
-			{{/first}},[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
-			{{/Rows}}
+			{{#ChartRows}}
+				{{#first}}
+					[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
+				{{/first}}
+				,[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
+			{{/ChartRows}}
 		]);
 
 		var options = {

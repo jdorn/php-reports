@@ -20,17 +20,48 @@
 .report {
 	margin: 8px 0;
 }
+#report_list .collapse {
+	text-decoration:none;
+	vertical-align:middle;
+	color: #7777ff;
+	padding: 0 3px;
+}
 </style>
-<div id='report_list'>
+<script>
+$(document).ready(function() {
+	$('#report_list').on('click','h2',function() {
+		var list = $(this).next('.report_list');
+		var collapse = $(this).children('.collapse');
+		
+		if(list.css('display') == 'none') collapse.html('-');
+		else collapse.html('+');
+		list.toggle(200);
+		
+		return false;
+	});
+});
+</script>
+
 <h1>Report List</h1>
+<div id='table_of_contents'>
+	<ul>
+		{{#reports}}
+			{{#is_dir}}
+				<li><a href='#report_{{Name}}'>{{Name}}</a></li>
+			{{/is_dir}}
+		{{/reports}}
+	</ul>
+</div>
+
+<div id='report_list'>
 {{#reports}}
 	{{#is_dir}}
-		<h2>{{Name}}</h2>
+		<h2><a name="report_{{Name}}"></a>{{Name}} <a href='#' class='collapse'>-</a></h2>
 		<div class='report_list'>
 		{{#children}}
 			{{#is_dir}}
-				<h2>{{Name}}</h2>
-				<div class='report_list'>
+				<h2>{{Name}} <a href='#' class='collapse'>+</a></h2>
+				<div class='report_list' style='display:none;'>
 				{{#children}}
 					{{^is_dir}}
 						<div class='report'>

@@ -13,7 +13,10 @@ class Report {
 	protected $raw_query;
 	
 	public function __construct($report,$macros = array(), $database = null) {
-		if(!file_exists('reports/'.$report)) {
+		require('config/config.php');
+		if(!$reportDir) $reportDir = 'reports';
+		
+		if(!file_exists($reportDir.'/'.$report)) {
 			throw new Exception('Report not found');
 		}
 		
@@ -24,8 +27,13 @@ class Report {
 		$this->mustache = new Mustache;
 		
 		//get the raw report file and convert EOL to unix style
-		$this->raw = file_get_contents('reports/'.$this->report);
+		$this->raw = file_get_contents($reportDir.'/'.$this->report);
 		$this->raw = str_replace(array("\r\n","\r"),"\n",$this->raw);
+		
+		//if there are no headers in this report
+		if(strpos($this->raw,"\n\n") === false) {
+			throw new Exception('Report missing headers');
+		}
 		
 		//split the raw report into headers and code
 		list($this->raw_headers, $this->raw_query) = explode("\n\n",$this->raw,2);
@@ -53,6 +61,8 @@ class Report {
 		
 		$first = true;
 		foreach($lines as $line) {
+			if(empty($line)) continue;
+			
 			//if the line doesn't start with a comment character, skip
 			if(!in_array(substr($line,0,2),array('--','/*')) && $line[0] !== '#') continue;
 			
@@ -144,15 +154,24 @@ class Report {
 					$params = explode(',',$value);
 					$value = array();
 					foreach($params as $param) {
-						if(strpos($param,'=') !== false) {
+						if(strpos($param,'=') !== false) {							
 							list($key,$val) = explode('=',$param,2);
-							$value[trim($key)] = trim($val);
+							
+							if($key === 'y' || $key === 'x') {
+								$val = explode(':',$val);
+							}
+							else {
+								$value = trim($val);
+							}
+							
+							$value[trim($key)] = $val;
 						}
 						else {
-							$value['options'][trim($param)] = true;
+							$value[trim($param)] = true;
 						}
 					}
 				}
+				//print_r($value);
 				$this->options['Chart'] = $value;
 			}
 			//this is another option
@@ -183,6 +202,11 @@ class Report {
 		if(isset($this->options['Columns']) && !is_array($this->options['Columns'])) {
 			$this->options['Columns'] = explode(',',$this->options['Columns']);
 		}
+		
+		//if a name isn't set, construct one
+		if(!isset($this->options['Name'])) {
+			$this->options['Name'] = $this->report;
+		}
 	}
 	
 	protected function initDb() {
@@ -191,6 +215,9 @@ class Report {
 		//set up database connections
 		switch($this->options['Type']) {
 			case 'mysql':
+				//allow support for {macro} format as well as {{macro}} format (for compatibility with legacy systems)
+				$this->raw_query = preg_replace('/([^\{])(\{[a-zA-Z0-9_\-]+\})([^\}])/','$1{$2}$3',$this->raw_query);
+			
 				//if the database isn't set or doesn't exist, use the first defined one
 				if(!$this->options['Database'] || !isset($mysql_connections[$this->options['Database']])) {
 					$this->options['Database'] = current(array_keys($mysql_connections));
@@ -293,6 +320,11 @@ class Report {
 			//expand macros in query
 			$sql = $this->mustache->render($this->raw_query,$this->macros);
 			
+			$this->options['Query'] = $sql;
+			
+			require_once('lib/SqlFormatter/SqlFormatter.php');
+			$this->options['Query_Formatted'] = SqlFormatter::format($sql);
+			
 			//split queries and run each one, saving the last result
 			$queries = explode(';',$sql);
 			foreach($queries as $query) {
@@ -305,11 +337,6 @@ class Report {
 					throw new Exception("Query failed: ".mysql_error());
 				}
 			}
-			
-			$this->options['Query'] = $sql;
-			
-			require_once('lib/SqlFormatter/SqlFormatter.php');
-			$this->options['Query_Formatted'] = SqlFormatter::format($sql);
 			
 			while($row = mysql_fetch_assoc($result)) {
 				$rows[] = $row;
@@ -338,13 +365,39 @@ class Report {
 		$this->closeDb();
 	}
 	
-	protected function applyFilters() {
+	protected function prepareRows() {
 		$rows = array();
+		$chart_rows = array();
 		
 		foreach($this->options['Rows'] as $row) {
 			$rowval = array();
+			$chartrowval = array();
+			
+			//if this is a total row and we're omitting totals from charts
+			if(isset($this->options['Chart']) && isset($this->options['Chart']['omit-total']) && $this->options['Chart']['omit-total'] && trim(current($row))==='TOTAL') {
+				$include_in_chart = false;
+			}
+			else {
+				$include_in_chart = true;
+			}
+			
 			$i=1;
 			foreach($row as $key=>$value) {
+				//determine if this column should appear in a chart
+				$column_in_chart = false;
+				if(!isset($this->options['Chart']['y'])) {
+					$column_in_chart = true;
+				}
+				elseif(in_array($key,$this->options['Chart']['y']) || in_array($i,$this->options['Chart']['y'])) {
+					$column_in_chart = true;
+				}
+				elseif($i===1 && !isset($this->options['Chart']['x'])) {
+					$column_in_chart = true;
+				}
+				elseif(isset($this->options['Chart']['x']) && (in_array($key,$this->options['Chart']['x']) || in_array($i,$this->options['Chart']['x']))) {
+					$column_in_chart = true;
+				}
+				
 				//get filter fot column
 				if(isset($this->options['Filters'][$key])) {
 					$filter = $this->options['Filters'][$key]['filter'];
@@ -364,6 +417,23 @@ class Report {
 					$class = false;
 				}
 				
+				//unescaped output
+				if($class === 'raw') {
+					$raw = true;
+				}
+				else {
+					$raw = false;
+				}
+				
+				//output wrapped in <pre> tags
+				if($class === 'pre') {
+					$pre = true;
+				}
+				else {
+					$pre = false;
+				}
+				
+				
 				$alt = '';
 				switch($filter) {
 					case 'geoip':
@@ -381,8 +451,32 @@ class Report {
 						break;
 				}
 				
-				$rowval[] = array('key'=>$key,'value'=>$value, 'alt'=>$alt, 'class'=>$class, 'first'=>$i===1);
+				if($column_in_chart) {
+					$chartrowval[] = array(
+						'key'=>$key,
+						'value'=>$value, 
+						'first'=>$i===1
+					);
+				}
+				
+				$rowval[] = array(
+					'key'=>$key,
+					'value'=>$value, 
+					'alt'=>$alt, 
+					'class'=>$class, 
+					'first'=>$i===1,
+					'raw'=>$raw,
+					'pre'=>$pre
+				);
 				$i++;
+			}
+			
+			if($include_in_chart) {
+				$first = !$chart_rows;
+				$chart_rows[] = array(
+					'values'=>$chartrowval,
+					'first'=>$first
+				);
 			}
 			
 			$first = !$rows;
@@ -393,11 +487,12 @@ class Report {
 		}
 		
 		$this->options['Rows'] = $rows;
+		$this->options['ChartRows'] = $chart_rows;
 	}
 	
 	public function renderReport() {
 		$this->runReport();
-		$this->applyFilters();
+		$this->prepareRows();
 		
 		if(isset($this->options['Template'])) $template = $this->options['Template'];
 		else $template = 'table';

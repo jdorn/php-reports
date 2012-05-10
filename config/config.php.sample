@@ -1,4 +1,7 @@
 <?php
+$reportDir = 'reports';
+$cacheDir = 'cache';
+
 $mysql_connections = array(
 	'main' => array(
 		'host'=>'localhost',

@@ -2,10 +2,13 @@
 require_once('lib/Mustache/Mustache.php');
 require_once('lib/FileSystemCache/FileSystemCache.php');
 require_once('lib/Class/Report.php');
+require_once('config/config.php');
+
+if(isset($cacheDir)) FileSystemCache::$cacheDir = $cacheDir;
 
 function getReports($dir, $base = null) {
 	if($base === null) $base = $dir;
-	$reports = glob($dir.'*');
+	$reports = glob($dir.'*',GLOB_NOSORT);
 	$return = array();
 	foreach($reports as $key=>$report) {
 		if(is_dir($report)) {
@@ -15,14 +18,24 @@ function getReports($dir, $base = null) {
 				'children'=>getReports($report.'/', $base)
 			);
 		}
-		else {			
+		else {
 			//check if report data is cached and newer than when the report file was created
-			$data = FileSystemCache::retrieve($report, filemtime($report));
+			//the url parameter ?nocache will bypass this and not use cache
+			$data =false;
+			if(!isset($_REQUEST['nocache'])) {
+				$data = FileSystemCache::retrieve($report, filemtime($report));
+			}
 			
 			//report data not cached, need to parse it
 			if($data === false) {
 				$name = substr($report,strlen($base));
-				$temp = new Report($name);
+				try {
+					$temp = new Report($name);
+				}
+				catch(Exception $e) {
+					continue;
+				}
+				
 				$data = $temp->options;
 				
 				$data['report'] = $name;
@@ -37,10 +50,21 @@ function getReports($dir, $base = null) {
 			$return[] = $data;
 		}
 	}
+	
+	usort($return,function(&$a,&$b) {
+		if($a['is_dir'] && !$b['is_dir']) return 1;
+		elseif($b['is_dir'] && !$a['is_dir']) return -1;
+		
+		return strcmp($a['Name'], $b['Name']);
+	});
+	
 	return $return;
 }
 
-$reports = getReports('reports/');
+
+if(!isset($reportDir)) $reportDir = 'reports';
+
+$reports = getReports($reportDir.'/');
 
 $m = new Mustache;
 
