@@ -4,3 +4,6 @@
 [submodule "lib/Mustache"]
 	path = lib/Mustache
 	url = git://github.com/bobthecow/mustache.php.git
+[submodule "lib/FileSystemCache"]
+	path = lib/FileSystemCache
+	url = git://github.com/jdorn/FileSystemCache.git

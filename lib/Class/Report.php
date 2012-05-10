@@ -186,7 +186,7 @@ class Report {
 	}
 	
 	protected function initDb() {
-		require_once('config/config.php');
+		require('config/config.php');
 		
 		//set up database connections
 		switch($this->options['Type']) {
@@ -194,15 +194,6 @@ class Report {
 				//if the database isn't set or doesn't exist, use the first defined one
 				if(!$this->options['Database'] || !isset($mysql_connections[$this->options['Database']])) {
 					$this->options['Database'] = current(array_keys($mysql_connections));
-				}
-				
-				$config = $mysql_connections[$this->options['Database']];
-				
-				if(!mysql_connect($config['host'], $config['username'], $config['password'])) {
-					throw new Exception('Could not connect to Mysql');
-				}
-				if(!mysql_select_db($config['database'])) {
-					throw new Exception('Could not select Mysql database');
 				}
 				
 				//set up list of all available databases for displaying form for switching between them
@@ -231,6 +222,30 @@ class Report {
 				break;
 			case 'default':
 				throw new Exception("Unknown report type");
+		}
+	}
+	
+	
+	
+	protected function openDb() {
+		require('config/config.php');
+		
+		switch($this->options['Type']) {
+			case 'mysql':				
+				$config = $mysql_connections[$this->options['Database']];
+				
+				if(!($this->conn = mysql_connect($config['host'], $config['username'], $config['password']))) {
+					throw new Exception('Could not connect to Mysql');
+				}
+				if(!mysql_select_db($config['database'])) {
+					throw new Exception('Could not select Mysql database');
+				}
+				break;
+		}
+	}
+	protected function closeDb() {
+		if($this->options['Type'] === 'mysql') {
+			mysql_close($this->conn);
 		}
 	}
 	
@@ -265,6 +280,8 @@ class Report {
 	}
 	
 	public function runReport() {
+		$this->openDb();
+		
 		if(!$this->is_ready) {
 			throw new Exception("Report is not ready.  Missing variables");
 		}
@@ -317,6 +334,8 @@ class Report {
 		else {
 			throw new Exception("Unknown report type");
 		}
+		
+		$this->closeDb();
 	}
 	
 	protected function applyFilters() {
