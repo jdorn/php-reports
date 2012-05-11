@@ -21,11 +21,11 @@
 	</style>
 </head>
 <body>
-{{^is_home}}
+{{^is_home}}{{#report_list_url}}
 	<div id='links_holder'>
-		<a href='index.php'>Reports Home</a>
+		<a href='{{report_list_url}}'>Reports Home</a>
 	</div>
-{{/is_home}}
+{{/report_list_url}}{{/is_home}}
 
 {{{variable_form}}}
 

@@ -13,8 +13,7 @@ class Report {
 	protected $raw_query;
 	
 	public function __construct($report,$macros = array(), $database = null) {
-		require('config/config.php');
-		if(!$reportDir) $reportDir = 'reports';
+		$reportDir = PhpReports::$config['reportDir'];
 		
 		if(!file_exists($reportDir.'/'.$report)) {
 			throw new Exception('Report not found');
@@ -23,7 +22,6 @@ class Report {
 		$this->report = $report;
 		
 		//instantiate the templating engine
-		require_once('lib/Mustache/Mustache.php');
 		$this->mustache = new Mustache;
 		
 		//get the raw report file and convert EOL to unix style
@@ -219,11 +217,11 @@ class Report {
 	}
 	
 	protected function initDb() {
-		require('config/config.php');
-		
 		//set up database connections
 		switch($this->options['Type']) {
 			case 'mysql':
+				$mysql_connections = PhpReports::$config['mysql_connections'];
+				
 				//allow support for {macro} format as well as {{macro}} format (for compatibility with legacy systems)
 				$this->raw_query = preg_replace('/([^\{])(\{[a-zA-Z0-9_\-]+\})([^\}])/','$1{$2}$3',$this->raw_query);
 			
@@ -242,6 +240,8 @@ class Report {
 				}
 				break;
 			case 'mongo':
+				$mongo_connections = PhpReports::$config['mongo_connections'];
+			
 				//if the database isn't set or doesn't exist, use the first defined one
 				if(!$this->options['Database'] || !isset($mongo_connections[$this->options['Database']])) {
 					$this->options['Database'] = current(array_keys($mongo_connections));
@@ -266,17 +266,16 @@ class Report {
 	}
 	
 	protected function openDb() {
-		require('config/config.php');
-		
 		switch($this->options['Type']) {
-			case 'mysql':				
+			case 'mysql':
+				$mysql_connections = PhpReports::$config['mysql_connections'];
 				$config = $mysql_connections[$this->options['Database']];
 				
 				if(!($this->conn = mysql_connect($config['host'], $config['username'], $config['password']))) {
-					throw new Exception('Could not connect to Mysql');
+					throw new Exception('Could not connect to Mysql: '.mysql_error());
 				}
 				if(!mysql_select_db($config['database'])) {
-					throw new Exception('Could not select Mysql database');
+					throw new Exception('Could not select Mysql database: '.mysql_error());
 				}
 				break;
 		}
@@ -348,7 +347,6 @@ class Report {
 			
 			$this->options['Query'] = $sql;
 			
-			require_once('lib/SqlFormatter/SqlFormatter.php');
 			$this->options['Query_Formatted'] = SqlFormatter::format($sql);
 			
 			//split queries and run each one, saving the last result
@@ -460,21 +458,13 @@ class Report {
 				}
 				
 				
-				$alt = '';
-				switch($filter) {
-					case 'geoip':
-						$record = @geoip_record_by_name($value);
-						if($record) {
-							$alt = $value;
-							$value = $record['city'];
-							if($record['country_code'] !== 'US') {
-								$value .= ' '.$record['country_name'];
-							}
-							else {
-								$value .= ', '.$record['region'];
-							}
-						}
-						break;
+				$alt = $value;
+				
+				if($filter) {
+					$classname = $filter.'Filter';
+					if(class_exists($classname)) {
+						$value = $classname::filter($key,$value);
+					}
 				}
 				
 				if($column_in_chart) {

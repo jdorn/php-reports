@@ -7,3 +7,6 @@
 [submodule "lib/FileSystemCache"]
 	path = lib/FileSystemCache
 	url = git://github.com/jdorn/FileSystemCache.git
+[submodule "lib/flight"]
+	path = lib/flight
+	url = git://github.com/mikecao/flight.git
