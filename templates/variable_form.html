@@ -43,8 +43,17 @@
 	{{#vars}}
 		<div class='input-row'>
 			<label for='var_{{key}}'>{{name}}</label>
-			<input type='hidden' name='macro_names[]' value='{{key}}' />	
-			<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}'  class='input'/>	
+			<input type='hidden' name='macro_names[]' value='{{key}}' />
+			{{#is_select}}
+				<select name='macro_values[]' id='var_{{key}}' class='input'>
+				{{#options}}
+					<option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{display}}</option>
+				{{/options}}
+				</select>
+			{{/is_select}}
+			{{^is_select}}
+				<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}'  class='input'/>	
+			{{/is_select}}
 		</div>
 	{{/vars}}
 	

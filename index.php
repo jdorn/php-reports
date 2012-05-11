@@ -11,9 +11,19 @@ function getReports($dir, $base = null) {
 	$reports = glob($dir.'*',GLOB_NOSORT);
 	$return = array();
 	foreach($reports as $key=>$report) {
+		$title = $description = false;
+		
 		if(is_dir($report)) {
+			if(file_exists($report.'/TITLE.txt')) $title = file_get_contents($report.'/TITLE.txt');
+			if(file_exists($report.'/README.txt')) $description = file_get_contents($report.'/README.txt');
+			
+			$id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
+			
 			$return[] = array(
 				'Name'=>ucwords(str_replace(array('_','-'),' ',basename($report))),
+				'Title'=>$title,
+				'Id'=> $id,
+				'Description'=>$description,
 				'is_dir'=>true,
 				'children'=>getReports($report.'/', $base)
 			);
@@ -41,6 +51,7 @@ function getReports($dir, $base = null) {
 				$data['report'] = $name;
 				$data['url'] = 'report.php?report='.$name;
 				$data['is_dir'] = false;
+				$data['Id'] = false;
 				if(!isset($data['Name'])) $data['Name'] = ucwords(str_replace(array('_','-'),' ',basename($report)));
 				
 				//store parsed report in cache
@@ -72,4 +83,4 @@ $template_file = file_get_contents('templates/report_list.html');
 $content = $m->render($template_file,array('reports'=>$reports));
 
 $page_template_file = file_get_contents('templates/page.html');
-echo $m->render($page_template_file,array('content'=>$content,'title'=>'Report List'));
+echo $m->render($page_template_file,array('content'=>$content,'title'=>'Report List', 'is_home'=>true));

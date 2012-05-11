@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 if(isset($_GET['report'])) {
 	$report = $_GET['report'];
 }
@@ -7,8 +9,15 @@ else {
 }
 
 $database = null;
-if(isset($_REQUEST['database'])) $database = $_REQUEST['database'];
-elseif(isset($_SESSION['database'])) $database = $_SESSION['database'];
+if(isset($_REQUEST['database'])) {
+	$database = $_REQUEST['database'];
+	
+	//store this database selection in the session
+	$_SESSION['database'] = $database;
+}
+elseif(isset($_SESSION['database'])) {
+	$database = $_SESSION['database'];
+}
 
 $macros = array();
 if(isset($_GET['macro_names'])) {
@@ -28,6 +37,10 @@ $page_template = array();
 
 $page_template['title'] = $report->options['Name'];
 $page_template['variable_form'] = $report->renderVariableForm();
+
+if(isset($_REQUEST['raw'])) {
+	$page_template['content'] = '<pre>'.$report->getRaw().'</pre>';
+}
 
 if(!$report->is_ready) {
 	$page_template['notice'] = "The report needs more information before running.";
@@ -55,7 +68,7 @@ if(isset($_REQUEST['csv'])) {
 
 	$page_template_file = 'csv_page';
 }
-else {
+else {	
 	$page_template_file = 'page';
 }
 

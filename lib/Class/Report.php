@@ -106,9 +106,16 @@ class Report {
 					$params = $temp;
 				}
 				else {
+					$parts = explode(',',$params);
 					$params = array(
-						'name'=>$params
+						'name'=>$parts[0]
 					);
+					
+					//id,name,OPTION1|OPTION2 syntax
+					if(isset($parts[1])) {
+						$params['type'] = 'select';
+						$params['options'] = explode('|',$parts[1]);
+					}
 				}
 				
 				//add to options
@@ -128,6 +135,8 @@ class Report {
 			}
 			//this is a filter
 			elseif($name === 'Filter') {
+				if(strpos($value,',') === false) continue;
+				
 				list($col,$params) = explode(',',$value,2);
 				$col = trim($col);
 				$params = trim($params);
@@ -161,7 +170,7 @@ class Report {
 								$val = explode(':',$val);
 							}
 							else {
-								$value = trim($val);
+								$val = trim($val);
 							}
 							
 							$value[trim($key)] = $val;
@@ -252,7 +261,9 @@ class Report {
 		}
 	}
 	
-	
+	public function getRaw() {
+		return $this->raw;
+	}
 	
 	protected function openDb() {
 		require('config/config.php');
@@ -297,6 +308,21 @@ class Report {
 				if(!isset($params['options'])) $params['options'] = false;
 				$params['value'] = $this->macros[$var];
 				$params['key'] = $var;
+				
+				if($params['type'] === 'select') {
+					$params['is_select'] = true;
+					
+					foreach($params['options'] as $key=>$option) {
+						if(!is_array($option)) {
+							$params['options'][$key] = array(
+								'display'=>$option,
+								'value'=>$option
+							);
+						}
+						if($params['options'][$key]['value'] == $params['value']) $params['options'][$key]['selected'] = true;
+						else $params['options'][$key]['selected'] = false;
+					}
+				}
 				
 				$template_vars['vars'][] = $params;
 			}
