@@ -63,8 +63,6 @@ class PhpReports {
 			}
 		}
 
-		$m = new Mustache;
-
 		if(isset($_REQUEST['csv'])) {
 			$file_name = preg_replace(array('/[\s]+/','/[^0-9a-zA-Z\-_\.]/'),array('_',''),$report->options['Name']);
 			
@@ -79,10 +77,7 @@ class PhpReports {
 			$page_template_file = 'page';
 		}
 
-		$page_template['report_list_url'] = self::$request->base.'/';
-
-		$page_template_source = file_get_contents('templates/'.$page_template_file.'.html');
-		echo $m->render($page_template_source,$page_template);
+		self::renderPage($page_template, $page_template_file);
 	}
 	
 	protected static function getReports($dir, $base = null) {
@@ -151,18 +146,33 @@ class PhpReports {
 		return $return;
 	}
 	
+	public function renderPage($options, $page='page') {
+		$default = array(
+			'base'=>self::$request->base,
+			'report_list_url'=>self::$request->base.'/'
+		);
+		
+		$options = array_merge($options,$default);
+		
+		
+		$page_template_file = file_get_contents('templates/'.$page.'.html');
+		
+		$m = new Mustache;
+		echo $m->render($page_template_file,$options);
+	}
+	
 	public static function listReports() {
 		$reports = self::getReports(self::$config['reportDir'].'/');
 		
-		//print_r($reports);
-
 		$m = new Mustache;
-
 		$template_file = file_get_contents('templates/report_list.html');
 		$content = $m->render($template_file,array('reports'=>$reports));
 
-		$page_template_file = file_get_contents('templates/page.html');
-		echo $m->render($page_template_file,array('content'=>$content,'title'=>'Report List', 'is_home'=>true));
+		self::renderPage(array(
+			'content'=>$content,
+			'title'=>'Report List',
+			'is_home'=>true
+		));
 	}
 	
 	public static function loader($className) {
