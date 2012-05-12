@@ -117,6 +117,7 @@ class PhpReports {
 						$temp = new Report($name);
 					}
 					catch(Exception $e) {
+						trigger_error('Failed to parse report '.$report.': '.$e->getMessage());
 						continue;
 					}
 					
@@ -176,10 +177,8 @@ class PhpReports {
 	}
 	
 	public static function loader($className) {
-		if(file_exists('filters/'.$className.'.php')) {
-			require('filters/'.$className.'.php');
-			return true;
-		}
+		//first try to load from the classes directory
+		if(self::load($className.'.php','classes')) return true;
 		
 		return self::load($className.'.php','lib');
 	}

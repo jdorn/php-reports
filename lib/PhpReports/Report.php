@@ -46,14 +46,15 @@ class Report {
 	}
 	
 	protected function parseHeader() {
-		$this->options = array(
-			'Variables'=>array(),
-			'Filters'=>array()
-		);
-		
 		//default the report to being ready
 		//if undefined variables are found in the headers, set to false
 		$this->is_ready = true;
+		
+		$this->options = array(
+			'Filters'=>array(),
+			'Variables'=>array(),
+			'Name'=>$this->report
+		);
 		
 		$lines = explode("\n",$this->raw_headers);
 		
@@ -74,13 +75,9 @@ class Report {
 				$value = trim($line);
 			}
 			//if this is after the first header and not in the format name:value, assume it is part of the description
-			elseif(strpos($line,':') === false) {
+			elseif(strpos($line,':') === false) {				
 				if(!isset($this->options['Description'])) $this->options['Description'] = '';
 				$this->options['Description'] .= "\n".$line;
-				continue;
-			}
-			//otherwise skip if not in name:value format
-			elseif(strpos($line,':')===false) {
 				continue;
 			}
 			else {
@@ -88,106 +85,21 @@ class Report {
 				$name = trim($name);
 				$value = trim($value);
 				
-				//make all cap names sentence case
+				//compatibility with legacy system
 				if(strtoupper($name) === $name) $name = ucfirst(strtolower($name));
 			}
 			
 			$first = false;
 			
-			//this is a variable
-			if($name === 'Variable') {
-				list($var,$params) = explode(',',$value,2);
-				$var = trim($var);
-				$params = trim($params);
-				
-				if($temp = json_decode($params,true)) {
-					$params = $temp;
-				}
-				else {
-					$parts = explode(',',$params);
-					$params = array(
-						'name'=>$parts[0]
-					);
-					
-					//id,name,OPTION1|OPTION2 syntax
-					if(isset($parts[1])) {
-						$params['type'] = 'select';
-						$params['options'] = explode('|',$parts[1]);
-					}
-				}
-				
-				//add to options
-				$this->options['Variables'][$var] = $params;
-				
-				if(!isset($this->macros[$var]) && isset($params['default'])) {
-					$this->macros[$var] = $params['default'];
-				}
-				elseif(!isset($this->macros[$var])) {
-					$this->macros[$var] = '';
-				}
-				
-				//if the macro value is empty and empty isn't allowed
-				if(trim($this->macros[$var])==='' && (!isset($params['empty']) || !$params['empty'])) {
-					$this->is_ready =false;
-				}
+			//compatibility with legacy system
+			if($name === 'Plot') $name = 'Chart';
+			
+			$classname = $name.'Header';
+			if(class_exists($classname)) {
+				$classname::parse($name,$value,$this);
 			}
-			//this is a filter
-			elseif($name === 'Filter') {
-				if(strpos($value,',') === false) continue;
-				
-				list($col,$params) = explode(',',$value,2);
-				$col = trim($col);
-				$params = trim($params);
-				
-				if($temp = json_decode($params,true)) {
-					$params = $temp;
-				}
-				else {
-					$params = array(
-						'filter'=>$params
-					);
-				}
-				
-				$this->options['Filters'][$col] = $params;
-			}
-			//a chart
-			elseif($name === 'Plot' || $name === 'Chart') {
-				//chart parameters in JSON format
-				if($temp = json_decode($value,true)) {
-					$value = $temp;
-				}
-				//chart parameters in key=value,key2=value2 format
-				else {
-					$params = explode(',',$value);
-					$value = array();
-					foreach($params as $param) {
-						if(strpos($param,'=') !== false) {							
-							list($key,$val) = explode('=',$param,2);
-							
-							if($key === 'y' || $key === 'x') {
-								$val = explode(':',$val);
-							}
-							else {
-								$val = trim($val);
-							}
-							
-							$value[trim($key)] = $val;
-						}
-						else {
-							$value[trim($param)] = true;
-						}
-					}
-				}
-				//print_r($value);
-				$this->options['Chart'] = $value;
-			}
-			//this is another option
 			else {
-				if($temp = json_decode($value,true)) {
-					$value = $temp;
-				}
-				
-				$this->options[$name] = $value;
+				throw new Exception("Unknown header $name");
 			}
 		}
 		
@@ -204,15 +116,6 @@ class Report {
 				default:
 					throw new Exception("Unknown report type");
 			}
-		}
-		
-		if(isset($this->options['Columns']) && !is_array($this->options['Columns'])) {
-			$this->options['Columns'] = explode(',',$this->options['Columns']);
-		}
-		
-		//if a name isn't set, construct one
-		if(!isset($this->options['Name'])) {
-			$this->options['Name'] = $this->report;
 		}
 	}
 	
