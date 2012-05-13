@@ -164,6 +164,8 @@ class PhpReports {
 				);
 			}
 			else {
+				if(in_array(basename($report),array('TITLE.txt','README.txt'))) continue;
+			
 				//check if report data is cached and newer than when the report file was created
 				//the url parameter ?nocache will bypass this and not use cache
 				$data =false;
@@ -178,7 +180,7 @@ class PhpReports {
 						$temp = new Report($name);
 					}
 					catch(Exception $e) {
-						trigger_error('Failed to parse report '.$report.': '.$e->getMessage());
+						throw $e;
 						continue;
 					}
 					

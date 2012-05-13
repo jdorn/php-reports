@@ -5,6 +5,7 @@ class Report {
 	public $macros;
 	public $options;
 	public $is_ready;
+	public $headers;
 	
 	protected $mustache;
 	
@@ -55,6 +56,7 @@ class Report {
 			'Variables'=>array(),
 			'Name'=>$this->report
 		);
+		$this->headers = array();
 		
 		$lines = explode("\n",$this->raw_headers);
 		$lines[] = '#End:';
@@ -112,6 +114,7 @@ class Report {
 				$classname = $last_header.'Header';
 				if(class_exists($classname)) {
 					$classname::parse($last_header,$last_header_value,$this);
+					$this->headers[] = $last_header;
 				}
 				else {
 					throw new Exception("Unknown header $last_header");
@@ -318,115 +321,34 @@ class Report {
 		
 		foreach($this->options['Rows'] as $row) {
 			$rowval = array();
-			$chartrowval = array();
-			
-			//if this is a total row and we're omitting totals from charts
-			if(isset($this->options['Chart']) && isset($this->options['Chart']['omit-total']) && $this->options['Chart']['omit-total'] && trim(current($row))==='TOTAL') {
-				$include_in_chart = false;
-			}
-			else {
-				$include_in_chart = true;
-			}
 			
 			$i=1;
-			foreach($row as $key=>$value) {
-				//determine if this column should appear in a chart
-				$column_in_chart = false;
-				if(!isset($this->options['Chart']['y'])) {
-					$column_in_chart = true;
-				}
-				elseif(in_array($key,$this->options['Chart']['y']) || in_array($i,$this->options['Chart']['y'])) {
-					$column_in_chart = true;
-				}
-				elseif($i===1 && !isset($this->options['Chart']['x'])) {
-					$column_in_chart = true;
-				}
-				elseif(isset($this->options['Chart']['x']) && (in_array($key,$this->options['Chart']['x']) || in_array($i,$this->options['Chart']['x']))) {
-					$column_in_chart = true;
-				}
-				
-				//get filter fot column
-				if(isset($this->options['Filters'][$key])) {
-					$filter = $this->options['Filters'][$key]['filter'];
-				}
-				elseif(isset($this->options['Filters'][$i]['filter'])) {
-					$filter = $this->options['Filters'][$i]['filter'];
-				}
-				else {
-					$filter = false;
-				}
-				
-				//get class for column
-				if(isset($this->options['Columns'][$i-1])) {
-					$class = $this->options['Columns'][$i-1];
-				}
-				else {
-					$class = false;
-				}
-				
-				//unescaped output
-				if($class === 'raw') {
-					$raw = true;
-				}
-				else {
-					$raw = false;
-				}
-				
-				//output wrapped in <pre> tags
-				if($class === 'pre') {
-					$pre = true;
-				}
-				else {
-					$pre = false;
-				}
-				
-				
-				$alt = $value;
-				
-				if($filter) {
-					$classname = $filter.'Filter';
-					if(class_exists($classname)) {
-						$value = $classname::filter($key,$value);
-					}
-				}
-				
-				if($column_in_chart) {
-					$chartrowval[] = array(
-						'key'=>$key,
-						'value'=>$value, 
-						'first'=>$i===1
-					);
-				}
-				
+			foreach($row as $key=>$value) {				
 				$rowval[] = array(
 					'key'=>$key,
-					'value'=>$value, 
-					'alt'=>$alt, 
-					'class'=>$class, 
-					'first'=>$i===1,
-					'raw'=>$raw,
-					'pre'=>$pre
+					'value'=>$value,
+					'first'=>$i===1
 				);
 				$i++;
 			}
 			
-			if($include_in_chart) {
-				$first = !$chart_rows;
-				$chart_rows[] = array(
-					'values'=>$chartrowval,
-					'first'=>$first
-				);
-			}
-			
 			$first = !$rows;
-			$rows[] = array(
+			
+			$row = array(
 				'values'=>$rowval,
 				'first'=>$first
 			);
+			
+			foreach($this->headers as $header) {
+				$classname = $header.'Header';
+				$row = $classname::filterRow($row,$this);
+				if(!$row) break;
+			}
+			
+			if($row) $rows[] = $row;
 		}
 		
 		$this->options['Rows'] = $rows;
-		$this->options['ChartRows'] = $chart_rows;
 	}
 	
 	public function renderReportContent($template='html/table') {

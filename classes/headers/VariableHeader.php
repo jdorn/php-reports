@@ -1,5 +1,5 @@
 <?php
-class VariableHeader implements HeaderInterface {
+class VariableHeader extends HeaderBase {
 	//in format: variable, params
 	//params can be a JSON object or "name" or "name, options"
 	//	'name', 

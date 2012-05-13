@@ -1,9 +1,10 @@
 <?php
-class ChartHeader implements HeaderInterface {
+class ChartHeader extends HeaderBase {
 	public static $allowed_options = array(
 		'x'=>true,
 		'y'=>true,
-		'omit-totals'=>true
+		'omit-totals'=>true,
+		'type'=>true
 	);
 	
 	//in format: params
@@ -40,10 +41,82 @@ class ChartHeader implements HeaderInterface {
 			}
 		}
 		
-		if($temp = array_diff($value, self::$allowed_options)) {
+		if($temp = array_diff_key($value, self::$allowed_options)) {
 			throw new Exception("Unknown options: ".print_r($temp,true));
 		}
 		
+		if(!isset($value['type'])) {
+			$value['type'] = 'LineChart';
+		}
+		
 		$report->options['Chart'] = $value;
+		
+		$report->options['ChartRows'] = array();
+	}
+	
+	public static function filterRow($row, &$report) {
+		if($row['first']) return $row;
+	
+		//if this is a total row and we're omitting totals from charts
+		if(isset($report->options['Chart']['omit-totals']) 
+			&& $report->options['Chart']['omit-totals'] 
+			&& strtoupper($row['values'][0]['value'])==='TOTAL'
+		) {
+			return $row;
+		}
+	
+		$i = 1;
+		$chartrowvals = array();
+		foreach($row['values'] as $key=>$value) {
+				//determine if this column should appear in a chart
+				$column_in_chart = false;
+				if(!isset($report->options['Chart']['y'])) {
+					$column_in_chart = true;
+					$x = false;
+				}
+				elseif(in_array($value['key'],$report->options['Chart']['y'],true) || in_array($i,$report->options['Chart']['y'],true)) {
+					$column_in_chart = true;
+					$x = false;
+				}
+				elseif($i===1 && !isset($report->options['Chart']['x'])) {
+					$column_in_chart = true;
+					$x = true;
+				}
+				elseif(isset($report->options['Chart']['x']) && ($value['key']==$report->options['Chart']['x'] || $i == $report->options['Chart']['x'])) {
+					$column_in_chart = true;
+					$x = true;
+				
+				}
+				
+				$i++;
+				
+				if(!$column_in_chart) {
+					continue;
+				}
+				
+				if($x) {
+					array_unshift($chartrowvals,array(
+						'key'=>$value['key'],
+						'value'=>$value['value'],
+						'first'=>true
+					));
+				}
+				else {
+					$chartrowvals[] = array(
+						'key'=>$value['key'],
+						'value'=>$value['value'],
+						'first'=>false
+					);
+				}
+		}
+		
+		//echo "<pre>".print_r($chartrowvals,true)."</pre>";
+		
+		$report->options['ChartRows'][] = array(
+			'values'=>$chartrowvals,
+			'first'=>!$report->options['ChartRows']
+		);
+		
+		return $row;
 	}
 }

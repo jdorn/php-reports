@@ -1,5 +1,5 @@
 <?php
-class FilterHeader implements HeaderInterface {
+class FilterHeader extends HeaderBase {
 	//in format: column, params
 	//params can be a JSON object or "filter"
 	//filter classes are defined in class/filters/
@@ -28,5 +28,31 @@ class FilterHeader implements HeaderInterface {
 		
 		if(!isset($report->options['Filters'])) $report->options['Filters'] = array();
 		$report->options['Filters'][$col] = $params;
+	}
+	
+	public static function filterRow($row, &$report) {
+		$i = 1;
+		foreach($row['values'] as $key=>$value) {
+			//get filter fot column
+			if(isset($report->options['Filters'][$value['key']])) {
+				$filter = $report->options['Filters'][$value['key']]['filter'];
+			}
+			elseif(isset($report->options['Filters'][$i]['filter'])) {
+				$filter = $report->options['Filters'][$i]['filter'];
+			}
+			else {
+				$filter = false;
+			}			
+			$i++;
+			
+			if(!$filter) continue;
+			
+			$classname = $filter.'Filter';
+			if(class_exists($classname)) {
+				$row['values'][$key]['value'] = $classname::filter($value['key'],$value['value']);
+			}
+		}
+		
+		return $row;
 	}
 }
