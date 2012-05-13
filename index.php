@@ -20,4 +20,12 @@ Flight::route('/report/text',function() {
 	PhpReports::textReport($_REQUEST['report']);
 });
 
+Flight::route('/report/json',function() {
+	PhpReports::jsonReport($_REQUEST['report']);
+});
+
+Flight::route('/report/sql',function() {
+	PhpReports::sqlReport($_REQUEST['report']);
+});
+
 Flight::start();

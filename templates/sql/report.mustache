@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS `{{Name}}`;
+
+INSERT INTO `{{Name}}`
+{{#Rows}}{{#first}}
+	({{#values}}{{^first}}`,{{/first}}`{{key}}{{/values}}`)
+VALUES
+{{/first}}{{^first}},
+{{/first}}	({{#values}}{{^first}}",{{/first}}"{{value}}{{/values}}"){{/Rows}};

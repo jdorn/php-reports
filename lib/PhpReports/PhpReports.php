@@ -47,6 +47,34 @@ class PhpReports {
 		self::renderPage($page_template,'text/page');
 	}
 	
+	public static function jsonReport($report) {
+		$report = self::prepareReport($report);
+		
+		$page_template = array(
+			'content'=>$report->renderReportPage('json/report','json/page')
+		);
+		
+		header("Content-type: application/json");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		self::renderPage($page_template,'json/page');
+	}
+	
+	public static function sqlReport($report) {
+		$report = self::prepareReport($report);
+		
+		$page_template = array(
+			'content'=>$report->renderReportPage('sql/report','sql/page')
+		);
+		
+		header("Content-type: text/plain");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		self::renderPage($page_template,'sql/page');
+	}
+	
 	public static function htmlReport($report) {
 		$report = self::prepareReport($report);
 		
