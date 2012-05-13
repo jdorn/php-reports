@@ -57,8 +57,12 @@ class Report {
 		);
 		
 		$lines = explode("\n",$this->raw_headers);
+		$lines[] = '#End:';
 		
-		$first = true;
+		$last_header = null;
+		$last_header_value = '';
+		$last_i = 0;
+		$i=0;
 		foreach($lines as $line) {
 			if(empty($line)) continue;
 			
@@ -69,19 +73,27 @@ class Report {
 			$line = trim(ltrim($line,'-*/#'));
 			if(!$line) continue;
 			
+			$has_name_value = preg_match('/^\s*[a-zA-Z0-9_\-]+\s*\:/',$line);
+			
 			//if this is the first header and not in the format name:value, assume it is the report name
-			if($first && strpos($line,':') === false) {
+			if(!$last_header && !$has_name_value) {
 				$name = 'Name';
 				$value = trim($line);
 			}
-			//if this is after the first header and not in the format name:value, assume it is part of the description
-			elseif(strpos($line,':') === false) {				
-				if(!isset($this->options['Description'])) $this->options['Description'] = '';
-				$this->options['Description'] .= "\n".$line;
-				continue;
-			}
 			else {
-				list($name,$value) = explode(':',$line,2);
+				if(!$has_name_value) {		
+					$value = trim($line);
+					
+					if($last_header !== 'Name') $name = $last_header;
+					else {
+						$name = 'Description';
+						$i++;
+					}
+				}
+				else {
+					$i++;
+					list($name,$value) = explode(':',$line,2);
+				}
 				$name = trim($name);
 				$value = trim($value);
 				
@@ -89,18 +101,26 @@ class Report {
 				if(strtoupper($name) === $name) $name = ucfirst(strtolower($name));
 			}
 			
-			$first = false;
-			
-			//compatibility with legacy system
-			if($name === 'Plot') $name = 'Chart';
-			
-			$classname = $name.'Header';
-			if(class_exists($classname)) {
-				$classname::parse($name,$value,$this);
+			if($last_i === $i) {
+				$last_header_value .= "\n".$value;
+				continue;
 			}
-			else {
-				throw new Exception("Unknown header $name");
+			elseif($last_header) {
+				//compatibility with legacy system
+				if($last_header === 'Plot') $last_header = 'Chart';
+				
+				$classname = $last_header.'Header';
+				if(class_exists($classname)) {
+					$classname::parse($last_header,$last_header_value,$this);
+				}
+				else {
+					throw new Exception("Unknown header $last_header");
+				}
 			}
+				
+			$last_header = $name;
+			$last_header_value = $value;
+			$last_i = $i;
 		}
 		
 		//try to infer report type from file extension
@@ -190,12 +210,12 @@ class Report {
 	}
 	
 	public function renderVariableForm($template='variable_form') {
-		if(!file_exists('templates/'.$template.'.html')) {
+		if(!file_exists('templates/html/'.$template.'.mustache')) {
 			throw new Exception("Variable Form template now found");
 		}
 		
 		if($this->options['Variables']) {
-			$form = file_get_contents('templates/'.$template.'.html');
+			$form = file_get_contents('templates/html/'.$template.'.mustache');
 			
 			$template_vars = array(
 				'vars'=>array(),
@@ -409,22 +429,35 @@ class Report {
 		$this->options['ChartRows'] = $chart_rows;
 	}
 	
-	public function renderReport() {
-		$this->runReport();
-		$this->prepareRows();
-		
-		if(isset($this->options['Template'])) $template = $this->options['Template'];
-		else $template = 'table';
-		
-		if(!file_exists('templates/'.$template.'.html')) {
-			throw new Exception("Report template not found");
+	public function renderReportContent($template='html/table') {
+		if($this->is_ready) {
+			$this->runReport();
+			$this->prepareRows();
 		}
 		
-		$template_code = file_get_contents('templates/'.$template.'.html');
+		if(!file_exists('templates/'.$template.'.mustache')) {
+			throw new Exception("Report content template not found");
+		}
 		
-		//print_r($this->options);
-		
+		$template_code = file_get_contents('templates/'.$template.'.mustache');
 		return $this->mustache->render($template_code, $this->options);
+	}
+	
+	public function renderReportPage($content_template='html/table',$report_template='html/report') {		
+		$template_vars = array(
+			'is_ready'=>$this->is_ready,
+			'content'=>self::renderReportContent($content_template),
+			'variable_form'=>self::renderVariableForm()
+		);
+		
+		$template_vars = array_merge($template_vars,$this->options);
+		
+		if(!file_exists('templates/'.$report_template.'.mustache')) {
+			throw new Exception("Report template not found");
+		}
+		$template_code = file_get_contents('templates/'.$report_template.'.mustache');
+		
+		return $this->mustache->render($template_code, $template_vars);
 	}
 }
 ?>

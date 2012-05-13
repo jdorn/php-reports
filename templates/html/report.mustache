@@ -5,29 +5,12 @@ body {
 .database_message {
 	color: #999;
 }
-#result_table {
-	border: 1px solid black;
-	border-width: 1px 1px 0 0;
-	margin: 15px 0;
-	border-collapse:collapse
+h1 {
+	margin: 10px 0;
+	padding: 0;
 }
-#result_table td, #result_table th {
-	border: 1px solid black;
-	border-width: 0 0 1px 1px;
-	padding: 5px 8px;
-	vertical-align:top;
-}
-#result_table th {
-	background-color: #cfc;
-}
-.currency {
-	text-align:right;
-}
-.right, .rpad2 {
-	text-align:right;
-}
-.center {
-	text-align:center;
+#report_description {
+	padding: 5px 0;
 }
 .show_query {
 	font-size: .8em;
@@ -40,9 +23,12 @@ body {
 <h1>{{Name}}</h1>
 
 {{#Description}}
-	<div>{{{Description}}}</div>
+	<div id='report_description'>{{{Description}}}</div>
 {{/Description}}
 
+{{{variable_form}}}
+
+{{#is_ready}}
 <em class='database_message'>Running on database
 <select id='database_select'>
 {{#Databases}}
@@ -55,40 +41,7 @@ body {
 <a href='{{csv_link}}' class='csv_link'>export to csv</a>
 {{/csv_link}}
 
-
-<table id='result_table'>
-	{{#Rows}}
-		{{#first}}
-		<tr class='header'>
-			{{#values}}
-				<th class="{{class}}">{{key}}</th>
-			{{/values}}
-		</tr>
-		{{/first}}
-		<tr>
-			{{#values}}
-				{{#value}}
-					<td class="{{class}}">
-						{{#raw}}
-							{{{value}}}
-						{{/raw}}
-						{{^raw}}
-							{{#pre}}
-								<pre>{{value}}</pre>
-							{{/pre}}
-							{{^pre}}
-								{{value}}
-							{{/pre}}
-						{{/raw}}
-					</td>
-				{{/value}}
-				{{^value}}
-					<td class="{{class}}">&nbsp;</td>
-				{{/value}}
-			{{/values}}
-		</tr>
-	{{/Rows}}
-</table>
+{{{content}}}
 
 <p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
 
@@ -156,3 +109,9 @@ $('#database_select').change(function() {
 	return false;
 });
 </script>
+{{/is_ready}}
+{{^is_ready}}
+<div class='notice'>
+This report needs more information before running.
+</div>
+{{/is_ready}}

@@ -5,7 +5,19 @@ require 'lib/PhpReports/PhpReports.php';
 Flight::route('/',array('PhpReports','listReports'));
 
 Flight::route('/report',function() {
-	PhpReports::displayReport($_REQUEST['report']);
+	PhpReports::htmlReport($_REQUEST['report']);
+});
+
+Flight::route('/report/html',function() {
+	PhpReports::htmlReport($_REQUEST['report']);
+});
+
+Flight::route('/report/csv',function() {
+	PhpReports::csvReport($_REQUEST['report']);
+});
+
+Flight::route('/report/text',function() {
+	PhpReports::textReport($_REQUEST['report']);
 });
 
 Flight::start();

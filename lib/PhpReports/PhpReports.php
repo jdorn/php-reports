@@ -16,7 +16,64 @@ class PhpReports {
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 	}
 	
-	public static function displayReport($report) {
+	public static function csvReport($report) {
+		$report = self::prepareReport($report);
+		
+		$page_template = array(
+			'content'=>$report->renderReportPage('csv/report','csv/page')
+		);
+		
+		$file_name = preg_replace(array('/[\s]+/','/[^0-9a-zA-Z\-_\.]/'),array('_',''),$report->options['Name']);
+		
+		header("Content-type: application/csv");
+		header("Content-Disposition: attachment; filename=".$file_name.".csv");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		self::renderPage($page_template,'csv/page');
+	}
+	
+	public static function textReport($report) {
+		$report = self::prepareReport($report);
+		
+		$page_template = array(
+			'content'=>$report->renderReportPage('text/report','text/page')
+		);
+		
+		header("Content-type: text/plain");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		self::renderPage($page_template,'text/page');
+	}
+	
+	public static function htmlReport($report) {
+		$report = self::prepareReport($report);
+		
+		$page_template = array(
+			'content'=>$report->renderReportPage('html/table','html/report')
+		);
+
+		self::renderPage($page_template,'html/page');
+	}
+	
+	public static function listReports() {
+		$reports = self::getReports(self::$config['reportDir'].'/');
+		
+		$m = new Mustache;
+		$template_file = file_get_contents('templates/html/report_list.mustache');
+		$content = $m->render($template_file,array('reports'=>$reports));
+
+		self::renderPage(array(
+			'content'=>$content,
+			'title'=>'Report List',
+			'is_home'=>true
+		));
+	}
+	
+	
+	
+	protected static function prepareReport($report) {
 		$database = null;
 		if(isset($_REQUEST['database'])) {
 			$database = $_REQUEST['database'];
@@ -34,50 +91,26 @@ class PhpReports {
 		}
 
 		$report = new Report($report,$macros,$database);
-
+		
 		//add csv download link to report
-		$report->options['csv_link'] = $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'].'&csv=true';
+		$report->options['csv_link'] = self::$request->base.'/report/csv/?'.$_SERVER['QUERY_STRING'];
 
-		//if exporting to csv, use the csv template instead of the report template
-		if(isset($_REQUEST['csv'])) $report->options['Template'] = 'csv';
-
-		$page_template = array();
-
-		$page_template['title'] = $report->options['Name'];
-		$page_template['variable_form'] = $report->renderVariableForm();
-
-		if(isset($_REQUEST['raw'])) {
-			$page_template['content'] = '<pre>'.$report->getRaw().'</pre>';
-		}
-
-		if(!$report->is_ready) {
-			$page_template['notice'] = "The report needs more information before running.";
-		}
-		else {
-			try {
-				$page_template['report'] = $report->renderReport();
-			}
-			catch(Exception $e) {
-				$page_template['error'] = $e->getMessage();
-				if(isset($report->options['Query_Formatted'])) $page_template['content'] = $report->options['Query_Formatted'];
-			}
-		}
-
-		if(isset($_REQUEST['csv'])) {
-			$file_name = preg_replace(array('/[\s]+/','/[^0-9a-zA-Z\-_\.]/'),array('_',''),$report->options['Name']);
-			
-			header("Content-type: application/csv");
-			header("Content-Disposition: attachment; filename=".$file_name.".csv");
-			header("Pragma: no-cache");
-			header("Expires: 0");
-
-			$page_template_file = 'csv_page';
-		}
-		else {	
-			$page_template_file = 'page';
-		}
-
-		self::renderPage($page_template, $page_template_file);
+		return $report;
+	}	
+	
+	protected function renderPage($options, $page='html/page') {
+		$default = array(
+			'base'=>self::$request->base,
+			'report_list_url'=>self::$request->base.'/'
+		);
+		
+		$options = array_merge($options,$default);
+		
+		
+		$page_template_file = file_get_contents('templates/'.$page.'.mustache');
+		
+		$m = new Mustache;
+		echo $m->render($page_template_file,$options);
 	}
 	
 	protected static function getReports($dir, $base = null) {
@@ -145,35 +178,6 @@ class PhpReports {
 		});
 		
 		return $return;
-	}
-	
-	public function renderPage($options, $page='page') {
-		$default = array(
-			'base'=>self::$request->base,
-			'report_list_url'=>self::$request->base.'/'
-		);
-		
-		$options = array_merge($options,$default);
-		
-		
-		$page_template_file = file_get_contents('templates/'.$page.'.html');
-		
-		$m = new Mustache;
-		echo $m->render($page_template_file,$options);
-	}
-	
-	public static function listReports() {
-		$reports = self::getReports(self::$config['reportDir'].'/');
-		
-		$m = new Mustache;
-		$template_file = file_get_contents('templates/report_list.html');
-		$content = $m->render($template_file,array('reports'=>$reports));
-
-		self::renderPage(array(
-			'content'=>$content,
-			'title'=>'Report List',
-			'is_home'=>true
-		));
 	}
 	
 	public static function loader($className) {

@@ -54,6 +54,10 @@
 			{{^is_select}}
 				<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}'  class='input'/>	
 			{{/is_select}}
+			
+			{{#description}}
+				<span>{{{description}}}</span>
+			{{/description}}
 		</div>
 	{{/vars}}
 	

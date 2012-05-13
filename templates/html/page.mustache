@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>{{title}}</title>
-	<script src='{{base}}/lib/jquery-1.7.2.min.js'></script>
+	<script src='{{base}}/public/js/jquery-1.7.2.min.js'></script>
 	<style>
 	.error {
 		color: red;
@@ -27,8 +27,6 @@
 	</div>
 {{/report_list_url}}{{/is_home}}
 
-{{{variable_form}}}
-
 {{#error}}
 	<div class='error'>
 		{{error}}
@@ -40,8 +38,6 @@
 		{{notice}}
 	</div>
 {{/notice}}
-
-{{{report}}}
 
 {{{content}}}
 </body>
