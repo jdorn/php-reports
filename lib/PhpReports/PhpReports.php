@@ -78,9 +78,17 @@ class PhpReports {
 	public static function htmlReport($report) {
 		$report = self::prepareReport($report);
 		
-		$page_template = array(
-			'content'=>$report->renderReportPage('html/table','html/report')
-		);
+		try {
+			$page_template = array(
+				'content'=>$report->renderReportPage('html/table','html/report')
+			);
+		}
+		catch(Exception $e) {
+			$page_template = array(
+				'error'=>$e->getMessage(),
+				'content'=>$report->options['Query_Formatted']
+			);
+		}
 
 		self::renderPage($page_template,'html/page');
 	}

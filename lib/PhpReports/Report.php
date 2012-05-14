@@ -107,10 +107,7 @@ class Report {
 				$last_header_value .= "\n".$value;
 				continue;
 			}
-			elseif($last_header) {
-				//compatibility with legacy system
-				if($last_header === 'Plot') $last_header = 'Chart';
-				
+			elseif($last_header) {			
 				$classname = $last_header.'Header';
 				if(class_exists($classname)) {
 					$classname::parse($last_header,$last_header_value,$this);
@@ -273,7 +270,7 @@ class Report {
 			
 			$this->options['Query'] = $sql;
 			
-			$this->options['Query_Formatted'] = SqlFormatter::format($sql);
+			$this->options['Query_Formatted'] = SqlFormatter::highlight($sql);
 			
 			//split queries and run each one, saving the last result
 			$queries = explode(';',$sql);
@@ -318,6 +315,18 @@ class Report {
 	protected function prepareRows() {
 		$rows = array();
 		$chart_rows = array();
+		
+		//generate list of all values for each numeric column
+		//this is used to calculate percentiles/averages/etc.
+		$vals = array();
+		foreach($this->options['Rows'] as $row) {
+			foreach($row as $key=>$value) {
+				if(!isset($vals[$key])) $vals[$key] = array();
+				
+				if(is_numeric($value)) $vals[$key][] = $value;
+			}
+		}
+		$this->options['Values'] = $vals;
 		
 		foreach($this->options['Rows'] as $row) {
 			$rowval = array();
@@ -368,8 +377,8 @@ class Report {
 	public function renderReportPage($content_template='html/table',$report_template='html/report') {		
 		$template_vars = array(
 			'is_ready'=>$this->is_ready,
-			'content'=>self::renderReportContent($content_template),
-			'variable_form'=>self::renderVariableForm()
+			'content'=>$this->renderReportContent($content_template),
+			'variable_form'=>$this->renderVariableForm()
 		);
 		
 		$template_vars = array_merge($template_vars,$this->options);

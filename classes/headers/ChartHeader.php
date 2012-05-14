@@ -4,7 +4,11 @@ class ChartHeader extends HeaderBase {
 		'x'=>true,
 		'y'=>true,
 		'omit-totals'=>true,
-		'type'=>true
+		'type'=>true,
+		'buckets'=>true,
+		'title'=>true,
+		'width'=>true,
+		'height'=>true
 	);
 	
 	//in format: params
@@ -49,17 +53,21 @@ class ChartHeader extends HeaderBase {
 			$value['type'] = 'LineChart';
 		}
 		
-		$report->options['Chart'] = $value;
+		if(!isset($report->options['Charts'])) $report->options['Charts'] = array();
 		
-		$report->options['ChartRows'] = array();
+		$value['num'] = count($report->options['Charts'])+1;
+		$value['Rows'] = array();
+		$report->options['Charts'][] = $value;
+		
+		$report->options['has_charts'] = true;
 	}
 	
-	public static function filterRow($row, &$report) {
-		if($row['first']) return $row;
+	//for basic graphs where there is a 1 to 1 relationship between values and data points
+	public static function filterRowTwoDim($num, $row, &$report) {
 	
 		//if this is a total row and we're omitting totals from charts
-		if(isset($report->options['Chart']['omit-totals']) 
-			&& $report->options['Chart']['omit-totals'] 
+		if(isset($report->options['Charts'][$num]['omit-totals']) 
+			&& $report->options['Charts'][$num]['omit-totals'] 
 			&& strtoupper($row['values'][0]['value'])==='TOTAL'
 		) {
 			return $row;
@@ -70,22 +78,28 @@ class ChartHeader extends HeaderBase {
 		foreach($row['values'] as $key=>$value) {
 				//determine if this column should appear in a chart
 				$column_in_chart = false;
-				if(!isset($report->options['Chart']['y'])) {
+				if(!isset($report->options['Charts'][$num]['y'])) {
 					$column_in_chart = true;
 					$x = false;
 				}
-				elseif(in_array($value['key'],$report->options['Chart']['y'],true) || in_array($i,$report->options['Chart']['y'],true)) {
+				elseif(in_array($value['key'],$report->options['Charts'][$num]['y'],true) 
+					|| in_array($i,$report->options['Charts'][$num]['y'],true)
+				) {
 					$column_in_chart = true;
 					$x = false;
 				}
-				elseif($i===1 && !isset($report->options['Chart']['x'])) {
+				elseif($i===1 && !isset($report->options['Charts'][$num]['x'])) {
 					$column_in_chart = true;
 					$x = true;
 				}
-				elseif(isset($report->options['Chart']['x']) && ($value['key']==$report->options['Chart']['x'] || $i == $report->options['Chart']['x'])) {
+				elseif(isset($report->options['Charts'][$num]['x']) 
+					&& (
+						$value['key']==$report->options['Charts'][$num]['x'] 
+						|| $i == $report->options['Charts'][$num]['x']
+					)
+				) {
 					$column_in_chart = true;
 					$x = true;
-				
 				}
 				
 				$i++;
@@ -112,10 +126,72 @@ class ChartHeader extends HeaderBase {
 		
 		//echo "<pre>".print_r($chartrowvals,true)."</pre>";
 		
-		$report->options['ChartRows'][] = array(
+		$report->options['Charts'][$num]['Rows'][] = array(
 			'values'=>$chartrowvals,
-			'first'=>!$report->options['ChartRows']
+			'first'=>!$report->options['Charts'][$num]['Rows']
 		);
+		
+		return $row;		
+	}
+	
+	//used for histogram or box plot
+	//values are grouped into buckets
+	public static function filterRowOneDim($num, $row, &$report) {
+		if(!$report->options['Charts'][$num]['Rows']) {
+			$i = 1;
+			foreach($report->options['Values'] as $key=>$values) {
+				if(isset($report->options['Charts'][$num]['x'])
+					&& in_array($report->options['Charts'][$num]['x'],array($i,$key),true)
+				) {
+					$col = $key;
+					break;
+				}
+				elseif(!isset($report->options['Charts'][$num]['x']) && $values) {
+					$col = $key;
+					break;
+				}
+				$i++;
+			}
+			
+			$max = max($values);
+			$min = min($values);
+			$step = ($max-$min)/$report->options['Charts'][$num]['buckets'];
+			
+			for($i = $min; $i< $max; $i += $step) {
+				$report->options['Charts'][$num]['Rows'][] = array(
+					"first"=>!$report->options['Charts'][$num]['Rows'],
+					"values"=>array(
+						array(
+							"key"=>"Bucket",
+							"value"=>round($i,2).' - '.round($i+$step,2),
+							"first"=>true
+						),
+						array(
+							"key"=>"Number",
+							"first"=>false,
+							"value"=>count(array_filter($values,function($a) use($i,$step) {
+								if($a>$i && $a <= ($i+$step)) return true;
+								else return false;
+							}))
+						)
+					)
+				);
+			}
+		}
+		return $row;
+	}
+	
+	public static function filterRow($row, &$report) {
+		if($row['first']) return $row;
+		
+		foreach($report->options['Charts'] as $num=>$value) {
+			if(isset($report->options['Charts'][$num]['buckets'])) {
+				self::filterRowOneDim($num, $row, $report);
+			}
+			else {
+				self::filterRowTwoDim($num, $row, $report);
+			}
+		}
 		
 		return $row;
 	}

@@ -2,12 +2,7 @@
 -- Description: This lists all customers by the number of orders they have made.
 -- Clicking on a customer's name will list all the orders for that particular customer.
 -- 
--- Columns: rpad2,pre,rpad2
--- Chart: {
---		"x": 1,
---		"y": [3],
---		"omit-totals": true
--- 	}
+-- Columns: rpad2,,rpad2
 -- Variable: min_num, {
 --		"type":"number",
 --		"default":1,

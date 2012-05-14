@@ -45,32 +45,38 @@ h1 {
 
 <p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
 
-{{#Chart}}
+{{#has_charts}}
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript">
 	google.load("visualization", "1", {packages:["corechart"]});
 	google.setOnLoadCallback(drawCharts);
-
+	
 	function drawCharts() {
-		var data = google.visualization.arrayToDataTable([
-			{{#ChartRows}}
-				{{#first}}
-					[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
-				{{/first}}
-				,[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
-			{{/ChartRows}}
-		]);
+		{{#Charts}}
+			var data_{{num}} = google.visualization.arrayToDataTable([
+				{{#Rows}}
+					{{#first}}
+						[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
+					{{/first}}
+					
+					,[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
+				{{/Rows}}
+			]);
 
-		var options = {
-			title: '{{title}}'
-		};
+			var options_{{num}} = {
+				title: '{{title}}'
+			};
 
-		var chart = new google.visualization.{{type}}(document.getElementById('chart_div'));
-		chart.draw(data, options);
+			var chart_{{num}} = new google.visualization.{{type}}(document.getElementById('chart_div_{{num}}'));
+			chart_{{num}}.draw(data_{{num}}, options_{{num}});
+		{{/Charts}}
 	}
 	</script>
-	<div id='chart_div' style='{{#width}}width: {{width}}px;{{/width}}{{#height}}height: {{height}}px;{{/height}}'></div>
-{{/Chart}}
+	
+	{{#Charts}}
+	<div id='chart_div_{{num}}' style='{{#width}}width: {{width}}px;{{/width}}{{#height}}height: {{height}}px;{{/height}}'></div>
+	{{/Charts}}
+{{/has_charts}}
 
 {{#Query}}
 <a href='#' class='show_query'>show query</a>
