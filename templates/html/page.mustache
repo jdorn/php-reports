@@ -18,6 +18,20 @@
 		background-color: #ffd;
 		border-radius: 6px;
 	}
+	.waiting {
+		color: #34e;
+		padding: 20px 20px;
+		border: 1px solid #34e;
+		border-radius: 6px;
+		background: #ffd;
+		margin: 10px 0;
+		text-align:center;
+		line-height: 22px;
+	}
+	.waiting div {
+		padding-bottom: 25px;
+		background: url("{{base}}/public/images/ajax-loader.gif") no-repeat bottom center;
+	}
 	</style>
 </head>
 <body>
@@ -39,6 +53,9 @@
 	</div>
 {{/notice}}
 
-{{{content}}}
+<div id='content'>
+	{{{content}}}
+</div>
+
 </body>
 </html>

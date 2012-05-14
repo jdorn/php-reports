@@ -6,13 +6,15 @@ class FilterHeader extends HeaderBase {
 	//examples:
 	//	"4,geoip" - apply a geoip filter to the 4th column
 	//	'Ip,{"filter":"geoip"}' - apply a geoip filter to the "Ip" column
-	public static function parse($key, $value, &$report) {
+	public static function parse($key, $value, &$report) {		
 		if(strpos($value,',') === false) {
-			throw new Exception("Could not parse Filter header: $value");
+			$col = 1;
+			$params = $value;
 		}
-		
-		list($col,$params) = explode(',',$value,2);
-		$col = trim($col);
+		else {
+			list($col,$params) = explode(',',$value,2);
+			$col = trim($col);
+		}
 		$params = trim($params);
 		
 		//JSON format
@@ -24,6 +26,10 @@ class FilterHeader extends HeaderBase {
 			$params = array(
 				'filter'=>$params
 			);
+		}
+		
+		if(!class_exists($params['filter'].'Filter')) {
+			throw new Exception("Unknown filter '$params[filter]' in ".$report->report);
 		}
 		
 		if(!isset($report->options['Filters'])) $report->options['Filters'] = array();

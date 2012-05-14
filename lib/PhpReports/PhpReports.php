@@ -71,12 +71,28 @@ class PhpReports {
 		header("Content-type: text/plain");
 		header("Pragma: no-cache");
 		header("Expires: 0");
-
+		
 		self::renderPage($page_template,'sql/page');
 	}
 	
-	public static function htmlReport($report) {
+	public static function xmlReport($report) {
 		$report = self::prepareReport($report);
+		
+		$page_template = array(
+			'content'=>$report->renderReportPage('xml/rows','xml/report')
+		);
+		
+		header("Content-type: application/xml");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		self::renderPage($page_template,'xml/page');
+	}
+	
+	public static function htmlReport($report, $async=false) {
+		$report = self::prepareReport($report);
+		
+		$report->async = $async;
 		
 		try {
 			$page_template = array(
@@ -90,7 +106,12 @@ class PhpReports {
 			);
 		}
 
-		self::renderPage($page_template,'html/page');
+		if(isset($_REQUEST['content_only'])) {
+			self::renderPage($page_template,'text/page');
+		}
+		else {
+			self::renderPage($page_template,'html/page');
+		}
 	}
 	
 	public static function listReports() {
@@ -172,7 +193,10 @@ class PhpReports {
 				);
 			}
 			else {
-				if(in_array(basename($report),array('TITLE.txt','README.txt'))) continue;
+				//files to skip
+				if(strpos(basename($report),'.') === false) continue;
+				$ext = array_pop(explode('.',$report));
+				if(!in_array($ext,array('sql','js'))) continue;
 			
 				//check if report data is cached and newer than when the report file was created
 				//the url parameter ?nocache will bypass this and not use cache
@@ -188,7 +212,7 @@ class PhpReports {
 						$temp = new Report($name);
 					}
 					catch(Exception $e) {
-						throw $e;
+						echo "<div><strong>$name</strong> - ".$e->getMessage()."</div>";
 						continue;
 					}
 					
@@ -218,7 +242,7 @@ class PhpReports {
 		return $return;
 	}
 	
-	public static function loader($className) {
+	public static function loader($className) {				
 		//first try to load from the classes directory
 		if(self::load($className.'.php','classes')) return true;
 		

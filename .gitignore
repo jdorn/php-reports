@@ -1,3 +1,4 @@
 config/config.php
 reports/transactions/
 cache/
+classes/local/

@@ -3,19 +3,25 @@ class ChartHeader extends HeaderBase {
 	public static $allowed_options = array(
 		'x'=>true,
 		'y'=>true,
-		'omit-totals'=>true,
+		'omit-total'=>true,
+		'rotate-x-labels'=>false,
 		'type'=>true,
 		'buckets'=>true,
 		'title'=>true,
 		'width'=>true,
-		'height'=>true
+		'height'=>true,
+		'grid'=>false,
+		'timefmt'=>false,
+		'xformat'=>false,
+		'yrange'=>false,
+		'xhistogram'=>false
 	);
 	
 	//in format: params
 	//params can be a JSON object or key=value,key=value format
 	//	'x' - the column to use for the x axis
 	//	'y' - the column(s) to use for the y axis (array or ':' separated list)
-	//	'omit-totals' - if set to true, will not include total rows
+	//	'omit-total' - if set to true, will not include total rows
 	public static function parse($key, $value, &$report) {
 		//chart parameters in JSON format
 		if($temp = json_decode($value,true)) {
@@ -46,7 +52,7 @@ class ChartHeader extends HeaderBase {
 		}
 		
 		if($temp = array_diff_key($value, self::$allowed_options)) {
-			throw new Exception("Unknown options: ".print_r($temp,true));
+			throw new Exception("Unknown chart options ($report->report): ".print_r($temp,true));
 		}
 		
 		if(!isset($value['type'])) {
@@ -66,8 +72,8 @@ class ChartHeader extends HeaderBase {
 	public static function filterRowTwoDim($num, $row, &$report) {
 	
 		//if this is a total row and we're omitting totals from charts
-		if(isset($report->options['Charts'][$num]['omit-totals']) 
-			&& $report->options['Charts'][$num]['omit-totals'] 
+		if(isset($report->options['Charts'][$num]['omit-total']) 
+			&& $report->options['Charts'][$num]['omit-total'] 
 			&& strtoupper($row['values'][0]['value'])==='TOTAL'
 		) {
 			return $row;

@@ -5,6 +5,7 @@ class Report {
 	public $macros;
 	public $options;
 	public $is_ready;
+	public $async;
 	public $headers;
 	
 	protected $mustache;
@@ -17,7 +18,7 @@ class Report {
 		$reportDir = PhpReports::$config['reportDir'];
 		
 		if(!file_exists($reportDir.'/'.$report)) {
-			throw new Exception('Report not found');
+			throw new Exception('Report not found - '.$report);
 		}
 		
 		$this->report = $report;
@@ -31,7 +32,7 @@ class Report {
 		
 		//if there are no headers in this report
 		if(strpos($this->raw,"\n\n") === false) {
-			throw new Exception('Report missing headers');
+			throw new Exception('Report missing headers - '.$report);
 		}
 		
 		//split the raw report into headers and code
@@ -75,7 +76,7 @@ class Report {
 			$line = trim(ltrim($line,'-*/#'));
 			if(!$line) continue;
 			
-			$has_name_value = preg_match('/^\s*[a-zA-Z0-9_\-]+\s*\:/',$line);
+			$has_name_value = preg_match('/^\s*[A-Z0-9_\-]+\s*\:/',$line);
 			
 			//if this is the first header and not in the format name:value, assume it is the report name
 			if(!$last_header && !$has_name_value) {
@@ -105,16 +106,17 @@ class Report {
 			
 			if($last_i === $i) {
 				$last_header_value .= "\n".$value;
+				$last_header = $name;
 				continue;
 			}
-			elseif($last_header) {			
+			elseif($last_header) {
 				$classname = $last_header.'Header';
 				if(class_exists($classname)) {
 					$classname::parse($last_header,$last_header_value,$this);
 					$this->headers[] = $last_header;
 				}
 				else {
-					throw new Exception("Unknown header $last_header");
+					throw new Exception("Unknown header '$last_header' - ".$this->report);
 				}
 			}
 				
@@ -134,7 +136,7 @@ class Report {
 					$this->options['Type'] = 'mysql';
 					break;
 				default:
-					throw new Exception("Unknown report type");
+					throw new Exception("Unknown report type - ".$this->report);
 			}
 		}
 	}
@@ -180,7 +182,7 @@ class Report {
 				}
 				break;
 			case 'default':
-				throw new Exception("Unknown report type");
+				throw new Exception("Unknown report type - ".$report);
 		}
 	}
 	
@@ -335,6 +337,7 @@ class Report {
 			foreach($row as $key=>$value) {				
 				$rowval[] = array(
 					'key'=>$key,
+					'key_collapsed'=>trim(preg_replace(array('/\s+/','/[^a-zA-Z0-9_]*/'),array('_',''),$key),'_'),
 					'value'=>$value,
 					'first'=>$i===1
 				);
@@ -361,7 +364,7 @@ class Report {
 	}
 	
 	public function renderReportContent($template='html/table') {
-		if($this->is_ready) {
+		if($this->is_ready && !$this->async) {
 			$this->runReport();
 			$this->prepareRows();
 		}
@@ -374,9 +377,12 @@ class Report {
 		return $this->mustache->render($template_code, $this->options);
 	}
 	
-	public function renderReportPage($content_template='html/table',$report_template='html/report') {		
+	public function renderReportPage($content_template='html/table',$report_template='html/report') {
 		$template_vars = array(
 			'is_ready'=>$this->is_ready,
+			'async'=>$this->async,
+			'report_url'=>PhpReports::$request->base.'/report/?'.$_SERVER['QUERY_STRING'],
+			'base'=>PhpReports::$request->base,
 			'content'=>$this->renderReportContent($content_template),
 			'variable_form'=>$this->renderVariableForm()
 		);

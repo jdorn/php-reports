@@ -5,11 +5,11 @@ require 'lib/PhpReports/PhpReports.php';
 Flight::route('/',array('PhpReports','listReports'));
 
 Flight::route('/report',function() {
-	PhpReports::htmlReport($_REQUEST['report']);
+	PhpReports::htmlReport($_REQUEST['report'],false);
 });
 
 Flight::route('/report/html',function() {
-	PhpReports::htmlReport($_REQUEST['report']);
+	PhpReports::htmlReport($_REQUEST['report'],true);
 });
 
 Flight::route('/report/csv',function() {
@@ -26,6 +26,10 @@ Flight::route('/report/json',function() {
 
 Flight::route('/report/sql',function() {
 	PhpReports::sqlReport($_REQUEST['report']);
+});
+
+Flight::route('/report/xml',function() {
+	PhpReports::xmlReport($_REQUEST['report']);
 });
 
 Flight::start();

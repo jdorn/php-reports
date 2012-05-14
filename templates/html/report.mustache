@@ -28,7 +28,7 @@ h1 {
 
 {{{variable_form}}}
 
-{{#is_ready}}
+{{#is_ready}}{{^async}}
 <em class='database_message'>Running on database
 <select id='database_select'>
 {{#Databases}}
@@ -41,7 +41,9 @@ h1 {
 <a href='{{csv_link}}' class='csv_link'>export to csv</a>
 {{/csv_link}}
 
-{{{content}}}
+<div id='report_content'>
+	{{{content}}}
+</div>
 
 <p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
 
@@ -115,9 +117,24 @@ $('#database_select').change(function() {
 	return false;
 });
 </script>
-{{/is_ready}}
+{{/async}}{{/is_ready}}
 {{^is_ready}}
 <div class='notice'>
 This report needs more information before running.
 </div>
 {{/is_ready}}
+{{#async}}
+<div class='waiting' id='async_notice'>
+	<div>Your report is loading</div>
+</div>
+<script>
+$.ajax({
+	'url': '{{report_url}}',
+	'dataType': 'html',
+	'data': {'content_only': true},
+	'success': function(data) {
+		$('#content').html(data);
+	}
+});
+</script>
+{{/async}}
