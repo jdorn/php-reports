@@ -3,6 +3,12 @@
 <head>
 	<title>{{title}}</title>
 	<script src='{{base}}/public/js/jquery-1.7.2.min.js'></script>
+	{{#has_charts}}
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script>
+		google.load("visualization", "1", {packages:["corechart"]});
+		</script>
+	{{/has_charts}}
 	<style>
 	.error {
 		color: red;

@@ -1,14 +1,14 @@
--- Name: Customers by Number of Orders
--- Description: This lists all customers by the number of orders they have made.
+-- NAME: Customers by Number of Orders
+-- DESCRIPTION: This lists all customers by the number of orders they have made.
 -- Clicking on a customer's name will list all the orders for that particular customer.
 -- 
--- Columns: rpad2,,rpad2
--- Variable: min_num, {
+-- COLUMNS: rpad2,,rpad2
+-- VARIABLE: min_num, {
 --		"type":"number",
 --		"default":1,
 --		"name":"Minimum Number"
 --	}
--- Variable: max_num, {
+-- VARIABLE: max_num, {
 --		"type":"number",
 --		"empty":true,
 --		"name":"Maximum Number",

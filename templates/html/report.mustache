@@ -20,6 +20,7 @@ h1 {
 	margin-left: 20px;
 }
 </style>
+
 <h1>{{Name}}</h1>
 
 {{#Description}}
@@ -48,11 +49,8 @@ h1 {
 <p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
 
 {{#has_charts}}
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript">
-	google.load("visualization", "1", {packages:["corechart"]});
-	google.setOnLoadCallback(drawCharts);
-	
+	drawCharts();
 	function drawCharts() {
 		{{#Charts}}
 			var data_{{num}} = google.visualization.arrayToDataTable([
@@ -125,7 +123,20 @@ This report needs more information before running.
 {{/is_ready}}
 {{#async}}
 <div class='waiting' id='async_notice'>
-	<div>Your report is loading</div>
+	<div>
+		Your report is running.
+		{{#time_estimate}}
+			The average running time for this report is <strong>{{time_estimate}}
+			{{#time_estimate_stdev}}
+				+- {{time_estimate_stdev}}
+			{{/time_estimate_stdev}}
+			seconds</strong>
+			{{#time_estimate_count}}
+				(based on {{time_estimate_count}} samples)
+			{{/time_estimate_count}}
+			.
+		{{/time_estimate}}
+	</div>
 </div>
 <script>
 $.ajax({

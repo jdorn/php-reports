@@ -45,6 +45,8 @@ class Report {
 		$this->options['Database'] = $database;
 		
 		$this->initDb();
+		
+		$this->getTimeEstimate();
 	}
 	
 	protected function parseHeader() {
@@ -290,10 +292,6 @@ class Report {
 			while($row = mysql_fetch_assoc($result)) {
 				$rows[] = $row;
 			}
-			
-			$this->options['Time'] = round(microtime(true) - $start,5);
-			$this->options['Count'] = count($rows);
-			$this->options['Rows'] = $rows;
 		}
 		elseif($options['Type'] === 'mongo') {	
 			throw new Exception("Not implemented");
@@ -312,6 +310,40 @@ class Report {
 		}
 		
 		$this->closeDb();
+		
+		$this->options['Time'] = round(microtime(true) - $start,5);
+		$this->options['Count'] = count($rows);
+		$this->options['Rows'] = $rows;
+		
+		//store the report time
+		$report_times = FileSystemCache::retrieve($this->report,'report_times');
+		if(!$report_times) $report_times = array();
+		$report_times[] = $this->options['Time'];
+		
+		//only keep the last 10 times for each report
+		//this keeps the timing data up to date and the cache small
+		if(count($report_times) > 10) array_shift($report_times);
+		
+		FileSystemCache::store($this->report, $report_times, 'report_times');
+	}
+	
+	protected function getTimeEstimate() {
+		$report_times = FileSystemCache::retrieve($this->report,'report_times');
+		if(!$report_times) return;
+		
+		$sum = array_sum($report_times);
+		$count = count($report_times);
+		$average = $sum/$count;
+		
+		$sample_square = 0;
+		for($i = 0; $i < $count; $i++) {
+			$sample_square += pow($report_times[$i], 2);
+		}
+		$standard_deviation = sqrt($sample_square / $count - pow(($average), 2));
+		
+		$this->options['time_estimate'] = round($average,2);
+		$this->options['time_estimate_stdev'] = round($standard_deviation,2);
+		$this->options['time_estimate_count'] = $count;
 	}
 	
 	protected function prepareRows() {

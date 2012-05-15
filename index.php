@@ -4,12 +4,13 @@ require 'lib/PhpReports/PhpReports.php';
 
 Flight::route('/',array('PhpReports','listReports'));
 
+//shortcut for html report
 Flight::route('/report',function() {
-	PhpReports::htmlReport($_REQUEST['report'],false);
+	PhpReports::htmlReport($_REQUEST['report']);
 });
 
 Flight::route('/report/html',function() {
-	PhpReports::htmlReport($_REQUEST['report'],true);
+	PhpReports::htmlReport($_REQUEST['report']);
 });
 
 Flight::route('/report/csv',function() {

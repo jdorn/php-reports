@@ -89,14 +89,15 @@ class PhpReports {
 		self::renderPage($page_template,'xml/page');
 	}
 	
-	public static function htmlReport($report, $async=false) {
+	public static function htmlReport($report) {
 		$report = self::prepareReport($report);
 		
-		$report->async = $async;
+		$report->async = !isset($_REQUEST['content_only']);
 		
 		try {
 			$page_template = array(
-				'content'=>$report->renderReportPage('html/table','html/report')
+				'content'=>$report->renderReportPage('html/table','html/report'),
+				'has_charts'=>$report->options['has_charts']
 			);
 		}
 		catch(Exception $e) {
@@ -108,6 +109,7 @@ class PhpReports {
 
 		if(isset($_REQUEST['content_only'])) {
 			self::renderPage($page_template,'text/page');
+			exit;
 		}
 		else {
 			self::renderPage($page_template,'html/page');
@@ -219,7 +221,7 @@ class PhpReports {
 					$data = $temp->options;
 					
 					$data['report'] = $name;
-					$data['url'] = self::$request->base.'/report/?report='.$name;
+					$data['url'] = self::$request->base.'/report/html/?report='.$name;
 					$data['is_dir'] = false;
 					$data['Id'] = false;
 					if(!isset($data['Name'])) $data['Name'] = ucwords(str_replace(array('_','-'),' ',basename($report)));

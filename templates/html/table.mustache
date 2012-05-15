@@ -25,35 +25,19 @@
 }
 </style>
 <table id='result_table'>
-	{{#Rows}}
-		{{#first}}
-		<tr class='header'>
-			{{#values}}
-				<th class="{{class}}">{{key}}</th>
-			{{/values}}
-		</tr>
-		{{/first}}
-		<tr>
-			{{#values}}
-				{{#value}}
-					<td class="{{class}}">
-						{{#raw}}
-							{{{value}}}
-						{{/raw}}
-						{{^raw}}
-							{{#pre}}
-								<pre>{{value}}</pre>
-							{{/pre}}
-							{{^pre}}
-								{{value}}
-							{{/pre}}
-						{{/raw}}
-					</td>
-				{{/value}}
-				{{^value}}
-					<td class="{{class}}">{{value}}&nbsp;</td>
-				{{/value}}
-			{{/values}}
-		</tr>
-	{{/Rows}}
+{{#Rows}}{{#first}}
+	<tr class='header'>
+		{{#values}}
+			<th class="{{class}}">{{key}}</th>
+		{{/values}}
+	</tr>
+{{/first}}
+	<tr>
+	{{#values}}
+		{{#value}}<td class="{{class}}">{{#raw}}{{{value}}}{{/raw}}{{^raw}}{{#pre}}<pre>{{value}}</pre>{{/pre}}{{^pre}}{{value}}{{/pre}}{{/raw}}</td>{{/value}}
+		{{^value}}<td class="{{class}}">{{value}}&nbsp;</td>{{/value}}
+		
+	{{/values}}
+	</tr>
+{{/Rows}}
 </table>
