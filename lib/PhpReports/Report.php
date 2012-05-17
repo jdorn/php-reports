@@ -12,7 +12,7 @@ class Report {
 	
 	protected $raw;
 	protected $raw_headers;
-	protected $raw_query;
+	public $raw_query;
 	
 	public function __construct($report,$macros = array(), $database = null) {
 		$reportDir = PhpReports::$config['reportDir'];
@@ -62,11 +62,11 @@ class Report {
 		$this->headers = array();
 		
 		$lines = explode("\n",$this->raw_headers);
-		$lines[] = '#End:';
+		$lines[] = '#END:';
 		
 		$last_header = null;
 		$last_header_value = '';
-		$last_i = 0;
+		$last_i = -1;
 		$i=0;
 		foreach($lines as $line) {
 			if(empty($line)) continue;
@@ -104,7 +104,7 @@ class Report {
 				
 				//compatibility with legacy system
 				if(strtoupper($name) === $name) $name = ucfirst(strtolower($name));
-			}
+			}			
 			
 			if($last_i === $i) {
 				$last_header_value .= "\n".$value;
@@ -148,9 +148,6 @@ class Report {
 		switch($this->options['Type']) {
 			case 'mysql':
 				$mysql_connections = PhpReports::$config['mysql_connections'];
-				
-				//allow support for {macro} format as well as {{macro}} format (for compatibility with legacy systems)
-				$this->raw_query = preg_replace('/([^\{])(\{[a-zA-Z0-9_\-]+\})([^\}])/','$1{$2}$3',$this->raw_query);
 			
 				//if the database isn't set or doesn't exist, use the first defined one
 				if(!$this->options['Database'] || !isset($mysql_connections[$this->options['Database']])) {
@@ -247,6 +244,17 @@ class Report {
 						}
 						if($params['options'][$key]['value'] == $params['value']) $params['options'][$key]['selected'] = true;
 						else $params['options'][$key]['selected'] = false;
+						
+						
+						if($params['multiple']) {
+							$params['is_multiselect'] = true;
+							$params['choices'] = count($params['options']);
+						}
+					}
+				}
+				else {
+					if($params['multiple']) {
+						$params['is_textarea'] = true;
 					}
 				}
 				
@@ -269,8 +277,23 @@ class Report {
 		$start = microtime(true);
 		
 		if($this->options['Type'] === 'mysql') {
+			$macros = $this->macros;
+			foreach($macros as $key=>$value) {
+				if(is_array($value)) {
+					$first = true;
+					foreach($value as $key2=>$value2) {
+						$value[$key2] = array(
+							'first'=>$first,
+							'value'=>$value2
+						);
+						$first = false;
+					}
+					$macros[$key] = $value;
+				}
+			}
+			
 			//expand macros in query
-			$sql = $this->mustache->render($this->raw_query,$this->macros);
+			$sql = $this->mustache->render($this->raw_query,$macros);
 			
 			$this->options['Query'] = $sql;
 			

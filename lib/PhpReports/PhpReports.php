@@ -106,14 +106,53 @@ class PhpReports {
 				'content'=>$report->options['Query_Formatted']
 			);
 		}
+		
+		$page_template['title'] = $report->options['Name'];
 
 		if(isset($_REQUEST['content_only'])) {
-			self::renderPage($page_template,'text/page');
+			self::renderPage($page_template,'html/content_only');
 			exit;
 		}
 		else {
 			self::renderPage($page_template,'html/page');
 		}
+	}
+	
+	public static function rawReport($report) {
+		$report = self::prepareReport($report);
+		
+		header("Content-type: text/plain");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+		
+		self::renderPage(array(
+			'content'=>$report->getRaw()
+		),'text/page');
+	}
+	
+	public static function debugReport($report) {
+		$report = self::prepareReport($report);
+		
+		header("Content-type: text/plain");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+		
+		$content = "****************** Raw Report File ******************\n\n".$report->getRaw()."\n\n\n";
+		$content .= "****************** Macros ******************\n\n".print_r($report->macros,true)."\n\n\n";
+		$content .= "****************** All Report Options ******************\n\n".print_r($report->options,true)."\n\n\n";
+		
+		if($report->is_ready) {
+			$report->renderReportContent();
+		
+			$content .= "****************** Generated Query ******************\n\n".print_r($report->options['Query'],true)."\n\n\n";
+			
+			$content .= "****************** Report Rows ******************\n\n".print_r($report->options['Rows'],true)."\n\n\n";
+		}
+		
+		
+		self::renderPage(array(
+			'content'=>$content
+		),'text/page');
 	}
 	
 	public static function listReports() {
@@ -144,10 +183,9 @@ class PhpReports {
 			$database = $_SESSION['database'];
 		}
 
+		
 		$macros = array();
-		if(isset($_GET['macro_names'])) {
-			$macros = array_combine($_GET['macro_names'],$_GET['macro_values']);
-		}
+		if(isset($_GET['macros'])) $macros = $_GET['macros'];
 
 		$report = new Report($report,$macros,$database);
 		

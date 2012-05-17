@@ -63,6 +63,7 @@ class ChartHeader extends HeaderBase {
 		
 		$value['num'] = count($report->options['Charts'])+1;
 		$value['Rows'] = array();
+		
 		$report->options['Charts'][] = $value;
 		
 		$report->options['has_charts'] = true;
@@ -81,60 +82,62 @@ class ChartHeader extends HeaderBase {
 	
 		$i = 1;
 		$chartrowvals = array();
-		foreach($row['values'] as $key=>$value) {
-				//determine if this column should appear in a chart
-				$column_in_chart = false;
-				if(!isset($report->options['Charts'][$num]['y'])) {
-					$column_in_chart = true;
-					$x = false;
-				}
-				elseif(in_array($value['key'],$report->options['Charts'][$num]['y'],true) 
-					|| in_array($i,$report->options['Charts'][$num]['y'],true)
-				) {
-					$column_in_chart = true;
-					$x = false;
-				}
-				elseif($i===1 && !isset($report->options['Charts'][$num]['x'])) {
-					$column_in_chart = true;
-					$x = true;
-				}
-				elseif(isset($report->options['Charts'][$num]['x']) 
-					&& (
-						$value['key']==$report->options['Charts'][$num]['x'] 
-						|| $i == $report->options['Charts'][$num]['x']
-					)
-				) {
-					$column_in_chart = true;
-					$x = true;
-				}
-				
-				$i++;
-				
-				if(!$column_in_chart) {
-					continue;
-				}
-				
-				if($x) {
-					array_unshift($chartrowvals,array(
-						'key'=>$value['key'],
-						'value'=>$value['value'],
-						'first'=>true
-					));
-				}
-				else {
-					$chartrowvals[] = array(
-						'key'=>$value['key'],
-						'value'=>$value['value'],
-						'first'=>false
-					);
-				}
+		foreach($row['values'] as $key=>$value) {			
+			//determine if this column should appear in a chart
+			$column_in_chart = false;
+			$x = false;
+			if(!isset($report->options['Charts'][$num]['y'])) {
+				$column_in_chart = true;
+			}
+			elseif(in_array($value['key'],$report->options['Charts'][$num]['y'],true) 
+				|| in_array("$i",$report->options['Charts'][$num]['y'],true)
+			) {
+				$column_in_chart = true;
+			}
+			elseif(!$xval && $i===1 && !isset($report->options['Charts'][$num]['x'])) {
+				$column_in_chart = true;
+				$x = true;
+			}
+			elseif(!$xval && isset($report->options['Charts'][$num]['x']) 
+				&& (
+					$value['key']==$report->options['Charts'][$num]['x'] 
+					|| "$i" === "".$report->options['Charts'][$num]['x']
+				)
+			) {
+				$column_in_chart = true;
+				$x = true;
+			}
+			
+			$i++;
+			
+			if(!$column_in_chart) {
+				continue;
+			}
+			
+			if($x) {
+				$xval = array(
+					'key'=>$value['key'],
+					'value'=>$value['value'],
+					'first'=>true
+				);
+			}
+			else {
+				$chartrowvals[] = array(
+					'key'=>$value['key'],
+					'value'=>floatval($value['value']),
+					'first'=>false
+				);
+			}
 		}
 		
+		array_unshift($chartrowvals,$xval);
+		
 		//echo "<pre>".print_r($chartrowvals,true)."</pre>";
+		$first = count($report->options['Charts'][$num]['Rows']);
 		
 		$report->options['Charts'][$num]['Rows'][] = array(
 			'values'=>$chartrowvals,
-			'first'=>!$report->options['Charts'][$num]['Rows']
+			'first'=>!$first
 		);
 		
 		return $row;		

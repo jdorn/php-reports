@@ -1,4 +1,4 @@
 <?php
-class TotalHeader extends HeaderBase {
+class TotalHeader extends TotalsHeader {
 	
 }

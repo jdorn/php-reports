@@ -2,7 +2,9 @@
 session_start();
 require 'lib/PhpReports/PhpReports.php';
 
-Flight::route('/',array('PhpReports','listReports'));
+Flight::route('/',function() {
+	PhpReports::listReports();
+});
 
 //shortcut for html report
 Flight::route('/report',function() {
@@ -31,6 +33,14 @@ Flight::route('/report/sql',function() {
 
 Flight::route('/report/xml',function() {
 	PhpReports::xmlReport($_REQUEST['report']);
+});
+
+Flight::route('/report/raw',function() {
+	PhpReports::rawReport($_REQUEST['report']);
+});
+
+Flight::route('/report/debug',function() {
+	PhpReports::debugReport($_REQUEST['report']);
 });
 
 Flight::start();

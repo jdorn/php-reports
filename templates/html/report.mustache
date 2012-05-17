@@ -19,6 +19,57 @@ h1 {
 	font-size: .9em;
 	margin-left: 20px;
 }
+
+#variable_form {
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 10px 0;
+	font-family: arial;
+}
+#variable_form .input-row {
+	margin: 5px 0;
+}
+#variable_form h2 {
+	font-size: 1.3em;
+	padding: 0 0 15px 0;
+	margin: 0;
+}
+#variable_form .input, #variable_form select {
+	padding: 3px 6px;
+	border-radius: 5px;
+	border: 1px solid #aaa;
+}
+#variable_form .submit {
+	padding: 5px 10px;
+	border-radius: 8px;
+	border: 1px solid #aaa;
+	margin-top: 10px;
+}
+#result_table {
+	border: 1px solid black;
+	border-width: 1px 1px 0 0;
+	margin: 15px 0;
+	border-collapse:collapse
+}
+#result_table td, #result_table th {
+	border: 1px solid black;
+	border-width: 0 0 1px 1px;
+	padding: 5px 8px;
+	vertical-align:top;
+}
+#result_table th {
+	background-color: #cfc;
+}
+.currency {
+	text-align:right;
+}
+.right, .rpad2 {
+	text-align:right;
+}
+.center {
+	text-align:center;
+}
 </style>
 
 <h1>{{Name}}</h1>
@@ -54,11 +105,9 @@ h1 {
 	function drawCharts() {
 		{{#Charts}}
 			var data_{{num}} = google.visualization.arrayToDataTable([
-				{{#Rows}}
-					{{#first}}
-						[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
-					{{/first}}
-					
+				{{#Rows}}{{#first}}
+				[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
+{{/first}}
 					,[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
 				{{/Rows}}
 			]);
@@ -140,7 +189,7 @@ This report needs more information before running.
 </div>
 <script>
 $.ajax({
-	'url': '{{report_url}}',
+	'url': '{{{report_url}}}',
 	'dataType': 'html',
 	'data': {'content_only': true},
 	'success': function(data) {

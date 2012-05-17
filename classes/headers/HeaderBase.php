@@ -1,6 +1,6 @@
 <?php
 class HeaderBase {
-	public static function parse($key, $value, &$report) {
+	public static function parse($key, $value, &$report) {		
 		$report->options[$key] = $value;
 	}
 	

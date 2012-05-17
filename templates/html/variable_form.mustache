@@ -1,31 +1,3 @@
-<style>
-#variable_form {
-	border: 1px solid #aaa;
-	border-radius: 5px;
-	padding: 10px;
-	margin: 10px 0;
-	font-family: arial;
-}
-#variable_form .input-row {
-	margin: 5px 0;
-}
-#variable_form h2 {
-	font-size: 1.3em;
-	padding: 0 0 15px 0;
-	margin: 0;
-}
-#variable_form .input, #variable_form select {
-	padding: 3px 6px;
-	border-radius: 5px;
-	border: 1px solid #aaa;
-}
-#variable_form .submit {
-	padding: 5px 10px;
-	border-radius: 8px;
-	border: 1px solid #aaa;
-	margin-top: 10px;
-}
-</style>
 <form method='get' id='variable_form'>
 	<h2>Configure Report</h2>
 	
@@ -43,16 +15,25 @@
 	{{#vars}}
 		<div class='input-row'>
 			<label for='var_{{key}}'>{{name}}</label>
-			<input type='hidden' name='macro_names[]' value='{{key}}' />
 			{{#is_select}}
-				<select name='macro_values[]' id='var_{{key}}' class='input'>
+				{{#is_multiselect}}
+					<select name='macros[{{key}}][]' id='var_{{key}}' class='input' multiple=true size={{choices}}>
+				{{/is_multiselect}}
+				{{^is_multiselect}}
+					<select name='macros[{{key}}]' id='var_{{key}}' class='input'>
+				{{/is_multiselect}}
 				{{#options}}
 					<option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{display}}</option>
 				{{/options}}
 				</select>
 			{{/is_select}}
 			{{^is_select}}
-				<input type='text' name='macro_values[]' value='{{value}}' id='var_{{key}}'  class='input'/>	
+				{{#is_textarea}}
+					<textarea type='text' name='macros[{{key}}' id='var_{{key}}' class='input'>{{value}}</textarea>
+				{{/is_textarea}}
+				{{^is_textarea}}
+					<input type='text' name='macros[{{key}}]' value='{{value}}' id='var_{{key}}'  class='input'/>	
+				{{/is_textarea}}
 			{{/is_select}}
 			
 			{{#description}}
