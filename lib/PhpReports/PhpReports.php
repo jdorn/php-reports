@@ -159,7 +159,7 @@ class PhpReports {
 		$reports = self::getReports(self::$config['reportDir'].'/');
 		
 		$m = new Mustache;
-		$template_file = file_get_contents('templates/html/report_list.mustache');
+		$template_file = self::getTemplate('html/report_list');
 		$content = $m->render($template_file,array('reports'=>$reports));
 
 		self::renderPage(array(
@@ -203,8 +203,7 @@ class PhpReports {
 		
 		$options = array_merge($options,$default);
 		
-		
-		$page_template_file = file_get_contents('templates/'.$page.'.mustache');
+		$page_template_file = self::getTemplate($page);
 		
 		$m = new Mustache;
 		echo $m->render($page_template_file,$options);
@@ -280,6 +279,21 @@ class PhpReports {
 		});
 		
 		return $return;
+	}
+	
+	public static function getTemplate($template) {
+		//look in the templates/local/ directory first
+		if(file_exists('templates/local/'.$template.'.mustache')) {
+			return file_get_contents('templates/local/'.$template.'.mustache');
+		}
+		//look in the main template directory
+		elseif(file_exists('templates/'.$template.'.mustache')) {
+			return file_get_contents('templates/'.$template.'.mustache');
+		}
+		//template not found
+		else {
+			throw new Exception("Template not found: $template");
+		}
 	}
 	
 	public static function loader($className) {				

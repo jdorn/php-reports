@@ -72,7 +72,7 @@ class Report {
 			if(empty($line)) continue;
 			
 			//if the line doesn't start with a comment character, skip
-			if(!in_array(substr($line,0,2),array('--','/*')) && $line[0] !== '#') continue;
+			if(!in_array(substr($line,0,2),array('--','/*','//')) && $line[0] !== '#') continue;
 			
 			//remove comment from start of line and skip if empty
 			$line = trim(ltrim($line,'-*/#'));
@@ -180,13 +180,9 @@ class Report {
 		return $this->raw;
 	}
 	
-	public function renderVariableForm($template='variable_form') {
-		if(!file_exists('templates/html/'.$template.'.mustache')) {
-			throw new Exception("Variable Form template now found");
-		}
-		
+	public function renderVariableForm($template='html/variable_form') {		
 		if($this->options['Variables']) {
-			$form = file_get_contents('templates/html/'.$template.'.mustache');
+			$form = PhpReports::getTemplate($template);
 			
 			$template_vars = array(
 				'vars'=>array(),
@@ -361,10 +357,6 @@ class Report {
 			$classname::beforeRender($this);
 		}
 		
-		if(!file_exists('templates/'.$template.'.mustache')) {
-			throw new Exception("Report content template not found");
-		}
-		
 		//get current report times for this report
 		$report_times = FileSystemCache::retrieve($this->report,'report_times');
 		if(!$report_times) $report_times = array();
@@ -377,7 +369,7 @@ class Report {
 		$report_times[] = $this->options['Time'];
 		FileSystemCache::store($this->report, $report_times, 'report_times');
 		
-		$template_code = file_get_contents('templates/'.$template.'.mustache');
+		$template_code = PhpReports::getTemplate($template);
 		
 		$ret = $this->mustache->render($template_code, $this->options);
 		return $ret;
@@ -398,10 +390,7 @@ class Report {
 		
 		$template_vars = array_merge($template_vars,$this->options);
 		
-		if(!file_exists('templates/'.$report_template.'.mustache')) {
-			throw new Exception("Report template not found");
-		}
-		$template_code = file_get_contents('templates/'.$report_template.'.mustache');
+		$template_code = PhpReports::getTemplate($report_template);
 		
 		return $this->mustache->render($template_code, $template_vars);
 	}
