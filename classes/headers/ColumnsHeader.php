@@ -3,43 +3,73 @@ class ColumnsHeader extends HeaderBase {
 	public static function parse($key, $value, &$report) {
 		if($temp = json_decode($value,true)) {
 			$value = $temp;
+			
+			foreach($value as $column=>$options) {
+				$type = $options['type'];
+				$report->addFilter($column,$type,$options);
+			}
 		}
 		else {
-			$value = explode(',',$value);
+			$parts = explode(',',$value);
+			$value = array();
+			$i = 1;
+			foreach($parts as $part) {
+				$type = null;
+				$options = null;
+				
+				$part = trim($part);
+				//special cases
+				//'rpadN' or 'lpadN' where N is number of spaces to pad
+				if(substr($part,1,3)==='pad') {
+					$type = 'padding';
+					
+					$options = array(
+						'type'=>$part[0],
+						'spaces'=>intval(substr($part,4))
+					);
+				}
+				//link or link(display) or link_blank or link_blank(display)
+				elseif(substr($part,0,4)==='link') {
+					//link(display) or link_blank(display)
+					if(strpos($part,'(') !== false) {
+						list($type,$display) = explode('(',substr($part,0,-1),2);
+					}
+					else {
+						$type = $part;
+						$display = 'link';
+					}
+					
+					$blank = ($type == 'link_blank');
+					$type = 'link';
+					
+					$options = array(
+						'display'=>$display,
+						'blank'=>$blank
+					);
+				}
+				//synonyms for 'html'
+				elseif(in_array($part,'html','raw')) {
+					$type = 'html';
+				}
+				//url synonym for link
+				elseif($part === 'url') {
+					$type = 'link';
+					$options = array(
+						'blank'=>false,
+						'display'=>$part
+					);
+				}
+				//normal case
+				else {
+					$type = 'class';
+					$options = array(
+						'class'=>$part
+					);
+				}
+				
+				$report->addFilter($i, $type, $options);
+				$i++;
+			}
 		}
-		
-		$report->options['Columns'] = $value;
-	}
-	
-	public static function filterRow($row, &$report) {
-		$i = 0;
-		//print_r($row);
-		foreach($row['values'] as $key=>$value) {
-			//get class for column
-			if(isset($report->options['Columns'][$i])) {
-				$class = $report->options['Columns'][$i];
-			}
-			else {
-				$class = false;
-			}
-			if(!$class) continue;
-			
-			//unescaped output
-			if($class === 'raw') {
-				$row['values'][$key]['raw'] = true;
-			}
-			//output wrapped in <pre> tags
-			elseif($class === 'pre') {
-				$row['values'][$key]['pre'] = true;
-			}
-			//classname
-			else {
-				$row['values'][$key]['class'] = $class;
-			}
-			
-			$i++;
-		}
-		
-		return $row;
 	}
 }

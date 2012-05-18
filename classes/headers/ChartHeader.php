@@ -72,12 +72,15 @@ class ChartHeader extends HeaderBase {
 	//for basic graphs where there is a 1 to 1 relationship between values and data points
 	public static function filterRowTwoDim($num, $row, &$report) {
 	
+		$is_total_row = false;
+		if(trim(strtoupper($row['values'][0]['raw_value']))==='TOTAL') $is_total_row = true;
+	
 		//if this is a total row and we're omitting totals from charts
 		if(isset($report->options['Charts'][$num]['omit-total']) 
 			&& $report->options['Charts'][$num]['omit-total'] 
-			&& strtoupper($row['values'][0]['value'])==='TOTAL'
+			&& $is_total_row
 		) {
-			return $row;
+			return;
 		}
 	
 		$i = 1;
@@ -138,9 +141,7 @@ class ChartHeader extends HeaderBase {
 		$report->options['Charts'][$num]['Rows'][] = array(
 			'values'=>$chartrowvals,
 			'first'=>!$first
-		);
-		
-		return $row;		
+		);	
 	}
 	
 	//used for histogram or box plot
@@ -187,11 +188,11 @@ class ChartHeader extends HeaderBase {
 				);
 			}
 		}
-		return $row;
+		return;
 	}
 	
 	public static function filterRow($row, &$report) {
-		if($row['first']) return $row;
+		if($row['first']) return;
 		
 		foreach($report->options['Charts'] as $num=>$value) {
 			if(isset($report->options['Charts'][$num]['buckets'])) {
@@ -202,6 +203,12 @@ class ChartHeader extends HeaderBase {
 			}
 		}
 		
-		return $row;
+		return;
+	}
+	
+	public static function beforeRender(&$report) {
+		foreach($report->options['Rows'] as $key=>$row) {
+			self::filterRow($row,$report);
+		}
 	}
 }

@@ -175,15 +175,7 @@ This report needs more information before running.
 	<div>
 		Your report is running.
 		{{#time_estimate}}
-			The average running time for this report is <strong>{{time_estimate}}
-			{{#time_estimate_stdev}}
-				+- {{time_estimate_stdev}}
-			{{/time_estimate_stdev}}
-			seconds</strong>
-			{{#time_estimate_count}}
-				(based on {{time_estimate_count}} samples)
-			{{/time_estimate_count}}
-			.
+			This report usually takes between {{q1}} and {{q3}} seconds.
 		{{/time_estimate}}
 	</div>
 </div>

@@ -1,10 +1,6 @@
 <?php
-class geoipFilter implements FilterInterface {
-	public static function canEscape() {
-		return true;
-	}
-	
-	public static function filter($key, $value, $options = array()) {
+class geoipFilter extends FilterBase {	
+	public static function filter($value, $options = array()) {
 		$record = @geoip_record_by_name($value);
 		if($record) {
 			$value = $record['city'];

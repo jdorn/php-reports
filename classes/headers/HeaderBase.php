@@ -4,7 +4,7 @@ class HeaderBase {
 		$report->options[$key] = $value;
 	}
 	
-	public static function filterRow($row, &$report) {
-		return $row;
+	public static function beforeRender(&$report) {
+		
 	}
 }

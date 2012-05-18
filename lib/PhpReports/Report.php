@@ -1,18 +1,18 @@
 <?php
 class Report {
 	public $report;
-	public $template;
-	public $macros;
-	public $options;
-	public $is_ready;
-	public $async;
-	public $headers;
+	public $macros = array();
+	public $options = array();
+	public $is_ready = false;
+	public $async = false;
+	public $headers = array();
+	public $raw_query;
 	
 	protected $mustache;
 	
 	protected $raw;
 	protected $raw_headers;
-	public $raw_query;
+	protected $filters = array();
 	
 	public function __construct($report,$macros = array(), $database = null) {
 		$reportDir = PhpReports::$config['reportDir'];
@@ -115,7 +115,7 @@ class Report {
 				$classname = $last_header.'Header';
 				if(class_exists($classname)) {
 					$classname::parse($last_header,$last_header_value,$this);
-					$this->headers[] = $last_header;
+					if(!in_array($last_header,$this->headers)) $this->headers[] = $last_header;
 				}
 				else {
 					throw new Exception("Unknown header '$last_header' - ".$this->report);
@@ -132,10 +132,13 @@ class Report {
 			$file_type = array_pop(explode('.',$this->report));
 			switch($file_type) {
 				case 'js':
-					$this->options['Type'] = 'mongo';
+					$this->options['Type'] = 'Mongo';
 					break;
 				case 'sql':
-					$this->options['Type'] = 'mysql';
+					$this->options['Type'] = 'Mysql';
+					break;
+				case 'php':
+					$this->options['Type'] = 'Php';
 					break;
 				default:
 					throw new Exception("Unknown report type - ".$this->report);
@@ -143,71 +146,38 @@ class Report {
 		}
 	}
 	
-	protected function initDb() {
-		//set up database connections
-		switch($this->options['Type']) {
-			case 'mysql':
-				$mysql_connections = PhpReports::$config['mysql_connections'];
+	public function addFilter($column, $type, $options) {
+		if(!isset($this->filters[$column])) $this->filters[$column] = array();
+		
+		$this->filters[$column][$type] = $options;
+	}
+	protected function applyFilters($column, $value) {
+		//no filters to apply
+		if(!isset($this->filters[$column])) return $value;
+		
+		foreach($this->filters[$column] as $type=>$options) {
+			$classname = $type.'Filter';
+			$value = $classname::filter($value, $options);
 			
-				//if the database isn't set or doesn't exist, use the first defined one
-				if(!$this->options['Database'] || !isset($mysql_connections[$this->options['Database']])) {
-					$this->options['Database'] = current(array_keys($mysql_connections));
-				}
-				
-				//set up list of all available databases for displaying form for switching between them
-				$this->options['Databases'] = array();
-				foreach(array_keys($mysql_connections) as $name) {
-					$this->options['Databases'][] = array(
-						'selected'=>($this->options['Database'] === $name),
-						'name'=>$name
-					);
-				}
-				break;
-			case 'mongo':
-				$mongo_connections = PhpReports::$config['mongo_connections'];
-			
-				//if the database isn't set or doesn't exist, use the first defined one
-				if(!$this->options['Database'] || !isset($mongo_connections[$this->options['Database']])) {
-					$this->options['Database'] = current(array_keys($mongo_connections));
-				}
-				
-				//set up list of all available databases for displaying form for switching between them
-				$this->options['Databases'] = array();
-				foreach(array_keys($mongo_connections) as $name) {
-					$this->options['Databases'][] = array(
-						'selected'=>($this->options['Database'] == $name),
-						'name'=>$name
-					);
-				}
-				break;
-			case 'default':
-				throw new Exception("Unknown report type - ".$report);
+			//if the column should not be displayed
+			if($value === false) return false;
 		}
+		
+		return $value;
+	}
+	
+	protected function initDb() {
+		$classname = $this->options['Type'].'ReportType';
+		
+		if(!class_exists($classname)) {
+			throw new exception("Unknown report type '".$this->options['Type']."'");
+		}
+		
+		$classname::init($this);
 	}
 	
 	public function getRaw() {
 		return $this->raw;
-	}
-	
-	protected function openDb() {
-		switch($this->options['Type']) {
-			case 'mysql':
-				$mysql_connections = PhpReports::$config['mysql_connections'];
-				$config = $mysql_connections[$this->options['Database']];
-				
-				if(!($this->conn = mysql_connect($config['host'], $config['username'], $config['password']))) {
-					throw new Exception('Could not connect to Mysql: '.mysql_error());
-				}
-				if(!mysql_select_db($config['database'])) {
-					throw new Exception('Could not select Mysql database: '.mysql_error());
-				}
-				break;
-		}
-	}
-	protected function closeDb() {
-		if($this->options['Type'] === 'mysql') {
-			mysql_close($this->conn);
-		}
 	}
 	
 	public function renderVariableForm($template='variable_form') {
@@ -267,96 +237,41 @@ class Report {
 	}
 	
 	public function runReport() {
-		$this->openDb();
-		
 		if(!$this->is_ready) {
 			throw new Exception("Report is not ready.  Missing variables");
+		}		
+		
+		$classname = $this->options['Type'].'ReportType';
+		
+		if(!class_exists($classname)) {
+			throw new exception("Unknown report type '".$this->options['Type']."'");
 		}
 		
-		$rows = array();
-		$start = microtime(true);
+		$classname::openConnection($this);
+		$rows = $classname::run($this);
+		$classname::closeConnection($this);
 		
-		if($this->options['Type'] === 'mysql') {
-			$macros = $this->macros;
-			foreach($macros as $key=>$value) {
-				if(is_array($value)) {
-					$first = true;
-					foreach($value as $key2=>$value2) {
-						$value[$key2] = array(
-							'first'=>$first,
-							'value'=>$value2
-						);
-						$first = false;
-					}
-					$macros[$key] = $value;
-				}
-			}
-			
-			//expand macros in query
-			$sql = $this->mustache->render($this->raw_query,$macros);
-			
-			$this->options['Query'] = $sql;
-			
-			$this->options['Query_Formatted'] = SqlFormatter::highlight($sql);
-			
-			//split queries and run each one, saving the last result
-			$queries = explode(';',$sql);
-			foreach($queries as $query) {
-				//skip empty queries
-				$query = trim($query);
-				if(!$query) continue;
-				
-				$result = mysql_query($query);
-				if(!$result) {
-					throw new Exception("Query failed: ".mysql_error());
-				}
-			}
-			
-			while($row = mysql_fetch_assoc($result)) {
-				$rows[] = $row;
-			}
-		}
-		elseif($options['Type'] === 'mongo') {	
-			throw new Exception("Not implemented");
-			
-			$eval = '';
-			foreach($this->macros as $key=>$value) {
-				$eval .= 'var '.$key.' = "'.addslashes($value).'";';
-			}
-			$command = 'mongo '.$mongo_connections[$config]['host'].':'.$mongo_connections[$config]['port'].'/'.$options['Database'].' --quiet --eval "'.addslashes($eval).'" '.$report;
-			echo $command;
-			
-			$options['Query'] = $command;
-		}
-		else {
-			throw new Exception("Unknown report type");
-		}
-		
-		$this->closeDb();
-		
-		$this->options['Time'] = round(microtime(true) - $start,5);
 		$this->options['Count'] = count($rows);
 		$this->options['Rows'] = $rows;
-		
-		//store the report time
-		$report_times = FileSystemCache::retrieve($this->report,'report_times');
-		if(!$report_times) $report_times = array();
-		$report_times[] = $this->options['Time'];
-		
-		//only keep the last 10 times for each report
-		//this keeps the timing data up to date and the cache small
-		if(count($report_times) > 10) array_shift($report_times);
-		
-		FileSystemCache::store($this->report, $report_times, 'report_times');
 	}
 	
 	protected function getTimeEstimate() {
 		$report_times = FileSystemCache::retrieve($this->report,'report_times');
 		if(!$report_times) return;
 		
+		sort($report_times);
+		
+		
 		$sum = array_sum($report_times);
 		$count = count($report_times);
 		$average = $sum/$count;
+		$quartile1 = $report_times[round(($count-1)/4)];
+		$median = $report_times[round(($count-1)/2)];
+		$quartile3 = $report_times[round(($count-1)*3/4)];
+		$min = min($report_times);
+		$max = max($report_times);
+		$iqr = $quartile3-$quartile1;
+		$range = (1.5)*$iqr;
 		
 		$sample_square = 0;
 		for($i = 0; $i < $count; $i++) {
@@ -364,14 +279,23 @@ class Report {
 		}
 		$standard_deviation = sqrt($sample_square / $count - pow(($average), 2));
 		
-		$this->options['time_estimate'] = round($average,2);
-		$this->options['time_estimate_stdev'] = round($standard_deviation,2);
-		$this->options['time_estimate_count'] = $count;
+		$this->options['time_estimate'] = array(
+			'times'=>$report_times,
+			'count'=>$count,
+			'min'=>round($min,2),
+			'max'=>round($max,2),
+			'median'=>round($median,2),
+			'average'=>round($average,2),
+			'q1'=>round($quartile1,2),
+			'q3'=>round($quartile3,2),
+			'iqr'=>round($range,2),
+			'sum'=>round($sum,2),
+			'stdev'=>round($standard_deviation,2)
+		);
 	}
 	
 	protected function prepareRows() {
 		$rows = array();
-		$chart_rows = array();
 		
 		//generate list of all values for each numeric column
 		//this is used to calculate percentiles/averages/etc.
@@ -390,12 +314,23 @@ class Report {
 			
 			$i=1;
 			foreach($row as $key=>$value) {				
-				$rowval[] = array(
+				$val = array(
 					'key'=>$key,
 					'key_collapsed'=>trim(preg_replace(array('/\s+/','/[^a-zA-Z0-9_]*/'),array('_',''),$key),'_'),
 					'value'=>$value,
-					'first'=>$i===1
+					'raw_value'=>$value
 				);
+				
+				//apply filters for the column key
+				$val = $this->applyFilters($key,$val);
+				//apply filters for the column position
+				if($val) $val = $this->applyFilters($i,$val);
+				
+				if($val) {
+					$val['first'] = !$rowvals;
+					$rowval[] = $val;
+				}
+				
 				$i++;
 			}
 			
@@ -406,12 +341,6 @@ class Report {
 				'first'=>$first
 			);
 			
-			foreach($this->headers as $header) {
-				$classname = $header.'Header';
-				$row = $classname::filterRow($row,$this);
-				if(!$row) break;
-			}
-			
 			if($row) $rows[] = $row;
 		}
 		
@@ -419,27 +348,52 @@ class Report {
 	}
 	
 	public function renderReportContent($template='html/table') {
+		$start = microtime(true);
+		
 		if($this->is_ready && !$this->async) {
 			$this->runReport();
 			$this->prepareRows();
+		}
+		
+		//call the beforeRender callback for each header
+		foreach($this->headers as $header) {
+			$classname = $header.'Header';
+			$classname::beforeRender($this);
 		}
 		
 		if(!file_exists('templates/'.$template.'.mustache')) {
 			throw new Exception("Report content template not found");
 		}
 		
+		//get current report times for this report
+		$report_times = FileSystemCache::retrieve($this->report,'report_times');
+		if(!$report_times) $report_times = array();
+		//only keep the last 10 times for each report
+		//this keeps the timing data up to date and relevant
+		if(count($report_times) > 10) array_shift($report_times);
+		
+		//store report times
+		$this->options['Time'] = round(microtime(true) - $start,5);
+		$report_times[] = $this->options['Time'];
+		FileSystemCache::store($this->report, $report_times, 'report_times');
+		
 		$template_code = file_get_contents('templates/'.$template.'.mustache');
-		return $this->mustache->render($template_code, $this->options);
+		
+		$ret = $this->mustache->render($template_code, $this->options);
+		return $ret;
 	}
 	
 	public function renderReportPage($content_template='html/table',$report_template='html/report') {
+		$variable_form = $this->renderVariableForm();
+		$content = $this->renderReportContent($content_template);
+		
 		$template_vars = array(
 			'is_ready'=>$this->is_ready,
 			'async'=>$this->async,
 			'report_url'=>PhpReports::$request->base.'/report/?'.$_SERVER['QUERY_STRING'],
 			'base'=>PhpReports::$request->base,
-			'content'=>$this->renderReportContent($content_template),
-			'variable_form'=>$this->renderVariableForm()
+			'content'=> $content,
+			'variable_form'=>$variable_form
 		);
 		
 		$template_vars = array_merge($template_vars,$this->options);
