@@ -3,6 +3,8 @@ class PhpReports {
 	public static $config;
 	public static $request;
 	
+	private static $loader_cache;
+	
 	public static function init($config = 'config/config.php') {
 		spl_autoload_register(array('PhpReports','loader'));
 		
@@ -93,6 +95,7 @@ class PhpReports {
 		$report = self::prepareReport($report);
 		
 		$report->async = !isset($_REQUEST['content_only']);
+		if(isset($_REQUEST['no_async'])) $report->async = false;
 		
 		try {
 			$page_template = array(
@@ -236,7 +239,7 @@ class PhpReports {
 				//files to skip
 				if(strpos(basename($report),'.') === false) continue;
 				$ext = array_pop(explode('.',$report));
-				if(!in_array($ext,array('sql','js'))) continue;
+				if(!in_array($ext,array('sql','js','.php'))) continue;
 			
 				//check if report data is cached and newer than when the report file was created
 				//the url parameter ?nocache will bypass this and not use cache
@@ -282,25 +285,45 @@ class PhpReports {
 		return $return;
 	}
 	
-	public static function loader($className) {				
-		//first try to load from the classes directory
-		if(self::load($className.'.php','classes')) return true;
+	
+	/**
+	 * Autoloader methods
+	 */
+	public static function loader($className) {		
+		if(!isset(self::$loader_cache)) {
+			self::buildLoaderCache();
+		}
 		
-		return self::load($className.'.php','lib');
-	}
-	public static function load($file, $dir) {
-		if(file_exists($dir.'/'.$file)) {
-			require($dir.'/'.$file);
+		if(isset(self::$loader_cache[$className])) {
+			require_once(self::$loader_cache[$className]);
 			return true;
 		}
-		
+		else {
+			return false;
+		}
+	}
+	public static function buildLoaderCache() {
+		self::load('classes/local');
+		self::load('classes',array('classes/local'));
+		self::load('lib');
+	}
+	public static function load($dir, $skip=array()) {
+		$files = glob($dir.'/*.php');
 		$dirs = glob($dir.'/*',GLOB_ONLYDIR);
-		foreach($dirs as $dir) {
-			if($dir[0] === '.') continue;
-			if(self::load($file,$dir)) return true;
+		
+		foreach($files as $file) {
+			$className = basename($file,'.php');
+			if(!isset(self::$loader_cache[$className])) self::$loader_cache[$className] = $file;
 		}
 		
-		return false;
+		foreach($dirs as $dir2) {
+			//directories to skip
+			if($dir2[0]==='.') continue;
+			if(in_array($dir2,$skip)) continue;
+			if(in_array(basename($dir2),array('tests','test','example','examples','bin'))) continue;
+			
+			self::load($dir2,$skip);
+		}
 	}
 }
 PhpReports::init();
