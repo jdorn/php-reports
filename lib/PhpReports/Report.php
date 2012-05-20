@@ -72,7 +72,7 @@ class Report {
 			if(empty($line)) continue;
 			
 			//if the line doesn't start with a comment character, skip
-			if(!in_array(substr($line,0,2),array('--','/*')) && $line[0] !== '#') continue;
+			if(!in_array(substr($line,0,2),array('--','/*','//')) && $line[0] !== '#') continue;
 			
 			//remove comment from start of line and skip if empty
 			$line = trim(ltrim($line,'-*/#'));
@@ -102,7 +102,6 @@ class Report {
 				$name = trim($name);
 				$value = trim($value);
 				
-				//compatibility with legacy system
 				if(strtoupper($name) === $name) $name = ucfirst(strtolower($name));
 			}			
 			
