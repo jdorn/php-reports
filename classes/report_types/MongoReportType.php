@@ -1,5 +1,5 @@
 <?php
-abstract class MysqlReportType extends ReportTypeBase {
+abstract class MongoReportType extends ReportTypeBase {
 	public static function init(&$report) {
 		$mongo_connections = PhpReports::$config['mongo_connections'];
 	
@@ -16,6 +16,12 @@ abstract class MysqlReportType extends ReportTypeBase {
 				'name'=>$name
 			);
 		}
+		
+		//add a host macro
+		if(isset($mongo_connections[$report->options['Database']]['webhost'])) $host = $mongo_connections[$report->options['Database']]['webhost'];
+		else $host = $mongo_connections[$report->options['Database']]['host'];
+		
+		$report->macros['host'] = $host;
 	}
 	
 	public static function openConnection(&$report) {
@@ -28,14 +34,30 @@ abstract class MysqlReportType extends ReportTypeBase {
 	
 	public static function run(&$report) {		
 		$eval = '';
-		foreach($this->macros as $key=>$value) {
+		foreach($report->macros as $key=>$value) {
 			$eval .= 'var '.$key.' = "'.addslashes($value).'";';
 		}
-		$command = 'mongo '.$mongo_connections[$config]['host'].':'.$mongo_connections[$config]['port'].'/'.$options['Database'].' --quiet --eval "'.addslashes($eval).'" '.$report;
-		echo $command;
 		
-		$options['Query'] = $command;
+		$mongo_connections = PhpReports::$config['mongo_connections'];
+		$config = $mongo_connections[$report->options['Database']];
 		
-		throw new Exception("Not implemented");
+		$mongo_database = isset($report->options['Mongodatabase'])? $report->options['Mongodatabase'] : '';
+		
+		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval "'.addslashes($eval).'" '.PhpReports::$config['reportDir'].'/'.$report->report;
+		
+		$report->options['Query'] = '$ '.$command."\n\n".$report->raw_query;
+		$report->options['Query_Formatted'] = '<div>
+			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.$command.'</pre>'
+			.PhpReports::$config['reportDir'].'/'.$report->report.
+			'<pre style="border-left: 1px solid black; padding-left: 20px;">'.$report->raw_query.'</pre>
+		</div>';
+		
+		$result = shell_exec($command);
+		
+		$rows = json_decode($result,true);
+		
+		if(!$rows) throw new Exception($result);
+		
+		return $rows;
 	}
 }
