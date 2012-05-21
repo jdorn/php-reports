@@ -1,6 +1,6 @@
 INSERT INTO `{{Name}}`
 {{#Rows}}{{#first}}
-	({{#values}}{{^first}}`,{{/first}}`{{key}}{{/values}}`)
+	({{#values}}{{^first}},{{/first}}`{{key}}`{{/values}})
 VALUES
 {{/first}}{{^first}},
-{{/first}}	({{#values}}{{^first}}",{{/first}}"{{raw_value}}{{/values}}"){{/Rows}};
+{{/first}}	({{#values}}{{^first}},{{/first}}"{{raw_value}}"{{/values}}){{/Rows}};

@@ -322,7 +322,7 @@ class Report {
 				if($val) $val = $this->applyFilters($i,$val);
 				
 				if($val) {
-					$val['first'] = !$rowvals;
+					$val['first'] = !$rowval;
 					$rowval[] = $val;
 				}
 				

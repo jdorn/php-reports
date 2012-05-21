@@ -18,146 +18,18 @@ class PhpReports {
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 	}
 	
-	public static function csvReport($report) {
-		$report = self::prepareReport($report);
+	public static function displayReport($report,$type) {
+		$classname = ucfirst(strtolower($type)).'ReportFormat';
 		
-		$page_template = array(
-			'content'=>$report->renderReportPage('csv/report','csv/page')
-		);
-		
-		$file_name = preg_replace(array('/[\s]+/','/[^0-9a-zA-Z\-_\.]/'),array('_',''),$report->options['Name']);
-		
-		header("Content-type: application/csv");
-		header("Content-Disposition: attachment; filename=".$file_name.".csv");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-
-		self::renderPage($page_template,'csv/page');
-	}
-	
-	public static function textReport($report) {
-		$report = self::prepareReport($report);
-		
-		$page_template = array(
-			'content'=>$report->renderReportPage('text/report','text/page')
-		);
-		
-		header("Content-type: text/plain");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-
-		self::renderPage($page_template,'text/page');
-	}
-	
-	public static function jsonReport($report) {
-		$report = self::prepareReport($report);
-		
-		$page_template = array(
-			'content'=>$report->renderReportPage('json/report','json/page')
-		);
-		
-		header("Content-type: application/json");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-
-		self::renderPage($page_template,'json/page');
-	}
-	
-	public static function sqlReport($report) {
-		$report = self::prepareReport($report);
-		
-		$page_template = array(
-			'content'=>$report->renderReportPage('sql/report','sql/page')
-		);
-		
-		header("Content-type: text/plain");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-		
-		self::renderPage($page_template,'sql/page');
-	}
-	
-	public static function xmlReport($report) {
-		$report = self::prepareReport($report);
-		
-		$page_template = array(
-			'content'=>$report->renderReportPage('xml/rows','xml/report')
-		);
-		
-		header("Content-type: application/xml");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-
-		self::renderPage($page_template,'xml/page');
-	}
-	
-	public static function htmlReport($report) {
-		$report = self::prepareReport($report);
-		
-		$report->async = !isset($_REQUEST['content_only']);
-		if(isset($_REQUEST['no_async'])) $report->async = false;
-		
-		try {
-			$page_template = array(
-				'content'=>$report->renderReportPage('html/table','html/report'),
-				'has_charts'=>$report->options['has_charts']
-			);
-		}
-		catch(Exception $e) {
-			$page_template = array(
-				'error'=>$e->getMessage(),
-				'content'=>$report->options['Query_Formatted']
-			);
+		if(!class_exists($classname)) {
+			throw new Exception("Unknown report format '$type'");
 		}
 		
-		$page_template['title'] = $report->options['Name'];
-
-		if(isset($_REQUEST['content_only'])) {
-			self::renderPage($page_template,'html/content_only');
-			exit;
-		}
-		else {
-			self::renderPage($page_template,'html/page');
-		}
+		$report = $classname::prepareReport($report);
+		
+		$classname::display($report,self::$request);
 	}
-	
-	public static function rawReport($report) {
-		$report = self::prepareReport($report);
 		
-		header("Content-type: text/plain");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-		
-		self::renderPage(array(
-			'content'=>$report->getRaw()
-		),'text/page');
-	}
-	
-	public static function debugReport($report) {
-		$report = self::prepareReport($report);
-		
-		header("Content-type: text/plain");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-		
-		$content = "****************** Raw Report File ******************\n\n".$report->getRaw()."\n\n\n";
-		$content .= "****************** Macros ******************\n\n".print_r($report->macros,true)."\n\n\n";
-		$content .= "****************** All Report Options ******************\n\n".print_r($report->options,true)."\n\n\n";
-		
-		if($report->is_ready) {
-			$report->renderReportContent();
-		
-			$content .= "****************** Generated Query ******************\n\n".print_r($report->options['Query'],true)."\n\n\n";
-			
-			$content .= "****************** Report Rows ******************\n\n".print_r($report->options['Rows'],true)."\n\n\n";
-		}
-		
-		
-		self::renderPage(array(
-			'content'=>$content
-		),'text/page');
-	}
-	
 	public static function listReports() {
 		$reports = self::getReports(self::$config['reportDir'].'/');
 		
@@ -172,33 +44,7 @@ class PhpReports {
 		));
 	}
 	
-	
-	
-	protected static function prepareReport($report) {
-		$database = null;
-		if(isset($_REQUEST['database'])) {
-			$database = $_REQUEST['database'];
-			
-			//store this database selection in the session
-			$_SESSION['database'] = $database;
-		}
-		elseif(isset($_SESSION['database'])) {
-			$database = $_SESSION['database'];
-		}
-
-		
-		$macros = array();
-		if(isset($_GET['macros'])) $macros = $_GET['macros'];
-
-		$report = new Report($report,$macros,$database);
-		
-		//add csv download link to report
-		$report->options['csv_link'] = self::$request->base.'/report/csv/?'.$_SERVER['QUERY_STRING'];
-
-		return $report;
-	}	
-	
-	protected function renderPage($options, $page='html/page') {
+	public function renderPage($options, $page='html/page') {
 		$default = array(
 			'base'=>self::$request->base,
 			'report_list_url'=>self::$request->base.'/'
@@ -206,7 +52,7 @@ class PhpReports {
 		
 		$options = array_merge($options,$default);
 		
-		$page_template_file = self::getTemplate($page);
+		$page_template_file = PhpReports::getTemplate($page);
 		
 		$m = new Mustache;
 		echo $m->render($page_template_file,$options);
