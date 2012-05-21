@@ -1,6 +1,6 @@
 <?php
 class geoipFilter extends FilterBase {	
-	public static function filter($value, $options = array()) {
+	public static function filter($value, $options = array(), $report=null) {
 		$record = @geoip_record_by_name($value);
 		if($record) {
 			$value = $record['city'];

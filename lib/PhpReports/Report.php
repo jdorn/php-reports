@@ -156,7 +156,7 @@ class Report {
 		
 		foreach($this->filters[$column] as $type=>$options) {
 			$classname = $type.'Filter';
-			$value = $classname::filter($value, $options);
+			$value = $classname::filter($value, $options, $this);
 			
 			//if the column should not be displayed
 			if($value === false) return false;

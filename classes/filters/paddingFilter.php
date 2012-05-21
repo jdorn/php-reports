@@ -1,6 +1,6 @@
 <?php
 class paddingFilter extends FilterBase {	
-	public static function filter($value, $options = array()) {
+	public static function filter($value, $options = array(), $report=null) {
 		$value['value'] = htmlentities($value['value']);
 		$value['raw'] = true;
 		
