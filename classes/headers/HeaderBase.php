@@ -7,4 +7,8 @@ class HeaderBase {
 	public static function beforeRender(&$report) {
 		
 	}
+	
+	public function afterParse(&$report) {
+		
+	}
 }

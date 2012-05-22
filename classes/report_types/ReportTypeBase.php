@@ -12,5 +12,9 @@ abstract class ReportTypeBase {
 		
 	}
 	
+	public static function getVariableOptions($params, &$report) {
+		return array();
+	}
+	
 	abstract public static function run(&$report);
 }

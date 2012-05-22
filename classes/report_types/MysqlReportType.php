@@ -26,6 +26,8 @@ class MysqlReportType extends ReportTypeBase {
 	}
 	
 	public static function openConnection(&$report) {
+		if(isset($report->conn)) return;
+		
 		$mysql_connections = PhpReports::$config['mysql_connections'];
 		$config = $mysql_connections[$report->options['Database']];
 		
@@ -48,7 +50,33 @@ class MysqlReportType extends ReportTypeBase {
 	}
 	
 	public static function closeConnection(&$report) {
+		if(!isset($report->conn)) return;
 		mysql_close($report->conn);
+		unset($report->conn);
+	}
+	
+	public static function getVariableOptions($params, &$report) {
+		$query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
+		
+		if(isset($params['where'])) {
+			$query .= ' WHERE '.$params['where'];
+		}
+		
+		$result = mysql_query($query, $report->conn);
+		
+		if(!$result) {
+			throw new Exception("Unable to get variable options: ".mysql_error());
+		}
+		
+		$options = array();
+		
+		if(isset($params['all'])) $options[] = 'ALL';
+		
+		while($row = mysql_fetch_assoc($result)) {
+			$options[] = $row[$params['column']];
+		}
+		
+		return $options;
 	}
 	
 	public static function run(&$report) {
@@ -67,10 +95,13 @@ class MysqlReportType extends ReportTypeBase {
 				}
 				$macros[$key] = $value;
 			}
+			
+			if($value === 'ALL') $macros[$key.'_all'] = true;
 		}
 		
 		//expand macros in query
 		$m = new Mustache;
+		
 		$sql = $m->render($report->raw_query,$macros);
 		
 		$report->options['Query'] = $sql;

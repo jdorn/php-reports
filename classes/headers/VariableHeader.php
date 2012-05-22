@@ -28,18 +28,44 @@ class VariableHeader extends HeaderBase {
 				//name, LIST, options style (multiselect)
 				if(trim($parts[1]) === "LIST" && isset($parts[2])) {
 					$params['type'] = 'select';
-					$params['multiple'] = true;
+					$params['multiple'] = true;					
 					$params['options'] = explode('|',$parts[2]);
 				}
 				//name, LIST style (textarea)
 				elseif(trim($parts[1]) === "LIST") {
 					$params['multiple'] = true;
 					if(isset($report->macros[$var])) $report->macros[$var] = explode("\n",trim($report->macros[$var]));
-				}
+				}				
 				//name, options style (select)
 				else {
 					$params['type'] = 'select';
-					$params['options'] = explode('|',$parts[1]);
+					
+					//name, Table.Column style
+					if(preg_match('/[^\|\.]*\.[^\|\.]*/',$parts[1])) {
+						list($table,$column) = explode('.',$parts[1],2);
+						$var_params = array(
+							'table'=>$table,
+							'column'=>$column
+						);
+						
+						//name, Table.Column, ALL style
+						if(isset($parts[2]) && trim($parts[2])==='ALL') {
+							$var_params['all'] = true;
+						}
+						//name, Table.Column, Where[, ALL] style
+						elseif(isset($parts[2])) {
+							$var_params['where'] = $parts[2];
+							
+							if(isset($parts[3]) && trim($parts[3])==='ALL') {
+								$var_params['all'] = true;
+							}
+						}
+						
+						$params['values_database'] = $var_params;
+					}
+					else {
+						$params['options'] = explode('|',$parts[1]);
+					}
 				}
 			}
 		}
@@ -78,4 +104,18 @@ class VariableHeader extends HeaderBase {
 			$report->is_ready =false;
 		}
 	}
+	
+	public function afterParse(&$report) {
+		$classname = $report->options['Type'].'ReportType';
+		
+		foreach($report->options['Variables'] as $var=>$params) {
+			if(isset($params['values_database'])) {
+				$classname::openConnection($report);
+				$params['options'] = $classname::getVariableOptions($params['values_database'],$report);
+				
+				$report->options['Variables'][$var] = $params;
+			}
+		}
+	}
+	
 }

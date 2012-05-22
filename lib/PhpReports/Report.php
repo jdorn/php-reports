@@ -179,7 +179,12 @@ class Report {
 		return $this->raw;
 	}
 	
-	public function renderVariableForm($template='html/variable_form') {		
+	public function renderVariableForm($template='html/variable_form') {
+		foreach($this->headers as $header) {
+			$classname = $header.'Header';
+			$classname::afterParse($this);
+		}
+		
 		if($this->options['Variables']) {
 			$form = PhpReports::getTemplate($template);
 			
@@ -209,7 +214,6 @@ class Report {
 						}
 						if($params['options'][$key]['value'] == $params['value']) $params['options'][$key]['selected'] = true;
 						else $params['options'][$key]['selected'] = false;
-						
 						
 						if($params['multiple']) {
 							$params['is_multiselect'] = true;
