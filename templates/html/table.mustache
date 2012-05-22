@@ -1,17 +1,36 @@
-<table id='result_table'>
-{{#Rows}}{{#first}}
-	<tr class='header'>
+{{^noreport}}
+
+{{#vertical}}
+	<table id='result_table' class='{{#noborder}}noborder {{/noborder}}'>
+	{{#Rows}}{{#first}}
 		{{#values}}
+		<tr>
 			<th class="{{class}}">{{key}}</th>
+			<td class="{{class}}">{{value}}</td>
+		</tr>
 		{{/values}}
-	</tr>
-{{/first}}
-	<tr>
-	{{#values}}
-		{{#value}}<td class="{{class}}">{{#raw}}{{{value}}}{{/raw}}{{^raw}}{{value}}{{/raw}}</td>{{/value}}
-		{{^value}}<td class="{{class}}">{{value}}&nbsp;</td>{{/value}}
-		
-	{{/values}}
-	</tr>
-{{/Rows}}
-</table>
+	{{/first}}{{/Rows}}
+	</table>
+{{/vertical}}
+{{^vertical}}
+	<table id='result_table' class='{{#noborder}}noborder {{/noborder}}'>
+	{{#Rows}}{{#first}}
+		<tr class='header'>
+			{{#values}}
+				<th class="{{class}}">{{key}}</th>
+			{{/values}}
+		</tr>
+	{{/first}}
+		<tr>
+		{{#values}}
+			{{#value}}<td class="{{class}}">{{#raw}}{{{value}}}{{/raw}}{{^raw}}{{value}}{{/raw}}</td>{{/value}}
+			{{^value}}<td class="{{class}}">{{value}}&nbsp;</td>{{/value}}
+			
+		{{/values}}
+		</tr>
+	{{/Rows}}
+	</table>
+{{/vertical}}
+
+
+{{/noreport}}

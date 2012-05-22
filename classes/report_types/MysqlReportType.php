@@ -29,7 +29,17 @@ class MysqlReportType extends ReportTypeBase {
 		$mysql_connections = PhpReports::$config['mysql_connections'];
 		$config = $mysql_connections[$report->options['Database']];
 		
-		if(!($report->conn = mysql_connect($config['host'], $config['username'], $config['password']))) {
+		//the default is to use a user with read only privileges
+		$username = $config['username'];
+		$password = $config['password'];
+		
+		//if the report requires read/write privileges
+		if(isset($report->options['access']) && $report->options['access']==='rw') {
+			if(isset($config['username_rw'])) $username = $config['username_rw'];
+			if(isset($config['password_rw'])) $password = $config['password_rw'];
+		}
+		
+		if(!($report->conn = mysql_connect($config['host'], $username, $password))) {
 			throw new Exception('Could not connect to Mysql: '.mysql_error());
 		}
 		if(!mysql_select_db($config['database'],$report->conn)) {

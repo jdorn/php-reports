@@ -6,7 +6,7 @@ class PhpReports {
 	private static $loader_cache;
 	
 	public static function init($config = 'config/config.php') {
-		spl_autoload_register(array('PhpReports','loader'));
+		spl_autoload_register(array('PhpReports','loader'),true,true);
 		
 		if(!file_exists($config)) {
 			throw new Exception("Cannot find config file");
