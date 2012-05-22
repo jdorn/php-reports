@@ -2,14 +2,15 @@
 
 {{#vertical}}
 	<table id='result_table' class='{{#noborder}}noborder {{/noborder}}'>
-	{{#Rows}}{{#first}}
-		{{#values}}
+	{{#VerticalRows}}
 		<tr>
-			<th class="{{class}}">{{key}}</th>
-			<td class="{{class}}">{{value}}</td>
-		</tr>
+		{{#values}}
+			<{{#is_header}}th{{/is_header}}{{^is_header}}td{{/is_header}} class="{{class}}">
+			{{#raw}}{{{value}}}{{/raw}}{{^raw}}{{value}}{{/raw}}
+			</{{#is_header}}th{{/is_header}}{{^is_header}}td{{/is_header}}>
 		{{/values}}
-	{{/first}}{{/Rows}}
+		</tr>
+	{{/VerticalRows}}
 	</table>
 {{/vertical}}
 {{^vertical}}

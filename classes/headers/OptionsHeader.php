@@ -35,9 +35,33 @@ class OptionsHeader extends HeaderBase {
 			$report->options['Rows'] = array_slice($report->options['Rows'],0,intval($report->options['limit']));
 		}
 		
-		//the 'vertical' option only works with single row tables
-		if(isset($report->options['vertical']) && count($report->options['Rows']) > 1) {
-			unset($report->options['vertical']);
+		if(isset($report->options['vertical'])) {
+			$rows = array();
+			foreach($report->options['Rows'] as $row) {
+				foreach($row['values'] as $value) {
+					if(!isset($rows[$value['key']])) {
+						$rows[$value['key']] = array(
+							'values'=>array(
+								array(
+									'value'=>$value['key'],
+									'raw_value'=>$value['key'],
+									'is_header'=>true,
+									'class'=>isset($value['class'])? $value['class'] : '',
+									'first'=>true
+								)
+							),
+							'first'=>!$rows
+						);
+					}
+					
+					$value['first'] = false;
+					$rows[$value['key']]['values'][] = $value;
+				}
+			}
+			
+			$rows = array_values($rows);
+			
+			$report->options['VerticalRows'] = $rows;
 		}
 	}
 }
