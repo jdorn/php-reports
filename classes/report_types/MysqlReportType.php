@@ -34,14 +34,16 @@ class MysqlReportType extends ReportTypeBase {
 		//the default is to use a user with read only privileges
 		$username = $config['username'];
 		$password = $config['password'];
+		$host = $config['host'];
 		
 		//if the report requires read/write privileges
 		if(isset($report->options['access']) && $report->options['access']==='rw') {
 			if(isset($config['username_rw'])) $username = $config['username_rw'];
 			if(isset($config['password_rw'])) $password = $config['password_rw'];
+			if(isset($config['host_rw'])) $host = $config['host_rw'];
 		}
 		
-		if(!($report->conn = mysql_connect($config['host'], $username, $password))) {
+		if(!($report->conn = mysql_connect($host, $username, $password))) {
 			throw new Exception('Could not connect to Mysql: '.mysql_error());
 		}
 		if(!mysql_select_db($config['database'],$report->conn)) {
@@ -108,8 +110,9 @@ class MysqlReportType extends ReportTypeBase {
 		
 		$report->options['Query_Formatted'] = SqlFormatter::highlight($sql);
 		
-		//split queries and run each one, saving the last result
-		$queries = explode(';',$sql);
+		//split queries and run each one, saving the last result		
+		$queries = SqlFormatter::splitQuery($sql);
+		
 		foreach($queries as $query) {
 			//skip empty queries
 			$query = trim($query);

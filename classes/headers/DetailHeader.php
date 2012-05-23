@@ -3,7 +3,7 @@ class DetailHeader extends HeaderBase {
 	public static function parse($key, $value, &$report) {
 		if(!isset($report->options['Detail'])) $report->options['Detail'] = array();
 		
-		$parts = explode(',',$value);
+		$parts = explode(',',$value,3);
 		
 		if(count($parts) < 2) {
 			throw new Exception("Cannot parse DETAIL header '$value'");

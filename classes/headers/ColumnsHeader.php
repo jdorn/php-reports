@@ -48,7 +48,7 @@ class ColumnsHeader extends HeaderBase {
 					);
 				}
 				//synonyms for 'html'
-				elseif(in_array($part,'html','raw')) {
+				elseif(in_array($part,array('html','raw'))) {
 					$type = 'html';
 				}
 				//url synonym for link
