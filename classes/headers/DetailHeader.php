@@ -50,7 +50,7 @@ class DetailHeader extends HeaderBase {
 		array_pop($temp);
 		$report_name = implode('/',$temp).'/'.$report_name;
 		if(!file_exists(PhpReports::$config['reportDir'].'/'.$report_name)) {
-			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_name.'*');
+			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_name.'.*');
 			
 			if($possible_reports) {
 				$report_name = substr($possible_reports[0],strlen(PhpReports::$config['reportDir'].'/'));
