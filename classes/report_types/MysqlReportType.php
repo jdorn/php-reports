@@ -1,20 +1,6 @@
 <?php
 class MysqlReportType extends ReportTypeBase {
 	public static function init(&$report) {		
-		$report->raw_query = preg_replace('/([^\{])(\{[a-zA-Z0-9_\-]+\})([^\}])/','$1{{$2}}$3',$report->raw_query);
-		$report->macros['host'] = $host;
-		
-		
-		//if there are any included reports, add the report sql to the top
-		if(isset($report->options['Includes'])) {
-			$included_sql = '';
-			foreach($report->options['Includes'] as &$included_report) {
-				$included_sql .= trim($included_report->raw_query);
-			}
-			
-			$report->raw_query = $included_sql . "\n" . $report->raw_query;
-		}
-		
 		$mysql_connections = PhpReports::$config['mysql_connections'];
 	
 		//if the database isn't set or doesn't exist, use the first defined one
@@ -25,6 +11,19 @@ class MysqlReportType extends ReportTypeBase {
 		//add a host macro
 		if(isset($mysql_connections[$report->options['Database']]['webhost'])) $host = $mysql_connections[$report->options['Database']]['webhost'];
 		else $host = $mysql_connections[$report->options['Database']]['host'];
+		
+		$report->raw_query = preg_replace('/([^\{])(\{[a-zA-Z0-9_\-]+\})([^\}])/','$1{{$2}}$3',$report->raw_query);
+		$report->macros['host'] = $host;
+		
+		//if there are any included reports, add the report sql to the top
+		if(isset($report->options['Includes'])) {
+			$included_sql = '';
+			foreach($report->options['Includes'] as &$included_report) {
+				$included_sql .= trim($included_report->raw_query);
+			}
+			
+			$report->raw_query = $included_sql . "\n" . $report->raw_query;
+		}
 		
 		//set up list of all available databases for displaying form for switching between them
 		$report->options['Databases'] = array();
