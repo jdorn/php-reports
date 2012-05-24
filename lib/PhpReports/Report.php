@@ -6,6 +6,7 @@ class Report {
 	public $is_ready = false;
 	public $async = false;
 	public $headers = array();
+	public $header_lines = array();
 	public $raw_query;
 	
 	protected $mustache;
@@ -40,7 +41,7 @@ class Report {
 		
 		$this->macros = $macros;
 		
-		$this->parseHeader();
+		$this->parseHeaders();
 		
 		$this->options['Database'] = $database;
 		
@@ -49,15 +50,14 @@ class Report {
 		$this->getTimeEstimate();
 	}
 	
-	protected function parseHeader() {
+	protected function parseHeaders() {
 		//default the report to being ready
 		//if undefined variables are found in the headers, set to false
 		$this->is_ready = true;
 		
 		$this->options = array(
 			'Filters'=>array(),
-			'Variables'=>array(),
-			'Name'=>$this->report
+			'Variables'=>array()
 		);
 		$this->headers = array();
 		
@@ -111,14 +111,15 @@ class Report {
 				continue;
 			}
 			elseif($last_header) {
-				$classname = $last_header.'Header';
-				if(class_exists($classname)) {
-					$classname::parse($last_header,$last_header_value,$this);
-					if(!in_array($last_header,$this->headers)) $this->headers[] = $last_header;
-				}
-				else {
-					throw new Exception("Unknown header '$last_header' - ".$this->report);
-				}
+				
+				$this->header_lines[] = array(
+					'name'=>$last_header,
+					'value'=>$last_header_value
+				);
+				
+				if(!in_array($last_header,$this->headers)) $this->headers[] = $last_header;
+				
+				$this->parseHeader($last_header,$last_header_value);
 			}
 				
 			$last_header = $name;
@@ -142,6 +143,18 @@ class Report {
 				default:
 					throw new Exception("Unknown report type - ".$this->report);
 			}
+		}
+		
+		if(!isset($this->options['Name'])) $this->options['Name'] = $this->report;
+	}
+	
+	public function parseHeader($name,$value) {
+		$classname = $name.'Header';
+		if(class_exists($classname)) {
+			$classname::parse($name,$value,$this);
+		}
+		else {
+			throw new Exception("Unknown header '$name' - ".$this->report);
 		}
 	}
 	
