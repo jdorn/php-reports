@@ -179,6 +179,27 @@ class Report {
 	}
 	
 	protected function initDb() {
+		//if the database isn't set, use the first defined one from config
+		$databases = PhpReports::$config['databases'];
+		if(!$this->options['Database']) {
+			$this->options['Database'] = current(array_keys($databases));
+		}
+		
+		//set database options
+		$database_options = array();
+		foreach($databases as $key=>$params) {
+			$database_options[] = array(
+				'name'=>$key,
+				'selected'=>$key===$this->options['Database']
+			);
+		}
+		$this->options['Databases'] = $database_options;
+		
+		//add a host macro
+		if(isset($databases[$this->options['Database']]['host'])) {
+			$this->macros['host'] = $databases[$this->options['Database']]['host'];
+		}
+		
 		$classname = $this->options['Type'].'ReportType';
 		
 		if(!class_exists($classname)) {

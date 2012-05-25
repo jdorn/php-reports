@@ -1,27 +1,26 @@
 <?php
 abstract class MongoReportType extends ReportTypeBase {
 	public static function init(&$report) {
-		$mongo_connections = PhpReports::$config['mongo_connections'];
-	
-		//if the database isn't set or doesn't exist, use the first defined one
-		if(!$report->options['Database'] || !isset($mongo_connections[$report->options['Database']])) {
-			$report->options['Database'] = current(array_keys($mongo_connections));
+		$databases = PhpReports::$config['databases'];
+		
+		if(!isset($databases[$report->options['Database']]['mongo'])) {
+			throw new Exception("No mongo info defined for database '".$report->options['Database']."'");
 		}
 		
-		//set up list of all available databases for displaying form for switching between them
-		$report->options['Databases'] = array();
-		foreach(array_keys($mongo_connections) as $name) {
-			$report->options['Databases'][] = array(
-				'selected'=>($report->options['Database'] == $name),
-				'name'=>$name
-			);
+		$mongo = $databases[$report->options['Database']]['mongo'];
+		
+		//default host macro to mysql's host if it isn't defined elsewhere
+		if(!isset($report->macros['host'])) $report->macros['host'] = $mongo['host'];
+		
+		//if there are any included reports, add it to the top of the raw query
+		if(isset($report->options['Includes'])) {
+			$included_code = '';
+			foreach($report->options['Includes'] as &$included_report) {
+				$included_code .= trim($included_report->raw_query)."\n";
+			}
+			
+			$report->raw_query = $included_code . $report->raw_query;
 		}
-		
-		//add a host macro
-		if(isset($mongo_connections[$report->options['Database']]['webhost'])) $host = $mongo_connections[$report->options['Database']]['webhost'];
-		else $host = $mongo_connections[$report->options['Database']]['host'];
-		
-		$report->macros['host'] = $host;
 	}
 	
 	public static function openConnection(&$report) {
@@ -35,21 +34,26 @@ abstract class MongoReportType extends ReportTypeBase {
 	public static function run(&$report) {		
 		$eval = '';
 		foreach($report->macros as $key=>$value) {
-			$eval .= 'var '.$key.' = "'.addslashes($value).'";';
+			$eval .= 'var '.$key.' = "'.addslashes($value).'";'."\n";
 		}
+		$eval .= $report->raw_query;
 		
-		$mongo_connections = PhpReports::$config['mongo_connections'];
-		$config = $mongo_connections[$report->options['Database']];
+		
+		
+		$databases = PhpReports::$config['databases'];
+		$config = $databases[$report->options['Database']]['mongo'];
 		
 		$mongo_database = isset($report->options['Mongodatabase'])? $report->options['Mongodatabase'] : '';
 		
-		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval "'.addslashes($eval).'" '.PhpReports::$config['reportDir'].'/'.$report->report;
+		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval '.escapeshellarg($eval);
 		
 		$report->options['Query'] = '$ '.$command."\n\n".$report->raw_query;
 		$report->options['Query_Formatted'] = '<div>
-			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.$command.'</pre>'
-			.PhpReports::$config['reportDir'].'/'.$report->report.
-			'<pre style="border-left: 1px solid black; padding-left: 20px;">'.$report->raw_query.'</pre>
+			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.
+			'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval '."'...'".
+			'</pre>'.
+			'Eval String:'.
+			'<pre style="border-left: 1px solid black; padding-left: 20px;">'.$eval.'</pre>
 		</div>';
 		
 		$result = shell_exec($command);

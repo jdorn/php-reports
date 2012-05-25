@@ -2,20 +2,19 @@
 return array(
 	'reportDir' => 'reports',
 	'cacheDir' => 'cache',
-
-	'mysql_connections' => array(
-		'main' => array(
+	'databases' => array(
+		'main'=>array(
 			'host'=>'localhost',
-			'username'=>'root',
-			'password'=>'',
-			'database'=>'test'
-		)
-	),
-
-	'mongo_connections' => array(
-		'main' => array(
-			'host'=>'localhost',
-			'port'=>'27017'
+			'mysql'=>array(
+				'host'=>'localhost',
+				'user'=>'root',
+				'pass'=>'',
+				'database'=>'test'
+			),
+			'mongo'=>array(
+				'host'=>'localhost',
+				'port'=>'27017'
+			)
 		)
 	)
 );

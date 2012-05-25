@@ -1,55 +1,46 @@
 <?php
 class MysqlReportType extends ReportTypeBase {
 	public static function init(&$report) {		
-		$mysql_connections = PhpReports::$config['mysql_connections'];
-	
-		//if the database isn't set or doesn't exist, use the first defined one
-		if(!$report->options['Database'] || !isset($mysql_connections[$report->options['Database']])) {
-			$report->options['Database'] = current(array_keys($mysql_connections));
+		$databases = PhpReports::$config['databases'];
+		
+		if(!isset($databases[$report->options['Database']]['mysql'])) {
+			throw new Exception("No mysql info defined for database '".$report->options['Database']."'");
 		}
 		
-		//add a host macro
-		if(isset($mysql_connections[$report->options['Database']]['webhost'])) $host = $mysql_connections[$report->options['Database']]['webhost'];
-		else $host = $mysql_connections[$report->options['Database']]['host'];
+		$mysql = $databases[$report->options['Database']]['mysql'];
 		
-		$report->raw_query = preg_replace('/([^\{])(\{[a-zA-Z0-9_\-]+\})([^\}])/','$1{{$2}}$3',$report->raw_query);
-		$report->macros['host'] = $host;
+		//default host macro to mysql's host if it isn't defined elsewhere
+		if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
+		
+		//replace shorthand {host} with {{host}} in query
+		$report->raw_query = preg_replace('/([^\{])\{host\}([^\}])/','$1{{host}}$3',$report->raw_query);
 		
 		//if there are any included reports, add the report sql to the top
 		if(isset($report->options['Includes'])) {
 			$included_sql = '';
 			foreach($report->options['Includes'] as &$included_report) {
-				$included_sql .= trim($included_report->raw_query);
+				$included_sql .= trim($included_report->raw_query)."\n";
 			}
 			
-			$report->raw_query = $included_sql . "\n" . $report->raw_query;
-		}
-		
-		//set up list of all available databases for displaying form for switching between them
-		$report->options['Databases'] = array();
-		foreach(array_keys($mysql_connections) as $name) {
-			$report->options['Databases'][] = array(
-				'selected'=>($report->options['Database'] === $name),
-				'name'=>$name
-			);
+			$report->raw_query = $included_sql . $report->raw_query;
 		}
 	}
 	
 	public static function openConnection(&$report) {
 		if(isset($report->conn)) return;
 		
-		$mysql_connections = PhpReports::$config['mysql_connections'];
-		$config = $mysql_connections[$report->options['Database']];
+		$databases = PhpReports::$config['databases'];
+		$config = $databases[$report->options['Database']]['mysql'];
 		
 		//the default is to use a user with read only privileges
-		$username = $config['username'];
-		$password = $config['password'];
+		$username = $config['user'];
+		$password = $config['pass'];
 		$host = $config['host'];
 		
 		//if the report requires read/write privileges
 		if(isset($report->options['access']) && $report->options['access']==='rw') {
-			if(isset($config['username_rw'])) $username = $config['username_rw'];
-			if(isset($config['password_rw'])) $password = $config['password_rw'];
+			if(isset($config['user_rw'])) $username = $config['user_rw'];
+			if(isset($config['pass_rw'])) $password = $config['pass_rw'];
 			if(isset($config['host_rw'])) $host = $config['host_rw'];
 		}
 		
