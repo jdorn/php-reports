@@ -15,6 +15,9 @@ abstract class PhpReportType extends ReportTypeBase {
 	public static function run(&$report) {		
 		extract($report->macros);
 		
+		$config = PhpReports::$config;
+		$database = PhpReports::$config['databases'][$report->options['Database']];
+		
 		ob_start();
 		require(PhpReports::$config['reportDir'].'/'.$report->report);
 		$result = ob_get_contents();
