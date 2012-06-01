@@ -13,7 +13,7 @@ class MysqlReportType extends ReportTypeBase {
 		if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
 		
 		//replace shorthand {host} with {{host}} in query
-		$report->raw_query = preg_replace('/([^\{])\{host\}([^\}])/','$1{{host}}$3',$report->raw_query);
+		$report->raw_query = preg_replace('/([^\{])\{([^\{\}]+)\}([^\}])/','$1{{$2}}$3',$report->raw_query);
 		
 		//if there are any included reports, add the report sql to the top
 		if(isset($report->options['Includes'])) {
