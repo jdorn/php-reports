@@ -1,7 +1,12 @@
 <?php
 class IncludeHeader extends HeaderBase {
 	public static function parse($key, $value, &$report) {
-		$report_path = dirname($report->report).'/'.$value;
+		if($value[0] === '/') {
+			$report_path = substr($value,1);
+		}
+		else {
+			$report_path = dirname($report->report).'/'.$value;
+		}
 		
 		if(!file_exists(PhpReports::$config['reportDir'].'/'.$report_path)) {
 			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_path.'.*');

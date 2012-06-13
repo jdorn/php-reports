@@ -177,6 +177,16 @@ $('.show_query').click(function() {
 	
 	return false;
 });
+$('.included_report').each(function() {
+	var self = $(this);
+	self.css('display','none').css('background-color','#ddd');
+	var link = $('<a>').attr('href','#').text('View Included Report').css('display','block').click(function() {
+		self.toggle(200);
+		return false;
+	});
+	
+	self.before(link);
+});
 </script>
 {{/Query}}
 

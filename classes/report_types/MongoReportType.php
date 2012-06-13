@@ -53,7 +53,7 @@ abstract class MongoReportType extends ReportTypeBase {
 			'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval '."'...'".
 			'</pre>'.
 			'Eval String:'.
-			'<pre style="border-left: 1px solid black; padding-left: 20px;">'.$eval.'</pre>
+			'<pre style="border-left: 1px solid black; padding-left: 20px;">'.htmlentities($eval).'</pre>
 		</div>';
 		
 		$result = shell_exec($command);
