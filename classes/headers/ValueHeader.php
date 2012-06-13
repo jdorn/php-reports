@@ -15,4 +15,10 @@ class ValueHeader extends HeaderBase {
 			$report->macros[$var] = $default;
 		}
 	}
+	
+	public static function afterParse(&$report) {
+		foreach($report->options['Includes'] as $included_report) {
+			$report->importHeaders($included_report,'Value');
+		}
+	}
 }

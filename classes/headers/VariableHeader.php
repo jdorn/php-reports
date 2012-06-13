@@ -105,8 +105,12 @@ class VariableHeader extends HeaderBase {
 		}
 	}
 	
-	public function afterParse(&$report) {
+	public static function afterParse(&$report) {
 		$classname = $report->options['Type'].'ReportType';
+		
+		foreach($report->options['Includes'] as $included_report) {
+			$report->importHeaders($included_report,'Variable');
+		}
 		
 		foreach($report->options['Variables'] as $var=>$params) {
 			if(isset($params['values_database'])) {

@@ -39,7 +39,7 @@ class IncludeHeader extends HeaderBase {
 		
 	}
 	
-	public function afterParse(&$report) {
+	public static function afterParse(&$report) {
 		
 	}
 }

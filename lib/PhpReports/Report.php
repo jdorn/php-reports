@@ -57,7 +57,8 @@ class Report {
 		
 		$this->options = array(
 			'Filters'=>array(),
-			'Variables'=>array()
+			'Variables'=>array(),
+			'Includes'=>array()
 		);
 		$this->headers = array();
 		
@@ -146,6 +147,14 @@ class Report {
 		}
 		
 		if(!isset($this->options['Name'])) $this->options['Name'] = $this->report;
+	}
+	
+	public function importHeaders($report, $name=null) {
+		foreach($report->header_lines as $line) {
+			if(!$name || $line['name']===$name) {
+				$this->parseHeader($line['name'],$line['value']);
+			}
+		}
 	}
 	
 	public function parseHeader($name,$value) {
