@@ -38,10 +38,10 @@ abstract class PhpReportType extends ReportTypeBase {
 		
 		$parts = preg_split('/<\?php \/\*(BEGIN|END) (INCLUDED REPORT|REPORT MACROS)\*\/ \?>/',$eval);
 		$formatted = '';
-		$code = '<div style="margin: 10px 0;">'.htmlentities(array_pop($parts)).'</div>';
+		$code = '<div style="margin: 10px 0;">'.highlight_string(array_pop($parts),true).'</div>';
 		foreach($parts as $part) {
 			if(!trim($part)) continue;
-			$formatted .= "<div class='included_report'>".htmlentities($part)."</div>";
+			$formatted .= "<div class='included_report'>".highlight_string($part, true)."</div>";
 		}
 		$formatted .= $code;
 		

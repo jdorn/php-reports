@@ -179,7 +179,7 @@ $('.show_query').click(function() {
 });
 $('.included_report').each(function() {
 	var self = $(this);
-	self.css('display','none').css('background-color','#ddd');
+	self.css('display','none').css('background-color','#f4f4f4').css('padding-left','10px');
 	var link = $('<a>').attr('href','#').text('View Included Report').css('display','block').click(function() {
 		self.toggle(200);
 		return false;
