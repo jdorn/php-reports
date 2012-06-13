@@ -125,25 +125,29 @@ h1 {
 
 {{#has_charts}}
 	<script type="text/javascript">
-	drawCharts();
 	function drawCharts() {
 		{{#Charts}}
 			var data_{{num}} = google.visualization.arrayToDataTable([
-				{{#Rows}}{{#first}}
-				[{{#values}}{{^first}}",{{/first}}"{{key}}{{/values}}"]
-{{/first}}
-					,[{{#values}}{{#first}}"{{value}}"{{/first}}{{^first}},{{value}}{{/first}}{{/values}}]
+				{{#Rows}}				
+					{{#first}}
+					[{{#values}}{{^first}},{{/first}}{{^is_array}}"{{key}}"{{/is_array}}{{/values}}]
+					{{/first}}
+					,[{{#values}}{{^first}},{{/first}}{{{value}}}{{/values}}]
 				{{/Rows}}
 			]);
 
 			var options_{{num}} = {
-				title: '{{title}}'
+				title: '{{title}}',
+				displayMode: 'markers',
+				colorAxis: {colors: ['blue', 'red']},
+				sizeAxis: {minValue: 1,  maxSize:  10}
 			};
 
 			var chart_{{num}} = new google.visualization.{{type}}(document.getElementById('chart_div_{{num}}'));
 			chart_{{num}}.draw(data_{{num}}, options_{{num}});
 		{{/Charts}}
 	}
+	drawCharts();
 	</script>
 	
 	{{#Charts}}

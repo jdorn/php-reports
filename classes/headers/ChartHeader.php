@@ -82,68 +82,90 @@ class ChartHeader extends HeaderBase {
 		) {
 			return;
 		}
-	
-		$i = 1;		
-		$chartrowvals = array();
-		foreach($row['values'] as $key=>$value) {			
-			//determine if this column should appear in a chart
-			$column_in_chart = false;
-			$x = false;
+				
+		$vals = array();
+		$i = 1;
+		foreach($row['values'] as $key=>$value) {
+			$value['i'] = $i;
 			
-			if(!$xval && $i===1 && !isset($report->options['Charts'][$num]['x'])) {
-				$column_in_chart = true;
-				$x = true;
+			if(isset($value['chartval']) && is_array($value['chartval'])) {
+				foreach($value['chartval'] as $ckey=>$cval) {
+					$value['raw_value'] = trim($cval,'%$ ');
+					$value['value'] = $cval;
+					$value['key'] = $ckey;
+					$value['first'] = !$vals;
+					$vals[] = $value;
+				}
 			}
-			elseif(!$xval && isset($report->options['Charts'][$num]['x']) 
-				&& (
-					$value['key']===$report->options['Charts'][$num]['x'] 
-					|| "$i" === "".$report->options['Charts'][$num]['x']
-				)
-			) {
-				$column_in_chart = true;
-				$x = true;
-			}
-			elseif(!isset($report->options['Charts'][$num]['y'])) {
-				$column_in_chart = true;
-			}
-			elseif(in_array($value['key'],$report->options['Charts'][$num]['y'],true) 
-				|| in_array("$i",$report->options['Charts'][$num]['y'])
-			) {
-				$column_in_chart = true;
+			else {
+				$value['raw_value'] = trim($value['raw_value'],'%$ ');
+				$vals[] = $value;
 			}
 			
 			$i++;
+		}
+		
+		$chartrowvals = array();
+		$chartrowvals_x = array();
+		
+		//loop through the row's values
+		foreach($vals as $key=>$value) {
+			$i = $value['i'];
+			
+			//if the x column is explicitly defined and this is one of them
+			$is_x = isset($report->options['Charts'][$num]['x']) && (in_array("$i",$report->options['Charts'][$num]['x']) || in_array($key,$report->options['Charts'][$num]['x'],true));
+			
+			//if the x column is not explicitly defined, assume it is the first column
+			if(!isset($report->options['Charts'][$num]['x']) && $i==1) $is_x = true;
+			
+			//if the y column is explicitly defined and this is one of them
+			$is_y = !$is_x && isset($report->options['Charts'][$num]['y']) && (in_array("$i",$report->options['Charts'][$num]['y']) || in_array($key,$report->options['Charts'][$num]['y'],true));
+			
+			//if the y column is not explicitly defined, assume every column is a y column
+			if(!$is_x && !isset($report->options['Charts'][$num]['y'])) $is_y = true;
+			
+			
+			//determine if this column should appear in a chart
+			$column_in_chart = $is_x || $is_y;
 			
 			if(!$column_in_chart) {
 				continue;
 			}
 			
-			if($x) {
-				$xval = array(
+			$chartval = is_numeric($value['raw_value'])? $value['raw_value'] : '"'.$value['raw_value'].'"';
+				
+			if($is_x) {
+				array_push($chartrowvals_x, array(
 					'key'=>$value['key'],
-					'value'=>$value['raw_value'],
-					'first'=>true
-				);
+					'value'=>$chartval
+				));
 			}
 			else {
-				$chartrowvals[] = array(
+				array_push($chartrowvals, array(
 					'key'=>$value['key'],
-					'value'=>floatval($value['raw_value']),
-					'first'=>false
-				);
+					'value'=>$chartval
+				));
 			}
 		}
 		
+		$chartrowvals_x = array_reverse($chartrowvals_x);
 		
+		foreach($chartrowvals_x as $val) {
+			array_unshift($chartrowvals,$val);
+		}
 		
-		array_unshift($chartrowvals,$xval);
+		$is_first = true;
+		foreach($chartrowvals as &$value) {
+			$value['first'] = $is_first;
+			$is_first = false;
+		}
 		
 		//echo "<pre>".print_r($chartrowvals,true)."</pre>";
-		$first = count($report->options['Charts'][$num]['Rows']);
+		$numrows = count($report->options['Charts'][$num]['Rows']);
 		
 		$report->options['Charts'][$num]['Rows'][] = array(
 			'values'=>$chartrowvals,
-			'first'=>!$first
+			'first'=>!$numrows
 		);	
 	}
 	
@@ -195,7 +217,7 @@ class ChartHeader extends HeaderBase {
 	}
 	
 	public static function filterRow($row, &$report) {
-		if($row['first']) return;
+		//if($row['first']) return;
 		
 		foreach($report->options['Charts'] as $num=>$value) {
 			if(isset($report->options['Charts'][$num]['buckets'])) {
@@ -213,5 +235,6 @@ class ChartHeader extends HeaderBase {
 		foreach($report->options['Rows'] as $key=>$row) {
 			self::filterRow($row,$report);
 		}
+		
 	}
 }
