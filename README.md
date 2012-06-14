@@ -111,6 +111,83 @@ Stripe::setApiKey("123456");
 
 Hopefully, you can begin to see the power of the Php Report Framework.  
 
+
+Detailed Documentation
+=================
+
+This will cover all the pre-defined report headers, filters, etc..  
+It will also give instructions for how to extend and customize the framework to add your own.
+
+Report Headers
+================
+
+All pre-defined header classes are located in classes/headers/ and extend HeaderBase.
+
+Headers appear as comments at the top of a report file.
+
+VariableHeader
+-------------
+Used to prompt a user for a value before running a report.
+
+Here is the basic format:
+```
+VARIABLE: varname, Display Name
+```
+
+If you want to show a drop down list of possible values, use this format:
+```
+VARIABLE: varname, Display Name, option 1|option 2|option 3
+```
+
+ValueHeader
+--------------
+Used to supply a default value for a variable.
+
+```
+VARIABLE: varname, Display Name
+VALUE: varname, default value
+```
+
+IncludeHeader
+---------------
+Includes another report in the currently running one.
+The included report's headers are parsed and the report contents are prepended to the current report before running.
+
+Possible uses include:
+*   Creating a temp table for a set of MySQL reports
+*   Defining helper functions for MongoDB or PHP reports
+*   Setting up an API connection for a PHP report
+
+```
+INCLUDE: relative/path/to/report.sql
+INCLUDE: /path/to/report.sql
+```
+
+If a '/' is placed at the front of the path, it will be relative to the report directory root.
+Otherwise, it will be relative to the directory of the currently running report.
+
+FilterHeader
+--------------
+The Filter header applies a filter to a column of the report.
+
+Possible uses include:
+*   GeoIP lookup that replaces an IP address with City, State Country
+*   Star Rating filter that replaces a number (1-10) with that many images of stars.
+
+The only built-in filter is GeoIP, but others are easy to add.
+
+```
+FILTER: 1, geoip
+FILTER: Location, geoip
+```
+
+The first example is by column number (starting at 1).
+The second example is by column name.
+
+
+
+
+
 More documentation is coming soon for all the possible headers, filters, report types, output formats, and even 
 instructions for extending the framework and adding your own options.
 
