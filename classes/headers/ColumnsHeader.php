@@ -63,6 +63,9 @@ class ColumnsHeader extends HeaderBase {
 					$type = 'bar';
 					$options = array();
 				}
+				elseif($part === 'pre') {
+					$type = 'pre';
+				}
 				//normal case
 				else {
 					$type = 'class';

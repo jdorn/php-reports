@@ -8,21 +8,27 @@ class Report {
 	public $headers = array();
 	public $header_lines = array();
 	public $raw_query;
+	public $use_cache;
 	
 	protected $mustache;
 	
 	protected $raw;
 	protected $raw_headers;
 	protected $filters = array();
+	protected $filemtime;
 	
-	public function __construct($report,$macros = array(), $database = null) {
+	public function __construct($report,$macros = array(), $database = null, $use_cache = null) {
 		$reportDir = PhpReports::$config['reportDir'];
 		
 		if(!file_exists($reportDir.'/'.$report)) {
 			throw new Exception('Report not found - '.$report);
 		}
 		
+		$this->filemtime = filemtime($reportDir.'/'.$this->report);
+		
 		$this->report = $report;
+		
+		$this->use_cache = $use_cache;
 		
 		//instantiate the templating engine
 		$this->mustache = new Mustache;
@@ -48,6 +54,35 @@ class Report {
 		$this->initDb();
 		
 		$this->getTimeEstimate();
+	}
+	
+	public function getCacheKey() {
+		return md5(serialize(array(
+			'report'=>$this->report,
+			'macros'=>$this->macros,
+			'database'=>$this->options['Database']
+		)));
+	}
+
+	protected function retrieveFromCache() {
+		if(!$this->use_cache) {
+			return false;
+		}
+		
+		return FileSystemCache::retrieve($this->getCacheKey(),'results', $this->filemtime);
+	}
+	
+	protected function storeInCache() {
+		if(isset($this->options['Cache']) && is_numeric($this->options['Cache'])) {
+			$ttl = intval($this->options['Cache']);
+		}
+		else {
+			//default to caching things for 10 minutes
+			$ttl = 600;
+		}
+		
+		
+		FileSystemCache::store($this->getCacheKey(), $this->options, 'results', $ttl);
 	}
 	
 	protected function parseHeaders() {
@@ -355,12 +390,12 @@ class Report {
 			$rowval = array();
 			
 			$i=1;
-			foreach($row as $key=>$value) {				
+			foreach($row as $key=>$value) {						
 				$val = array(
 					'key'=>$key,
 					'key_collapsed'=>trim(preg_replace(array('/\s+/','/[^a-zA-Z0-9_]*/'),array('_',''),$key),'_'),
-					'value'=>$value,
-					'raw_value'=>$value
+					'value'=>utf8_encode($value),
+					'raw_value'=>($value)
 				);
 				
 				//apply filters for the column key
@@ -393,8 +428,17 @@ class Report {
 		$start = microtime(true);
 		
 		if($this->is_ready && !$this->async) {
-			$this->runReport();
-			$this->prepareRows();
+			//if this report should be cached
+			if($options = $this->retrieveFromCache()) {				
+				$this->options = $options;
+				$this->options['FromCache'] = true;
+			}
+			else {				
+				$this->runReport();
+				$this->prepareRows();
+				
+				$this->storeInCache();
+			}
 		}
 		
 		//call the beforeRender callback for each header
@@ -403,17 +447,20 @@ class Report {
 			$classname::beforeRender($this);
 		}
 		
-		//get current report times for this report
-		$report_times = FileSystemCache::retrieve($this->report,'report_times');
-		if(!$report_times) $report_times = array();
-		//only keep the last 10 times for each report
-		//this keeps the timing data up to date and relevant
-		if(count($report_times) > 10) array_shift($report_times);
-		
-		//store report times
 		$this->options['Time'] = round(microtime(true) - $start,5);
-		$report_times[] = $this->options['Time'];
-		FileSystemCache::store($this->report, $report_times, 'report_times');
+		
+		if($this->is_ready && !$this->async && !isset($this->options['FromCache'])) {
+			//get current report times for this report
+			$report_times = FileSystemCache::retrieve($this->report,'report_times');
+			if(!$report_times) $report_times = array();
+			//only keep the last 10 times for each report
+			//this keeps the timing data up to date and relevant
+			if(count($report_times) > 10) array_shift($report_times);
+			
+			//store report times
+			$report_times[] = $this->options['Time'];
+			FileSystemCache::store($this->report, $report_times, 'report_times');
+		}
 		
 		$template_code = PhpReports::getTemplate($template);
 		

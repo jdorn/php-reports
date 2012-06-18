@@ -50,7 +50,8 @@ h1 {
 	border: 1px solid black;
 	border-width: 1px 1px 0 0;
 	margin: 15px 0;
-	border-collapse:collapse
+	border-collapse:collapse;
+	font-family: arial, sans serif;
 }
 #result_table.noborder {
 	border: 0;
@@ -127,12 +128,27 @@ h1 {
 	<script type="text/javascript">
 	function drawCharts() {
 		{{#Charts}}
-			var data_{{num}} = google.visualization.arrayToDataTable([
-				{{#Rows}}				
-					{{#first}}
-					[{{#values}}{{^first}},{{/first}}{{^is_array}}"{{key}}"{{/is_array}}{{/values}}]
-					{{/first}}
-					,[{{#values}}{{^first}},{{/first}}{{{value}}}{{/values}}]
+			var data_{{num}} = new google.visualization.DataTable();
+		
+			{{#Rows}}
+				{{#first}}
+					{{#values}}
+						{{#is_date}}
+						data_{{num}}.addColumn('date',"{{key}}");
+						{{/is_date}}
+						{{#is_number}}
+						data_{{num}}.addColumn('number',"{{key}}");
+						{{/is_number}}
+						{{#is_string}}
+						data_{{num}}.addColumn('string',"{{key}}");
+						{{/is_string}}
+					{{/values}}
+				{{/first}}
+			{{/Rows}}
+		
+			data_{{num}}.addRows([
+				{{#Rows}}
+					{{^first}},{{/first}}[{{#values}}{{^first}},{{/first}}{{#is_date}}new Date("{{{value}}}"){{/is_date}}{{^is_date}}{{{value}}}{{/is_date}}{{/values}}]
 				{{/Rows}}
 			]);
 
@@ -140,7 +156,8 @@ h1 {
 				title: '{{title}}',
 				displayMode: 'markers',
 				colorAxis: {colors: ['blue', 'red']},
-				sizeAxis: {minValue: 1,  maxSize:  10}
+				sizeAxis: {minValue: 1,  maxSize:  10},
+				displayAnnotations: true
 			};
 
 			var chart_{{num}} = new google.visualization.{{type}}(document.getElementById('chart_div_{{num}}'));
@@ -202,6 +219,7 @@ $('#database_select').change(function() {
 	return false;
 });
 </script>
+
 {{/async}}{{/is_ready}}
 {{^is_ready}}
 <div class='notice'>
@@ -213,7 +231,11 @@ This report needs more information before running.
 	<div>
 		Your report is running.
 		{{#time_estimate}}
-			This report usually takes between {{q1}} and {{q3}} seconds.
+			{{#median}}
+				This report usually takes {{median}} seconds.
+			{{/median}}
+			
+			</div>			
 		{{/time_estimate}}
 	</div>
 </div>
@@ -227,4 +249,24 @@ $.ajax({
 	}
 });
 </script>
+
+{{#time_estimate}}
+<div style='margin-top: 20px;'>
+	<a href='#' id='show_time_estimate'>show time estimate data</a>
+	<div style='font-size: .8em; display:none;' id='time_estimate_holder'>
+		<div><strong>Number of Samples: </strong> {{count}}</div>
+		<div><strong>Minimum Time: </strong> {{min}}</div>
+		<div><strong>Maximum Time: </strong> {{max}}</div>
+		<div><strong>Median: </strong> {{median}}</div>
+		<div><strong>Average: </strong> {{average}}</div>
+		<div><strong>Standard Deviation: </strong> {{stdev}}</div>	
+	</div>
+</div>
+<script>
+$('#show_time_estimate').click(function() {
+	$('#time_estimate_holder').toggle(200);
+	return false;
+});
+</script>
+{{/time_estimate}}
 {{/async}}

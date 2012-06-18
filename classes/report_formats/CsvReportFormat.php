@@ -1,6 +1,9 @@
 <?php
 class CsvReportFormat extends ReportFormatBase {
-	public static function display(&$report, &$request) {		
+	public static function display(&$report, &$request) {
+		//always use cache for CSV reports
+		$report->use_cache = true;
+		
 		$page_template = array(
 			'content'=>$report->renderReportPage('csv/report','csv/page')
 		);
@@ -11,7 +14,7 @@ class CsvReportFormat extends ReportFormatBase {
 		header("Content-Disposition: attachment; filename=".$file_name.".csv");
 		header("Pragma: no-cache");
 		header("Expires: 0");
-
+		
 		PhpReports::renderPage($page_template,'csv/page');
 	}
 }

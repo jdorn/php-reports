@@ -52,6 +52,9 @@ abstract class PhpReportType extends ReportTypeBase {
 		$result = ob_get_contents();
 		ob_end_clean();
 		
-		return json_decode($result,true);
+		$json = json_decode($result, true);
+		if(!$json) throw new Exception($result);
+		
+		return $json;
 	}
 }

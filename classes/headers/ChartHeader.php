@@ -132,18 +132,43 @@ class ChartHeader extends HeaderBase {
 				continue;
 			}
 			
-			$chartval = is_numeric($value['raw_value'])? $value['raw_value'] : '"'.$value['raw_value'].'"';
-				
+			if($temp = strtotime($value['raw_value'])) {
+				$chartval = date('Y-m-d H:i:s',$temp);
+				$is_date = true;
+				$is_number = $is_string = false;
+			}
+			elseif(!is_numeric($value['raw_value']) && !$value['raw_value']) {
+				$chartval = 'null';
+				$is_date = $is_number = false;
+				$is_string = true;
+			}
+			elseif(is_numeric($value['raw_value'])) {
+				$chartval = $value['raw_value'];
+				$is_date = $is_string = false;
+				$is_number = true;
+			}
+			else {
+				$chartval = '"'.$value['raw_value'].'"';
+				$is_date = $is_number = false;
+				$is_string = true;
+			}
+			
 			if($is_x) {
 				array_push($chartrowvals_x, array(
 					'key'=>$value['key'],
-					'value'=>$chartval
+					'value'=>$chartval,
+					'is_date'=>$is_date,
+					'is_string'=>$is_string,
+					'is_number'=>$is_number
 				));
 			}
 			else {
 				array_push($chartrowvals, array(
 					'key'=>$value['key'],
-					'value'=>$chartval
+					'value'=>$chartval,
+					'is_date'=>$is_date,
+					'is_string'=>$is_string,
+					'is_number'=>$is_number
 				));
 			}
 		}
