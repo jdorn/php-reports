@@ -305,4 +305,82 @@ FILTER: {
 }
 ```
 
+CacheHeader
+--------------
+The Cache header enables automatic report caching for a specified time.
+
+This is useful for expensive reports where the data doesn't change too often.
+
+### JSON Format
+
+*    __ttl__ The number of seconds to cache the report results for
+
+### Examples
+
+```
+CACHE: {"ttl": 3600}
+```
+
+This will cache the results for 1 hour (3600 seconds).
+
+### Shortcut Syntax
+
+```
+CACHE: 3600
+
+CAHCE: {
+	"ttl": 3600
+}
+```
+
+DetailHeader
+------------------
+The Detail header is used to tie reports together and provide drill down links.
+
+An example is a report that shows product categories along with the number of products in the category.
+Another report shows all the products in a single category.  You could make the Number of Products column
+in the 1st report link to the 2nd report.
+
+### JSON Format
+*	__column__ _required_ The column that should be turned into a link.  Can either be the column number (starting at 1) or the column name.
+*	__report__ _required_ The report to link to.
+	*	If the report path starts with "/", it will be relative to the root report directory
+	*	Otherwise, it will be relative to the currently running report
+*	__macros__ Macros to pass along to the report being linked to.  
+	*	Each key in the macros object is the macro name, each value is either a string or 
+		{"column": "ColumnName"}.  This 2nd option lets you populate a macro from the row's values.
+
+### Examples
+```
+DETAIL: {
+	"column": "ProductCount",
+	"report": "/products/products-in-category.sql",
+	"macros": {
+		"category": {
+			"column": "CategoryName"
+		},
+		"othermacro": "constant value"
+	}
+}
+```
+
+The ProductCount column will be turned into a link to the products-in-category report.
+
+In each row, the link will contain 2 macros.  
+The "category" macro would be equal to the CategoryName column's value in that row.  
+The "othermacro" value would always be "constant value".
+
+The products-in-category.sql report would need something like the following to read these macros:
+
+```
+VARIABLE: {"name": "category"}
+VARIABLE: {"name": "othermacro"}
+```
+
+### Shortcut Syntax
+
+```
+DETAIL: ProductCount, /products/products-in-category.sql, category=CategoryName, othermacro="constant value"
+```
+
 
