@@ -1,265 +1,294 @@
 <?php
 class ChartHeader extends HeaderBase {
-	public static $allowed_options = array(
-		'x'=>true,
-		'y'=>true,
-		'omit-total'=>true,
-		'rotate-x-labels'=>false,
-		'type'=>true,
-		'buckets'=>true,
-		'title'=>true,
-		'width'=>true,
-		'height'=>true,
-		'grid'=>false,
-		'timefmt'=>false,
-		'xformat'=>false,
-		'yrange'=>false,
-		'xhistogram'=>false
+	static $validation = array(
+		'columns'=>array(
+			'type'=>'array',
+			'default'=>array()
+		),
+		'omit-totals'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'rotate-x-labels'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'type'=>array(
+			'type'=>'enum',
+			'values'=>array('LineChart','GeoChart','AnnotatedTimeline','BarChart','ColumnChart'),
+			'default'=>'LineChart'
+		),
+		'buckets'=>array(
+			'type'=>'number',
+			'default'=>0
+		),
+		'title'=>array(
+			'type'=>'string',
+			'default'=>''
+		),
+		'width'=>array(
+			'type'=>'string',
+			'default'=>'100%'
+		),
+		'height'=>array(
+			'type'=>'string',
+			'default'=>'400px'
+		),
+		'grid'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'timefmt'=>array(
+			'type'=>'string',
+			'default'=>''
+		),
+		'xformat'=>array(
+			'type'=>'string',
+			'default'=>''
+		),
+		'yrange'=>array(
+			'type'=>'string',
+			'default'=>''
+		),
+		'xhistogram'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		)
 	);
 	
-	//in format: params
-	//params can be a JSON object or key=value,key=value format
-	//	'x' - the column to use for the x axis
-	//	'y' - the column(s) to use for the y axis (array or ':' separated list)
-	//	'omit-total' - if set to true, will not include total rows
-	public static function parse($key, $value, &$report) {
-		//chart parameters in JSON format
-		if($temp = json_decode($value,true)) {
-			$value = $temp;
-		}
-		//chart parameters in key=value,key2=value2 format
-		else {
-			$params = explode(',',$value);
-			$value = array();
-			foreach($params as $param) {
-				$param = trim($param);
-				if(strpos($param,'=') !== false) {							
-					list($key,$val) = explode('=',$param,2);
-					$key = trim($key);
-					$val = trim($val);
-					
-					if($key === 'y' || $key === 'x') {
-						$val = explode(':',$val);
-					}
-				}
-				else {
-					$key = $param;
-					$val = true;
-				}
-				
-				$value[$key] = $val;
-			}
-		}
-		
-		if($temp = array_diff_key($value, self::$allowed_options)) {
-			throw new Exception("Unknown chart options ($report->report): ".print_r($temp,true));
-		}
-		
-		if(!isset($value['type'])) {
-			$value['type'] = 'LineChart';
+	public static function init($params, &$report) {
+		if(!isset($params['type'])) {
+			$params['type'] = 'LineChart';
 		}
 		
 		if(!isset($report->options['Charts'])) $report->options['Charts'] = array();
 		
-		$value['num'] = count($report->options['Charts'])+1;
-		$value['Rows'] = array();
+		$params['num'] = count($report->options['Charts'])+1;
+		$params['Rows'] = array();
 		
-		$report->options['Charts'][] = $value;
+		$report->options['Charts'][] = $params;
 		
 		$report->options['has_charts'] = true;
 	}
 	
-	//for basic graphs where there is a 1 to 1 relationship between values and data points
-	public static function filterRowTwoDim($num, $row, &$report) {
-	
-		$is_total_row = false;
-		if(trim(strtoupper($row['values'][0]['raw_value']))==='TOTAL') $is_total_row = true;
-	
-		//if this is a total row and we're omitting totals from charts
-		if(isset($report->options['Charts'][$num]['omit-total']) 
-			&& $report->options['Charts'][$num]['omit-total'] 
-			&& $is_total_row
-		) {
-			return;
-		}
+	public static function parseShortcut($value) {
+		$params = explode(',',$value);
+		$value = array();
+		foreach($params as $param) {
+			$param = trim($param);
+			if(strpos($param,'=') !== false) {							
+				list($key,$val) = explode('=',$param,2);
+				$key = trim($key);
+				$val = trim($val);
 				
-		$vals = array();
-		$i = 1;
-		foreach($row['values'] as $key=>$value) {
-			$value['i'] = $i;
-			
-			if(isset($value['chartval']) && is_array($value['chartval'])) {
-				foreach($value['chartval'] as $ckey=>$cval) {
-					$value['raw_value'] = trim($cval,'%$ ');
-					$value['value'] = $cval;
-					$value['key'] = $ckey;
-					$value['first'] = !$vals;
-					$vals[] = $value;
+				if($key === 'y' || $key === 'x') {
+					$val = explode(':',$val);
 				}
 			}
 			else {
-				$value['raw_value'] = trim($value['raw_value'],'%$ ');
-				$vals[] = $value;
+				$key = $param;
+				$val = true;
 			}
 			
-			$i++;
+			$value[$key] = $val;
 		}
 		
-		$chartrowvals = array();
-		$chartrowvals_x = array();
+		if(isset($value['x'])) $value['columns'] = $value['x'];
+		else $value['columns'] = array();
 		
-		//loop through the row's values
-		foreach($vals as $key=>$value) {
-			$i = $value['i'];
-			
-			//if the x column is explicitly defined and this is one of them
-			$is_x = isset($report->options['Charts'][$num]['x']) && (in_array("$i",$report->options['Charts'][$num]['x']) || in_array($key,$report->options['Charts'][$num]['x'],true));
-			
-			//if the x column is not explicitly defined, assume it is the first column
-			if(!isset($report->options['Charts'][$num]['x']) && $i==1) $is_x = true;
-			
-			//if the y column is explicitly defined and this is one of them
-			$is_y = !$is_x && isset($report->options['Charts'][$num]['y']) && (in_array("$i",$report->options['Charts'][$num]['y']) || in_array($key,$report->options['Charts'][$num]['y'],true));
-			
-			//if the y column is not explicitly defined, assume every column is a y column
-			if(!$is_x && !isset($report->options['Charts'][$num]['y'])) $is_y = true;
-			
-			
-			//determine if this column should appear in a chart
-			$column_in_chart = $is_x || $is_y;
-			
-			if(!$column_in_chart) {
-				continue;
-			}
-			
-			if($temp = strtotime($value['raw_value'])) {
-				$chartval = date('Y-m-d H:i:s',$temp);
-				$is_date = true;
-				$is_number = $is_string = false;
-			}
-			elseif(!is_numeric($value['raw_value']) && !$value['raw_value']) {
-				$chartval = 'null';
-				$is_date = $is_number = false;
-				$is_string = true;
-			}
-			elseif(is_numeric($value['raw_value'])) {
-				$chartval = $value['raw_value'];
-				$is_date = $is_string = false;
-				$is_number = true;
-			}
-			else {
-				$chartval = '"'.$value['raw_value'].'"';
-				$is_date = $is_number = false;
-				$is_string = true;
-			}
-			
-			if($is_x) {
-				array_push($chartrowvals_x, array(
-					'key'=>$value['key'],
-					'value'=>$chartval,
-					'is_date'=>$is_date,
-					'is_string'=>$is_string,
-					'is_number'=>$is_number
-				));
-			}
-			else {
-				array_push($chartrowvals, array(
-					'key'=>$value['key'],
-					'value'=>$chartval,
-					'is_date'=>$is_date,
-					'is_string'=>$is_string,
-					'is_number'=>$is_number
-				));
-			}
-		}
+		if(isset($value['y'])) $value['columns'] = array_merge($value['x'],$value['y']);
 		
-		$chartrowvals_x = array_reverse($chartrowvals_x);
+		unset($value['x']);
+		unset($value['y']);
 		
-		foreach($chartrowvals_x as $val) {
-			array_unshift($chartrowvals,$val);
-		}
-		
-		$is_first = true;
-		foreach($chartrowvals as &$value) {
-			$value['first'] = $is_first;
-			$is_first = false;
-		}
-		
-		//echo "<pre>".print_r($chartrowvals,true)."</pre>";
-		$numrows = count($report->options['Charts'][$num]['Rows']);
-		
-		$report->options['Charts'][$num]['Rows'][] = array(
-			'values'=>$chartrowvals,
-			'first'=>!$numrows
-		);	
+		return $value;
 	}
 	
-	//used for histogram or box plot
-	//values are grouped into buckets
-	public static function filterRowOneDim($num, $row, &$report) {
-		if(!$report->options['Charts'][$num]['Rows']) {
-			$i = 1;
-			foreach($report->options['Values'] as $key=>$values) {
-				if(isset($report->options['Charts'][$num]['x'])
-					&& in_array($report->options['Charts'][$num]['x'],array($i,$key),true)
-				) {
-					$col = $key;
-					break;
+	protected static function getRowInfo($rows, $params, $num, &$report) {
+		$cols = array();
+		
+		//expand columns
+		$chart_rows = array();
+		foreach($rows as $k=>$row) {
+			$vals = array();			
+			
+			if($k===0) {
+				$i=1;
+				foreach($row['values'] as $key=>$value) {
+					$row['values'][$key]['i'] = $i;
+					$i++;
+					
+					if(($temp = array_search($row['values'][$key]['i'], $report->options['Charts'][$num]['columns']))!==false) {
+						$cols[$temp] = $key;
+					}
+					elseif(($temp = array_search($row['values'][$key]['key'], $report->options['Charts'][$num]['columns']))!==false) {
+						$cols[$temp] = $key;
+					}
 				}
-				elseif(!isset($report->options['Charts'][$num]['x']) && $values) {
-					$col = $key;
-					break;
-				}
-				$i++;
+				
+				ksort($cols);
 			}
 			
-			$max = max($values);
-			$min = min($values);
-			$step = ($max-$min)/$report->options['Charts'][$num]['buckets'];
+			foreach($cols as $key) {
+				if(isset($row['values'][$key]['chartval']) && is_array($row['values'][$key]['chartval'])) {
+					foreach($row['values'][$key]['chartval'] as $ckey=>$cval) {
+						$temp = array();
+						$temp['raw_value'] = trim($cval,'%$ ');
+						$temp['value'] = $cval;
+						$temp['key'] = $ckey;
+						$temp['first'] = !$vals;
+						$vals[] = $temp;
+					}
+				}
+				else {
+					$row['values'][$key]['raw_value'] = trim($row['values'][$key]['raw_value'],'%$ ');
+					$vals[] = $row['values'][$key];
+				}
+			}
 			
-			for($i = $min; $i< $max; $i += $step) {
-				$report->options['Charts'][$num]['Rows'][] = array(
-					"first"=>!$report->options['Charts'][$num]['Rows'],
-					"values"=>array(
-						array(
-							"key"=>"Bucket",
-							"value"=>round($i,2).' - '.round($i+$step,2),
-							"first"=>true
-						),
-						array(
-							"key"=>"Number",
-							"first"=>false,
-							"value"=>count(array_filter($values,function($a) use($i,$step) {
-								if($a>$i && $a <= ($i+$step)) return true;
-								else return false;
-							}))
-						)
-					)
+			$chart_rows[] = $vals;
+		}
+		
+		//determine column types
+		$types = array();
+		foreach($chart_rows as $i=>$row) {
+			foreach($row as $k=>$v) {
+				$type = self::determineDataType($v['raw_value']);
+				if(!$type) continue;
+				elseif(!isset($types[$k])) $types[$k] = $type;
+				elseif($type === 'string') $types[$k] = 'string';
+				elseif($types[$k] === 'date' && $type === 'number') $types[$k] = 'number';
+			}
+		}
+		
+		$report->options['Charts'][$num]['datatypes'] = $types;
+		
+		//build chart rows
+		$report->options['Charts'][$num]['Rows'] = array();
+		
+		foreach($chart_rows as $i=>&$row) {
+			$vals = array();
+			foreach($row as $key=>$values) {	
+				$val = array(
+					'key'=>$values['key'],
+					'is_date'=>false,
+					'is_number'=>false,
+					'is_string'=>false,
+					'is_null'=>false,
+					'first'=>!$vals,
+					'value'=>$values['raw_value']
 				);
+				
+				if(is_null($val['value'])) {
+					$val['is_null'] = true;
+				}
+				elseif($types[$key] === 'date') {
+					$val['value'] = date('Y-m-d H:i:s',strtotime($val['value']));
+					$val['is_date'] = true;
+				}
+				elseif($types[$key] === 'number') {
+					$val['value'] = round(floatval(preg_replace('/[^0-9\.]*/','',$val['value'])),6);
+					$val['is_number'] = true;
+				}
+				elseif($types[$key] === 'string') {
+					$val['is_string'] = true;
+				}
+				
+				$vals[] = $val;
 			}
+			
+			$report->options['Charts'][$num]['Rows'][] = array(
+				'values'=>$vals,
+				'first'=>!$report->options['Charts'][$num]['Rows']
+			);
 		}
-		return;
 	}
 	
-	public static function filterRow($row, &$report) {
-		//if($row['first']) return;
+	protected static function generateHistogramRows($rows, $column, $num_buckets) {
+		$column_key = null;
 		
-		foreach($report->options['Charts'] as $num=>$value) {
-			if(isset($report->options['Charts'][$num]['buckets'])) {
-				self::filterRowOneDim($num, $row, $report);
+		//if a name is given as the column, determine the column index
+		if(!is_numeric($column)) {
+			foreach($rows[0]['values'] as $k=>$v) {
+				if($v['key'] == $column) {
+					$column = $k;
+					$column_key = $v['key'];
+					break;
+				}
+			}
+		}
+		//if an index is given, convert to 0-based
+		else {
+			$column --;
+			$column_key = $rows[0]['values'][$column]['key'];
+		}
+		
+		//get a list of values for the histogram
+		$vals = array();
+		foreach($rows as &$row) {
+			$vals[] = floatval(preg_replace('/[^0-9.]*/','',$row['values'][$column]['raw_value']));
+		}
+		sort($vals);
+		
+		//determine buckets
+		$count = count($vals);
+		$buckets = array();
+		$min = $vals[0];
+		$max = $vals[$count-1];
+		$step = ($max-$min)/$num_buckets;
+		$old_limit = $min;
+		
+		for($i=1;$i<$num_buckets+1;$i++) {
+			$limit = $old_limit + $step;
+			
+			$buckets[round($old_limit,2)." - ".round($limit,2)] = count(array_filter($vals,function($val) use($old_limit,$limit) {
+				return $val >= $old_limit && $val < $limit;
+			}));
+			$old_limit = $limit;
+		}
+		
+		//build chart rows
+		$chart_rows = array();
+		foreach($buckets as $name=>$count) {
+			$chart_rows[] = array(
+				'values'=>array(
+					array(
+						'raw_value'=>$name,
+						'value'=>$name,
+						'key'=>$name,
+						'first'=>true
+					),
+					array(
+						'raw_value'=>$count,
+						'value'=>$count,
+						'key'=>'value',
+						'first'=>false
+					)
+				),
+				'first'=>!$chart_rows
+			);
+		}
+		return $chart_rows;
+	}
+	
+	protected static function determineDataType($value) {
+		if(is_null($value)) return null;
+		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';
+		elseif(strtotime($value)) return 'date';
+		else return 'string';
+	}
+
+	public static function beforeRender(&$report) {
+		foreach($report->options['Charts'] as $num=>&$params) {
+			if(isset($params['xhistogram']) && $params['xhistogram']) {
+				$rows = self::generateHistogramRows($report->options['Rows'],$params['columns'][0],$params['buckets']);
+				$params['columns'] = array(1,2);
 			}
 			else {
-				self::filterRowTwoDim($num, $row, $report);
+				$rows = $report->options['Rows'];
 			}
+			
+			self::getRowInfo($rows, $params, $num, $report);
 		}
-		
-		return;
-	}
-	
-	public static function beforeRender(&$report) {
-		foreach($report->options['Rows'] as $key=>$row) {
-			self::filterRow($row,$report);
-		}
-		
 	}
 }

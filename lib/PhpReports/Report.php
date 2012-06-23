@@ -3,6 +3,7 @@ class Report {
 	public $report;
 	public $macros = array();
 	public $options = array();
+	public $template_vars = array();
 	public $is_ready = false;
 	public $async = false;
 	public $headers = array();

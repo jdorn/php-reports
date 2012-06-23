@@ -1,6 +1,28 @@
 <?php
 class ValueHeader extends HeaderBase {
-	public static function parse($key, $value, &$report) {
+	static $validation = array(
+		'name'=>array(
+			'required'=>true,
+			'type'=>'string'
+		),
+		'value'=>array(
+			'required'=>true
+		)
+	);
+	
+	public static function init($params, &$report) {
+		if(isset($report->options['Variables'][$params['name']])) {
+			if($report->macros[$params['name']]) return;
+			
+			$report->options['Variables'][$params['name']]['default'] = $params['value'];
+			$report->macros[$params['name']] = $params['value'];
+		}
+		else {
+			throw new Exception("Providing value for unknown variable $params[name]");
+		}
+	}
+	
+	public static function parseShortcut($value) {
 		if(strpos($value,',') === false) {
 			throw new Exception("Invalid value '$value'");
 		}
@@ -8,12 +30,10 @@ class ValueHeader extends HeaderBase {
 		$var = trim($name);
 		$default = trim($value);
 		
-		if(isset($report->options['Variables'][$var])) {
-			if($report->macros[$var]) return;
-			
-			$report->options['Variables'][$var]['default'] = $default;
-			$report->macros[$var] = $default;
-		}
+		return array(
+			'name'=>$var,
+			'value'=>$default
+		);
 	}
 	
 	public static function afterParse(&$report) {

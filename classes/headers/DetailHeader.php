@@ -1,8 +1,52 @@
 <?php
 class DetailHeader extends HeaderBase {
-	public static function parse($key, $value, &$report) {
+	static $validation = array(
+		'report'=>array(
+			'required'=>true,
+			'type'=>'string'
+		),
+		'column'=>array(
+			'required'=>true,
+			'type'=>'string'
+		),
+		'macros'=>array(
+			'type'=>'object'
+		)
+	);
+	
+	public static function init($params, &$report) {
 		if(!isset($report->options['Detail'])) $report->options['Detail'] = array();
 		
+		//relative to reportDir
+		if($params['report']{0} === '/') {
+			$report_name = $params['report'];
+		}
+		//relative to parent report
+		else {
+			$temp = explode('/',$report->report);
+			array_pop($temp);
+			$report_name = implode('/',$temp).'/'.$params['report'];
+		}
+		
+		if(!file_exists(PhpReports::$config['reportDir'].'/'.$report_name)) {
+			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_name.'.*');
+			
+			if($possible_reports) {
+				$report_name = substr($possible_reports[0],strlen(PhpReports::$config['reportDir'].'/'));
+			}
+			else {
+				throw new Exception("Unknown report in DETAIL header '$report_name'");
+			}
+		}
+		
+		
+		$report->options['Detail'][$params['column']] = array(
+			'report'=>$report_name,
+			'macros'=>$params['macros']
+		);
+	}
+	
+	public static function parseShortcut($value) {
 		$parts = explode(',',$value,3);
 		
 		if(count($parts) < 2) {
@@ -46,22 +90,9 @@ class DetailHeader extends HeaderBase {
 			$macros = array();
 		}
 		
-		$temp = explode('/',$report->report);
-		array_pop($temp);
-		$report_name = implode('/',$temp).'/'.$report_name;
-		if(!file_exists(PhpReports::$config['reportDir'].'/'.$report_name)) {
-			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_name.'.*');
-			
-			if($possible_reports) {
-				$report_name = substr($possible_reports[0],strlen(PhpReports::$config['reportDir'].'/'));
-			}
-			else {
-				throw new Exception("Unknown report in DETAIL header '$report_name'");
-			}
-		}
-		
-		$report->options['Detail'][$col] = array(
+		return array(
 			'report'=>$report_name,
+			'column'=>$col,
 			'macros'=>$macros
 		);
 	}

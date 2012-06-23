@@ -1,12 +1,20 @@
 <?php
 class IncludeHeader extends HeaderBase {
-	public static function parse($key, $value, &$report) {
-		if($value[0] === '/') {
-			$report_path = substr($value,1);
+	static $validation = array(
+		'report'=>array(
+			'required'=>true,
+			'type'=>'string'
+		)
+	);
+	
+	public static function init($params, &$report) {
+		if($params['report'][0] === '/') {
+			$report_path = substr($params['report'],1);
 		}
 		else {
-			$report_path = dirname($report->report).'/'.$value;
+			$report_path = dirname($report->report).'/'.$params['report'];
 		}
+		
 		
 		if(!file_exists(PhpReports::$config['reportDir'].'/'.$report_path)) {
 			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_path.'.*');
@@ -35,11 +43,9 @@ class IncludeHeader extends HeaderBase {
 		$report->options['Includes'][] = $included_report;
 	}
 	
-	public static function beforeRender(&$report) {
-		
-	}
-	
-	public static function afterParse(&$report) {
-		
+	public static function parseShortcut($value) {
+		return array(
+			'report'=>$value
+		);
 	}
 }
