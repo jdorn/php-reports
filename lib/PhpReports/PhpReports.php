@@ -184,5 +184,24 @@ class PhpReports {
 			self::load($dir2,$skip);
 		}
 	}
+	
+	public static function json_decode($json, $assoc=false) {
+		//replace single quoted values
+		$json = preg_replace('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/e', "':'.json_encode(stripslashes('$1')).'$3'", $json);
+		
+		//replace single quoted keys
+		$json = preg_replace('/\'(([^\']|\\\\\')*)\'\s*:/e', "json_encode(stripslashes('$1')).':'", $json);
+		
+		//remove any line breaks in the code
+		$json = str_replace(array("\n","\r"),"",$json);
+		
+		//replace non-quoted keys with double quoted keys
+		$json = preg_replace('/([{,])(\s*)([^"]+?)\s*:/','$1"$3":',$json);
+		
+		//remove trailing comma
+		$json = preg_replace('/,\s*\}/','}',$json);
+		
+		return json_decode($json, $assoc);
+	}
 }
 PhpReports::init();

@@ -3,15 +3,16 @@
 -- Clicking on a customer's name will list all the orders for that particular customer.
 -- 
 -- COLUMNS: rpad2,,rpad2
--- VARIABLE: min_num, {
+-- VARIABLE: {
 --		"type":"number",
 --		"default":1,
---		"name":"Minimum Number"
+--		"name": "min_num",
+--		"display":"Minimum Number"
 --	}
--- VARIABLE: max_num, {
---		"type":"number",
+-- VARIABLE: {
 --		"empty":true,
---		"name":"Maximum Number",
+--		"display":"Maximum Number",
+--		"name": "max_num",
 --		"description":"(optional)"
 --	}
 

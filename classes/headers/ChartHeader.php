@@ -5,22 +5,10 @@ class ChartHeader extends HeaderBase {
 			'type'=>'array',
 			'default'=>array()
 		),
-		'omit-totals'=>array(
-			'type'=>'boolean',
-			'default'=>false
-		),
-		'rotate-x-labels'=>array(
-			'type'=>'boolean',
-			'default'=>false
-		),
 		'type'=>array(
 			'type'=>'enum',
 			'values'=>array('LineChart','GeoChart','AnnotatedTimeline','BarChart','ColumnChart'),
 			'default'=>'LineChart'
-		),
-		'buckets'=>array(
-			'type'=>'number',
-			'default'=>0
 		),
 		'title'=>array(
 			'type'=>'string',
@@ -33,6 +21,22 @@ class ChartHeader extends HeaderBase {
 		'height'=>array(
 			'type'=>'string',
 			'default'=>'400px'
+		),
+		'xhistogram'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'buckets'=>array(
+			'type'=>'number',
+			'default'=>0
+		),
+		'omit-totals'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'rotate-x-labels'=>array(
+			'type'=>'boolean',
+			'default'=>false
 		),
 		'grid'=>array(
 			'type'=>'boolean',
@@ -49,10 +53,6 @@ class ChartHeader extends HeaderBase {
 		'yrange'=>array(
 			'type'=>'string',
 			'default'=>''
-		),
-		'xhistogram'=>array(
-			'type'=>'boolean',
-			'default'=>false
 		)
 	);
 	

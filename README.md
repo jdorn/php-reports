@@ -149,6 +149,10 @@ HEADERNAME: {
 Many headers also have a shortcut syntax for one or more common use cases.
 
 
+*__note__ Although it is recommended to only use valid JSON, javascript style
+declarations are also possible with single quoted values and unquoted or single
+quoted strings.
+
 VariableHeader
 -------------
 
@@ -158,6 +162,7 @@ Used to prompt a user for a value before running a report.
 
 *   __name__ _required_ The name of the variable.  Should only include alphanumeric characters and underscores.
 *   __display__ The display name of the variable.  Can contain any characters.  Defaults to __name__
+*   __description__ Will display after the input field in the variable form
 *   __type__ The type of variable.  Possible values are:
     *   "text" (the default)
     *   "select" (dropdown list)
@@ -226,6 +231,10 @@ VARIABLE: {
     "options": ["option 1", "option 2", "option 3"]
 }
 ```
+
+A few other shortcut formats are supported, but they are not user
+friendly and difficult to debug.  Anything more than these basic options
+should use JSON.
 
 IncludeHeader
 ---------------
@@ -383,4 +392,50 @@ VARIABLE: {"name": "othermacro"}
 DETAIL: ProductCount, /products/products-in-category.sql, category=CategoryName, othermacro="constant value"
 ```
 
+ChartHeader
+------------------
+The Chart header is used to display graphs and charts of report data.
 
+This uses the Google Visualization API to display line charts, column/bar charts, timelines, map charts, and/or histograms.
+
+The order and datatype of columns required is determined by the Google API for the selected chart type.  For example, line charts require
+a string or date column followed by one or more number columns.  Histograms require a single, numeric column.
+
+### JSON Format
+*	__columns__ An array of columns to use in the chart.  Columns can be specified by column number (starting at 1) or column name.  Defaults to all columns in order.
+*	__type__ The type of chart.  Possible values are:
+	*   LineChart
+	*	GeoChart
+	*	AnnotatedTimeline
+	*	BarChart
+	*	ColumnChart
+*	__title__ An optional title for the chart
+*	__width__ The width of the chart. Supports any css dimension style (e.g. "400px", "80%", "15em", etc.)
+*	__height__ The height of the chart.  Also supports any css dimension style.
+*	__xhistogram__ If set to true, a histogram will be constructed.
+*	__buckets__ When used with xhistogram, this defines how many buckets to put the data into.
+
+### Examples
+```
+CHART: {
+	"columns": [1,3,4],
+	"type": "LineChart",
+	"title": "Shopping Cart Abandonment",
+	"width": "600px",
+	"height": "400px"
+}
+```
+Assume the columns are as follows: "Date", "Revenue", "Number of Completed Carts", "Number of Abandoned Carts"
+
+This will display a line chart with Date on the x axis and Number of Completed Carts and Number of Abandoned Carts on the y axis.
+
+```
+CHART: {
+	columns: ["Price"],
+	'type': "ColumnChart",
+	"title": "Product Price",
+	"xhistogram": true,
+	"buckets": 10
+}
+```
+This will display a histogram of product prices.  Data will be broken up into 10 buckets and displayed as a column chart.
