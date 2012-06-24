@@ -21,13 +21,31 @@ class PhpReports {
 	public static function displayReport($report,$type) {
 		$classname = ucfirst(strtolower($type)).'ReportFormat';
 		
-		if(!class_exists($classname)) {
-			throw new Exception("Unknown report format '$type'");
+		$error_header = 'An error occurred while running your report';
+		
+		try {
+			if(!class_exists($classname)) {
+				$error_header = 'Unknown report format';
+				throw new Exception("Unknown report format '$type'");
+			}
+			
+			try {
+				$report = $classname::prepareReport($report);
+			}
+			catch(Exception $e) {
+				$error_header = 'An error occurred while preparing your report';
+				throw $e;
+			}
+			
+			$classname::display($report,self::$request);
 		}
-		
-		$report = $classname::prepareReport($report);
-		
-		$classname::display($report,self::$request);
+		catch(Exception $e) {
+			self::renderPage(array(
+				'title'=>$report,
+				'header'=>'<h2>'.$error_header.'</h2>',
+				'error'=>$e->getMessage()
+			));
+		}
 	}
 		
 	public static function listReports() {

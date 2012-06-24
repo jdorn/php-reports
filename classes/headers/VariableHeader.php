@@ -37,6 +37,10 @@ class VariableHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
+		if(!isset($params['display']) || !$params['display']) $params['display'] = $params['name'];
+		
+		if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_\-]*$/',$params['name'])) throw new Exception("Invalid variable name: $params[name]");
+		
 		//add to options
 		if(!isset($report->options['Variables'])) $report->options['Variables'] = array();
 		$report->options['Variables'][$params['name']] = $params;

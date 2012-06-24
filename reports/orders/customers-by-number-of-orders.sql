@@ -4,7 +4,6 @@
 -- 
 -- COLUMNS: rpad2,,rpad2
 -- VARIABLE: {
---		"type":"number",
 --		"default":1,
 --		"name": "min_num",
 --		"display":"Minimum Number"
