@@ -3,6 +3,7 @@
 	
 	<input type='hidden' name='report' value='{{report}}' />
 	
+	<!--
 	<div class='input-row'>
 		<label for='var_database'>Database</label>
 		<select name='database' id='var_database'>
@@ -11,10 +12,11 @@
 		{{/databases}}
 		</select>
 	</div>
+	-->
 	
 	{{#vars}}
 		<div class='input-row'>
-			<label for='var_{{key}}'>{{name}}</label>
+			<label for='var_{{key}}'>{{display}}</label>
 			{{#is_select}}
 				{{#is_multiselect}}
 					<select name='macros[{{key}}][]' id='var_{{key}}' class='input' multiple=true size={{choices}}>

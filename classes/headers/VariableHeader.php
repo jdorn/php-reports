@@ -33,10 +33,14 @@ class VariableHeader extends HeaderBase {
 		),
 		'description'=>array(
 			'type'=>'string'
+		),
+		'format'=>array(
+			'type'=>'string',
+			'default'=>'Y-m-d H:i:s'
 		)
 	);
 	
-	public static function init($params, &$report) {
+	public static function init($params, &$report) {		
 		if(!isset($params['display']) || !$params['display']) $params['display'] = $params['name'];
 		
 		if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_\-]*$/',$params['name'])) throw new Exception("Invalid variable name: $params[name]");
@@ -47,12 +51,14 @@ class VariableHeader extends HeaderBase {
 		
 		//add to macros
 		if(!isset($report->macros[$params['name']]) && isset($params['default'])) {
+			$report->addMacro($params['name'],$params['default']);
+			
 			$report->macros[$params['name']] = $params['default'];
 		}
 		elseif(!isset($report->macros[$params['name']])) {
-			if($params['multiple']) $report->macros[$params['name']] = array();
-			else $report->macros[$params['name']] = '';
-		}
+			if($params['multiple']) $report->addMacro($params['name'],array());
+			else $report->addMacro($params['name'],'');
+		}		
 		
 		//macros shortcuts for arrays
 		if(isset($params['multiple']) && $params['multiple']) {
@@ -144,6 +150,7 @@ class VariableHeader extends HeaderBase {
 		}
 		
 		foreach($report->options['Variables'] as $var=>$params) {
+			//if it's a select variable and the options are pulled from a database
 			if(isset($params['database_options'])) {
 				$classname::openConnection($report);
 				$params['options'] = $classname::getVariableOptions($params['database_options'],$report);
@@ -153,4 +160,15 @@ class VariableHeader extends HeaderBase {
 		}
 	}
 	
+	public static function beforeRun(&$report) {
+		foreach($report->options['Variables'] as $var=>$params) {
+			//if the type is date, parse with strtotime
+			if($params['type'] === 'date' && $report->macros[$params['name']]) {
+				$time = strtotime($report->macros[$params['name']]);
+				if(!$time) throw new Exception($params['display']." must be a valid datetime value.");
+				
+				$report->macros[$params['name']] = date($params['format'],$time);
+			}
+		}
+	}
 }

@@ -36,6 +36,10 @@ class HeaderBase {
 		
 	}
 	
+	public static function beforeRun(&$report) {
+		
+	}
+	
 	protected static function validate($params) {
 		if(!static::$validation) return $params;
 		

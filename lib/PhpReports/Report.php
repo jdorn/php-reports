@@ -46,7 +46,10 @@ class Report {
 		//split the raw report into headers and code
 		list($this->raw_headers, $this->raw_query) = explode("\n\n",$this->raw,2);
 		
-		$this->macros = $macros;
+		$this->macros = array();
+		foreach($macros as $key=>$value) {
+			$this->addMacro($key,$value);
+		}
 		
 		$this->parseHeaders();
 		
@@ -55,6 +58,10 @@ class Report {
 		$this->initDb();
 		
 		$this->getTimeEstimate();
+	}
+	
+	public function addMacro($name, $value) {
+		$this->macros[$name] = $value;
 	}
 	
 	public function getCacheKey() {
@@ -323,6 +330,11 @@ class Report {
 		
 		if(!class_exists($classname)) {
 			throw new exception("Unknown report type '".$this->options['Type']."'");
+		}
+		
+		foreach($this->headers as $header) {
+			$headerclass = $header.'Header';
+			$headerclass::beforeRun($this);
 		}
 		
 		$classname::openConnection($this);
