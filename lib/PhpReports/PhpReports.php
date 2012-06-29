@@ -143,7 +143,11 @@ class PhpReports {
 			if($a['is_dir'] && !$b['is_dir']) return 1;
 			elseif($b['is_dir'] && !$a['is_dir']) return -1;
 			
-			return strcmp($a['Name'], $b['Name']);
+			if(!$a['Title'] && !$b['Title']) return strcmp($a['Name'],$b['Name']);
+			elseif(!$a['Title']) return 1;
+			elseif(!$b['Title']) return -1;
+			
+			return strcmp($a['Title'], $b['Title']);
 		});
 		
 		return $return;

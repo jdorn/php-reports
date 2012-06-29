@@ -12,6 +12,10 @@
 	display: inline-block;
 	cursor: pointer;
 }
+#report_list h2.no_title {
+	font-size: 1em;
+	font-weight:normal;
+}
 #report_list .report_list {
 	margin-left: 20px;
 	border: 1px solid #aaa;
@@ -109,7 +113,7 @@ $(document).ready(function() {
 <div id='report_list'>
 {{#reports}}
 	{{#is_dir}}
-		<h2 id="report_{{Id}}">
+		<h2 id="report_{{Id}}" {{^Title}}class='no_title'{{/Title}}>
 			<a name="report_{{Id}}"></a>
 			{{#Title}}
 				{{Title}}
@@ -117,13 +121,13 @@ $(document).ready(function() {
 			{{^Title}}
 				{{Name}}
 			{{/Title}}
-			<a href='#' class='collapse'>-</a>
+			<a href='#' class='collapse'>{{#Title}}-{{/Title}}{{^Title}}+{{/Title}}</a>
 		</h2>
-		<div class='report_list'>
+		<div class='report_list' {{^Title}}style='display:none;'{{/Title}}>
 		{{{Description}}}
 		{{#children}}
 			{{#is_dir}}
-				<h2 id="report_{{Id}}">
+				<h2 id="report_{{Id}}" {{^Title}}class='no_title'{{/Title}}>
 					<a name="report_{{Id}}"></a>
 					{{#Title}}
 						{{Title}}
@@ -137,7 +141,7 @@ $(document).ready(function() {
 				{{{Description}}}
 				{{#children}}
 					{{#is_dir}}
-						<h2 id="report_{{Id}}">
+						<h2 id="report_{{Id}}" {{^Title}}class='no_title'{{/Title}}>
 							<a name="report_{{Id}}"></a>
 							{{#Title}}
 								{{Title}}
