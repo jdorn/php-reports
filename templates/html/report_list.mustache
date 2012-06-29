@@ -87,10 +87,25 @@ $(document).ready(function() {
 		var target = $($(this).attr('href'));
 		showReportList(target);
 	});
+	
+	$('#search').keyup(function(e) {
+		var re = new RegExp($(this).val(), "i");
+		//filter the table of contents
+		$('#table_of_contents > ul > li').show().filter(function() {
+			return !re.test($(this).children('a').text());
+		}).hide();
+		
+		//filter the report sections
+		$('#report_list > div').show().filter(function() {
+			return !re.test($(this).children('h2').text());
+		}).hide();
+	});
+	
 });
 </script>
 <a name='top'></a>
 <h1>Report List</h1>
+<input type='text' id='search'/>
 <div id='table_of_contents'>
 	<ul>
 		{{#reports}}
@@ -112,6 +127,7 @@ $(document).ready(function() {
 
 <div id='report_list'>
 {{#reports}}
+	<div>
 	{{#is_dir}}
 		<h2 id="report_{{Id}}" {{^Title}}class='no_title'{{/Title}}>
 			<a name="report_{{Id}}"></a>
@@ -186,5 +202,6 @@ $(document).ready(function() {
 			<a href='{{url}}'>{{Name}}</a> <em>{{Created}}</em>
 		</div>
 	{{/is_dir}}
+	</div>
 {{/reports}}
 </div>
