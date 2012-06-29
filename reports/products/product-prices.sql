@@ -1,14 +1,14 @@
 -- NAME: Product Prices 
 -- COLUMNS: rpad2,,rpad2
 -- CHART: {
---	"x": "buyPrice",
---	"type": "ColumnChart",
---	"buckets": 10,
---	"title": "Buy Price"
+--	columns: ["buyPrice"],
+--	'type': "ColumnChart",
+--	"title": "Buy Price",
+--	"xhistogram": true,
+--	"buckets": 10
 -- }
 -- CHART: {
---	"x": 1,
---	"y": [3,4],
+--	"columns": [1,3,4],
 --	"type": "LineChart"
 -- }
 

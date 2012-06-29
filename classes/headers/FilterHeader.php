@@ -1,33 +1,45 @@
 <?php
 class FilterHeader extends HeaderBase {
+	static $validation = array(
+		'column'=>array(
+			'required'=>true,
+			'type'=>'string'
+		),
+		'filter'=>array(
+			'required'=>true,
+			'type'=>'string'
+		),
+		'params'=>array(
+			'type'=>'object',
+			'default'=>array()
+		)
+	);
+	
+	public static function init($params, &$report) {
+		$report->addFilter($params['column'],$params['filter'],$params['params']);
+	}
+	
 	//in format: column, params
 	//params can be a JSON object or "filter"
 	//filter classes are defined in class/filters/
 	//examples:
 	//	"4,geoip" - apply a geoip filter to the 4th column
 	//	'Ip,{"filter":"geoip"}' - apply a geoip filter to the "Ip" column
-	public static function parse($key, $value, &$report) {		
+	public static function parseShortcut($value) {
 		if(strpos($value,',') === false) {
-			$col = 1;
-			$params = $value;
+			$col = "1";
+			$filter = $value;
 		}
 		else {
-			list($col,$params) = explode(',',$value,2);
+			list($col,$filter) = explode(',',$value,2);
 			$col = trim($col);
 		}
-		$params = trim($params);
+		$filter = trim($filter);
 		
-		//JSON format
-		if($temp = json_decode($params,true)) {
-			$params = $temp;
-		}
-		//just filter name
-		else {
-			$params = array(
-				'filter'=>$params
-			);
-		}
-		
-		$report->addFilter($col,$params['filter'],$params);
+		return array(
+			'column'=>$col,
+			'filter'=>$filter,
+			'params'=>array()
+		);
 	}
 }

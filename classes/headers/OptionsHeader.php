@@ -1,33 +1,79 @@
 <?php
 class OptionsHeader extends HeaderBase {
-	protected static $allowed_options = array(
-		'limit'=>true,
-		'access'=>true,
-		'noborder'=>true,
-		'noreport'=>true,
-		'vertical'=>true
+	static $validation = array(
+		'limit'=>array(
+			'type'=>'number',
+			'default'=>null
+		),
+		'access'=>array(
+			'type'=>'enum',
+			'values'=>array('rw','readonly'),
+			'default'=>'readonly'
+		),
+		'noborder'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'noreport'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'vertical'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'ignore'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'table'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'showcount'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'font'=>array(
+			'type'=>'string'
+		),
+		'stop'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'nodata'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		)
 	);
 	
-	public static function parse($key, $value, &$report) {
+	public static function init($params, &$report) {
+		foreach($params as $key=>$value) {
+			$report->options[$key] = $value;
+		}
+	}
+	
+	public static function parseShortcut($value) {
 		$options = explode(',',$value);
+		
+		$params = array();
 		
 		foreach($options as $v) {
 			if(strpos($v,'=')!==false) {
 				list($k,$v) = explode('=',$v,2);
+				$v = trim($v);
 			}
 			else {
 				$k = $v;
+				$v=true;
 			}
 			
 			$k = trim($k);
-			$v = trim($v);
 			
-			if(!in_array($k,self::$allowed_options)) {
-				throw new Exception("Unknown OPTION '$k'");
-			}
-			
-			$report->options[$k] = $v;
+			$params[$k] = $v;
 		}
+		
+		return $params;
 	}
 	
 	public static function beforeRender(&$report) {

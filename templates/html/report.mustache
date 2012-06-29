@@ -146,10 +146,10 @@ h1 {
 				{{/first}}
 			{{/Rows}}
 		
-			data_{{num}}.addRows([
-				{{#Rows}}
-					{{^first}},{{/first}}[{{#values}}{{^first}},{{/first}}{{#is_date}}new Date("{{{value}}}"){{/is_date}}{{^is_date}}{{{value}}}{{/is_date}}{{/values}}]
-				{{/Rows}}
+			data_{{num}}.addRows([{{#Rows}}
+			{{^first}},{{/first}}[{{#values}}
+{{^first}},{{/first}}{{#is_date}}new Date("{{{value}}}"){{/is_date}}{{#is_string}}"{{{value}}}"{{/is_string}}{{#is_number}}{{{value}}}{{/is_number}}{{#is_null}}null{{/is_null}}{{/values}}]
+{{/Rows}}
 			]);
 
 			var options_{{num}} = {
