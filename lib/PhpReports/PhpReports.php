@@ -14,6 +14,7 @@ class PhpReports {
 		
 		self::$config = include($config);
 		self::$request = Flight::request();
+		self::$request->base = 'http://'.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
 		
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 	}
