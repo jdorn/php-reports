@@ -27,7 +27,7 @@ class FilterHeader extends HeaderBase {
 	//	'Ip,{"filter":"geoip"}' - apply a geoip filter to the "Ip" column
 	public static function parseShortcut($value) {
 		if(strpos($value,',') === false) {
-			$col = 1;
+			$col = "1";
 			$filter = $value;
 		}
 		else {

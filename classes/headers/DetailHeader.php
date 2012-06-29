@@ -17,28 +17,48 @@ class DetailHeader extends HeaderBase {
 	public static function init($params, &$report) {
 		if(!isset($report->options['Detail'])) $report->options['Detail'] = array();
 		
+		//list of reports to try
+		$try = array();
+		
 		//relative to reportDir
 		if($params['report']{0} === '/') {
-			$report_name = $params['report'];
+			$try[] = substr($params['report'],1);
 		}
 		//relative to parent report
 		else {
 			$temp = explode('/',$report->report);
 			array_pop($temp);
-			$report_name = implode('/',$temp).'/'.$params['report'];
+			$try[] = implode('/',$temp).'/'.$params['report'];
+			$try[] = $params['report'];
 		}
 		
-		if(!file_exists(PhpReports::$config['reportDir'].'/'.$report_name)) {
-			$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_name.'.*');
+		//see if the file exists directly
+		$found = false;
+		$path = '';
+		foreach($try as $report_name) {
+			if(file_exists(PhpReports::$config['reportDir'].'/'.$report_name)) {
+				$found = true;
+				$path = $report_name;
+			}
+		}
+		
+		if(!$found) {
+			foreach($try as $report_name) {
+				$possible_reports = glob(PhpReports::$config['reportDir'].'/'.$report_name.'.*');
 			
-			if($possible_reports) {
-				$report_name = substr($possible_reports[0],strlen(PhpReports::$config['reportDir'].'/'));
-			}
-			else {
-				throw new Exception("Unknown report in DETAIL header '$report_name'");
+				if($possible_reports) {
+					$path = substr($possible_reports[0],strlen(PhpReports::$config['reportDir'].'/'));
+					$found = true;
+					break;
+				}
 			}
 		}
 		
+		if(!$found) {
+			//not a fatal error, just trigger the error
+			trigger_error("Unknown report in DETAIL header '".$params['report']."'");
+			return;
+		}
 		
 		$report->options['Detail'][$params['column']] = array(
 			'report'=>$report_name,

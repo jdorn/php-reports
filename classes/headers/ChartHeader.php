@@ -7,7 +7,7 @@ class ChartHeader extends HeaderBase {
 		),
 		'type'=>array(
 			'type'=>'enum',
-			'values'=>array('LineChart','GeoChart','AnnotatedTimeline','BarChart','ColumnChart'),
+			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart'),
 			'default'=>'LineChart'
 		),
 		'title'=>array(
@@ -31,6 +31,10 @@ class ChartHeader extends HeaderBase {
 			'default'=>0
 		),
 		'omit-totals'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'omit-total'=>array(
 			'type'=>'boolean',
 			'default'=>false
 		),
@@ -59,6 +63,11 @@ class ChartHeader extends HeaderBase {
 	public static function init($params, &$report) {
 		if(!isset($params['type'])) {
 			$params['type'] = 'LineChart';
+		}
+		
+		if(isset($params['omit-total'])) {
+			$params['omit-totals'] = $params['omit-total'];
+			unset($params['omit-total']);
 		}
 		
 		if(!isset($report->options['Charts'])) $report->options['Charts'] = array();

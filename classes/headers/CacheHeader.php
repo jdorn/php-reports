@@ -1,5 +1,5 @@
 <?php
-class CacheHeader extends TotalsHeader {
+class CacheHeader extends HeaderBase {
 	static $validation = array(
 		'ttl'=>array(
 			'min'=>0,
@@ -16,7 +16,7 @@ class CacheHeader extends TotalsHeader {
 		//if a cache ttl is being set
 		if(is_numeric($value)) {
 			return array(
-				'ttl'=>$value
+				'ttl'=>intval($value)
 			);
 		}
 		//if cache is being turned off

@@ -11,15 +11,38 @@ class OptionsHeader extends HeaderBase {
 			'default'=>'readonly'
 		),
 		'noborder'=>array(
-			'type'=>boolean,
+			'type'=>'boolean',
 			'default'=>false
 		),
 		'noreport'=>array(
-			'type'=>boolean,
+			'type'=>'boolean',
 			'default'=>false
 		),
 		'vertical'=>array(
-			'type'=>boolean,
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'ignore'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'table'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'showcount'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'font'=>array(
+			'type'=>'string'
+		),
+		'stop'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
+		'nodata'=>array(
+			'type'=>'boolean',
 			'default'=>false
 		)
 	);
