@@ -12,7 +12,7 @@ h1 {
 #report_description {
 	padding: 5px 0;
 }
-.show_query {
+.show_query, #show_time_estimate {
 	font-size: .8em;
 }
 .csv_link {
@@ -45,31 +45,6 @@ h1 {
 	border-radius: 8px;
 	border: 1px solid #aaa;
 	margin-top: 10px;
-}
-#result_table {
-	border: 1px solid black;
-	border-width: 1px 1px 0 0;
-	margin: 15px 0;
-	border-collapse:collapse;
-	font-family: arial, sans serif;
-}
-#result_table.noborder {
-	border: 0;
-}
-#result_table td, #result_table th {
-	border: 1px solid black;
-	border-width: 0 0 1px 1px;
-	padding: 5px 8px;
-	vertical-align:top;
-}
-#result_table.noborder td, #result_table.noborder th {
-	border: 0;
-}
-#result_table th {
-	background-color: #cfc;
-}
-#result_table.noborder th {
-	background-color: #fff;
 }
 
 #result_table td .bar{
@@ -122,7 +97,9 @@ h1 {
 	{{{content}}}
 </div>
 
-<p>Query took {{Time}} seconds.  {{Count}} rows returned.</p>
+<div style='clear:both;'></div>
+
+<p>Query took {{Time}} seconds</p>
 
 {{#has_charts}}
 	<script type="text/javascript">

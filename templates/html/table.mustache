@@ -14,13 +14,16 @@
 	</table>
 {{/vertical}}
 {{^vertical}}
-	<table id='result_table' class='{{#noborder}}noborder {{/noborder}}'>
+<table id='result_table' class='{{#noborder}}noborder {{/noborder}}'>
 	{{#Rows}}{{#first}}
+	<thead>
 		<tr class='header'>
 			{{#values}}
 				<th class="{{class}}">{{key}}</th>
 			{{/values}}
 		</tr>
+	</thead>
+	<tbody>
 	{{/first}}
 		<tr>
 		{{#values}}
@@ -30,7 +33,14 @@
 		{{/values}}
 		</tr>
 	{{/Rows}}
-	</table>
+	</tbody>
+</table>
+<script type='text/javascript'>
+$('#result_table').dataTable({
+	bPaginate: false,
+	aaSorting: []
+});
+</script>
 {{/vertical}}
 
 

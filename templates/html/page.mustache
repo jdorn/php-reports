@@ -10,6 +10,10 @@
 		google.load("visualization", "1", {packages:["corechart","geochart","annotatedtimeline"]});
 		</script>
 	{{/has_charts}}
+	{{^vertical}}
+		<script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
+		<link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
+	{{/vertical}}
 	<style>
 	.error {
 		color: red;
