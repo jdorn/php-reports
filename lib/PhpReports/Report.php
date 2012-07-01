@@ -326,6 +326,8 @@ class Report {
 			throw new Exception("Report is not ready.  Missing variables");
 		}		
 		
+		session_write_close();
+		
 		$classname = $this->options['Type'].'ReportType';
 		
 		if(!class_exists($classname)) {
