@@ -19,7 +19,7 @@ SELECT c.customerNumber as `Customer Number`, customerName as `Customer Name`, C
 FROM customers c
 LEFT JOIN orders o ON c.customerNumber = o.customerNumber
 GROUP BY c.customerNumber
-HAVING `Number of Orders` >= {{min_num}} 
+HAVING `Number of Orders` >= {min_num} 
 {{#max_num}}
 	AND `Number of Orders` < {{max_num}}
 {{/max_num}}

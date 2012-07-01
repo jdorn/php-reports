@@ -12,8 +12,25 @@ class MysqlReportType extends ReportTypeBase {
 		//default host macro to mysql's host if it isn't defined elsewhere
 		if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
 		
-		//replace shorthand {host} with {{host}} in query
-		$report->raw_query = preg_replace('/([^\{])\{([^\{\}]+)\}([^\}])/','$1{{$2}}$3',$report->raw_query);
+		//replace legacy shorthand macro format
+		foreach($report->macros as $key=>$value) {
+			$params = $report->options['Variables'][$key];
+			
+			//macros shortcuts for arrays
+			if(isset($params['multiple']) && $params['multiple']) {
+				//allow support for {macro} instead of {{#macro}}{{^first}},{{/first}}'{{{value}}}'{{/macro}}
+				$report->raw_query = preg_replace('/([^\{])\{'.$params['name'].'\}([^\}])/','$1{{#'.$params['name'].'}}{{^first}},{{/first}}\'{{{value}}}\'{{/'.$params['name'].'}}$2',$report->raw_query);
+			
+				//allow support for {(macro)} instead of {{#macro}}{{^first}},{{/first}}('{{{value}}}'){{/macro}}
+				//this is shorthand for quoted, comma separated lists
+				$report->raw_query = preg_replace('/([^\{])\{\('.$params['name'].'\)\}([^\}])/','$1{{#'.$params['name'].'}}{{^first}},{{/first}}(\'{{{value}}}\'){{/'.$params['name'].'}}$2',$report->raw_query);
+			}
+			//macros sortcuts for non-arrays
+			else {
+				//allow support for {macro} instead of {{{macro}}} for legacy support
+				$report->raw_query = preg_replace('/([^\{])(\{'.$params['name'].'+\})([^\}])/','$1{{$2}}$3',$report->raw_query);
+			}
+		}
 		
 		//if there are any included reports, add the report sql to the top
 		if(isset($report->options['Includes'])) {
