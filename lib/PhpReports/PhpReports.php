@@ -98,13 +98,22 @@ class PhpReports {
 				
 				$id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
 				
+				$children = self::getReports($report.'/', $base);
+				
+				$count = 0;
+				foreach($children as $child) {
+					if(isset($child['count'])) $count += $child['count'];
+					else $count++;
+				}
+				
 				$return[] = array(
 					'Name'=>ucwords(str_replace(array('_','-'),' ',basename($report))),
 					'Title'=>$title,
 					'Id'=> $id,
 					'Description'=>$description,
 					'is_dir'=>true,
-					'children'=>self::getReports($report.'/', $base)
+					'children'=>$children,
+					'count'=>$count
 				);
 			}
 			else {
@@ -136,7 +145,7 @@ class PhpReports {
 					$data['report'] = $name;
 					$data['url'] = self::$request->base.'/report/html/?report='.$name;
 					$data['is_dir'] = false;
-					$data['Id'] = false;
+					$data['Id'] = str_replace(array('_','-','/',' ','.'),array('','','_','-','_'),trim(substr($report,strlen($base)),'/'));
 					if(!isset($data['Name'])) $data['Name'] = ucwords(str_replace(array('_','-'),' ',basename($report)));
 					
 					//store parsed report in cache

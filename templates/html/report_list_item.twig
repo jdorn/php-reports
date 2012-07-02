@@ -5,7 +5,7 @@
 		<a href='#' class='collapse'>{% if item.Title %}-{% else %}+{% endif %}</a>
 	</h2>
 	{% if item.children %}
-	<div class='report_list' {% if not item.Title %}style='display:none;'{% endif %}>
+	<div class='report_list {% if item.Title %}default-show{% else %}default-hide{% endif %}'>
 		{% for item in item.children %}
 			{% include "html/report_list_item.twig" %}
 		{% endfor %}
@@ -13,7 +13,7 @@
 	{% endif %}
 {% else %}
 	<div class='report'>
-		<a href='{{item.url}}'>{{item.Name}}</a>
+		<a href='{{item.url}}' id='report_{{item.Id}}'>{{item.Name}}</a>
 		{% if item.Created %}
 			<em>{{ item.Created }}</em>
 		{% endif %}
