@@ -11,8 +11,6 @@ class Report {
 	public $raw_query;
 	public $use_cache;
 	
-	protected $mustache;
-	
 	protected $raw;
 	protected $raw_headers;
 	protected $filters = array();
@@ -30,9 +28,6 @@ class Report {
 		$this->report = $report;
 		
 		$this->use_cache = $use_cache;
-		
-		//instantiate the templating engine
-		$this->mustache = new Mustache;
 		
 		//get the raw report file and convert EOL to unix style
 		$this->raw = file_get_contents($reportDir.'/'.$this->report);
@@ -88,7 +83,6 @@ class Report {
 			//default to caching things for 10 minutes
 			$ttl = 600;
 		}
-		
 		
 		FileSystemCache::store($this->getCacheKey(), $this->options, 'results', $ttl);
 	}
@@ -272,8 +266,6 @@ class Report {
 		}
 		
 		if($this->options['Variables']) {
-			$form = PhpReports::getTemplate($template);
-			
 			$template_vars = array(
 				'vars'=>array(),
 				'database'=>$this->options['Database'],
@@ -316,7 +308,7 @@ class Report {
 				$template_vars['vars'][] = $params;
 			}
 			
-			return $this->mustache->render($form, $template_vars);
+			return PhpReports::render($template, $template_vars);
 		}
 		else return '';
 	}
@@ -326,6 +318,8 @@ class Report {
 			throw new Exception("Report is not ready.  Missing variables");
 		}		
 		
+		//release the write lock on the session file
+		//so the session isn't locked while the report is running
 		session_write_close();
 		
 		$classname = $this->options['Type'].'ReportType';
@@ -352,7 +346,6 @@ class Report {
 		if(!$report_times) return;
 		
 		sort($report_times);
-		
 		
 		$sum = array_sum($report_times);
 		$count = count($report_times);
@@ -448,7 +441,7 @@ class Report {
 				$this->options = $options;
 				$this->options['FromCache'] = true;
 			}
-			else {				
+			else {
 				$this->runReport();
 				$this->prepareRows();
 				
@@ -477,10 +470,7 @@ class Report {
 			FileSystemCache::store($this->report, $report_times, 'report_times');
 		}
 		
-		$template_code = PhpReports::getTemplate($template);
-		
-		$ret = $this->mustache->render($template_code, $this->options);
-		return $ret;
+		return PhpReports::render($template, $this->options);
 	}
 	
 	public function renderReportPage($content_template='html/table',$report_template='html/report') {
@@ -498,9 +488,7 @@ class Report {
 		
 		$template_vars = array_merge($template_vars,$this->options);
 		
-		$template_code = PhpReports::getTemplate($report_template);
-		
-		return $this->mustache->render($template_code, $template_vars);
+		return PhpReports::render($report_template, $template_vars);
 	}
 }
 ?>

@@ -1,0 +1,9 @@
+[{% for row in Rows %}{% if not row.first %},{% endif %}
+
+	{{'{'}}{% for value in row.values %}{% if not value.first %},{% endif %}
+
+		"{{value.key}}":"{% if value.raw %}{{value.raw_value}}{% else %}{{value.value}}{% endif %}"{% endfor %}
+
+	}{% endfor %}
+
+]

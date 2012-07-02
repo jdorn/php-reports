@@ -1,0 +1,12 @@
+{% if item.is_dir and item.Title %}
+	<li>
+		<a href='#report_{{item.Id}}'>{{item.Title}}</a>
+		{% if item.children %}
+		<ul>
+			{% for item in item.children %}
+			{% include "html/report_list_table_of_contents_item.twig" %}
+			{% endfor %}
+		</ul>
+		{%endif%}
+	</li>
+{% endif %}

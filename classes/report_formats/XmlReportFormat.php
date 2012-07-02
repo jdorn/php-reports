@@ -9,6 +9,6 @@ class XmlReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 
-		PhpReports::renderPage($page_template,'xml/page');
+		echo PhpReports::render('xml/page',$page_template);
 	}
 }

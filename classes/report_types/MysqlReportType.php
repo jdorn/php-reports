@@ -18,17 +18,18 @@ class MysqlReportType extends ReportTypeBase {
 			
 			//macros shortcuts for arrays
 			if(isset($params['multiple']) && $params['multiple']) {
-				//allow support for {macro} instead of {{#macro}}{{^first}},{{/first}}'{{{value}}}'{{/macro}}
-				$report->raw_query = preg_replace('/([^\{])\{'.$params['name'].'\}([^\}])/','$1{{#'.$params['name'].'}}{{^first}},{{/first}}\'{{{value}}}\'{{/'.$params['name'].'}}$2',$report->raw_query);
+				//allow {macro} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
+				//this is shorthand for comma separated list
+				$report->raw_query = preg_replace('/([^\{])\{'.$params['name'].'\}([^\}])/','$1{% for item in '.$params['name'].' %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}$2',$report->raw_query);
 			
-				//allow support for {(macro)} instead of {{#macro}}{{^first}},{{/first}}('{{{value}}}'){{/macro}}
-				//this is shorthand for quoted, comma separated lists
-				$report->raw_query = preg_replace('/([^\{])\{\('.$params['name'].'\)\}([^\}])/','$1{{#'.$params['name'].'}}{{^first}},{{/first}}(\'{{{value}}}\'){{/'.$params['name'].'}}$2',$report->raw_query);
+				//allow {(macro)} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
+				//this is shorthand for quoted, comma separated list
+				$report->raw_query = preg_replace('/([^\{])\{\('.$params['name'].'\)\}([^\}])/','$1{% for item in '.$params['name'].' %}{% if not item.first %},{% endif %}\'{{ item.value }}\'{% endfor %}$2',$report->raw_query);
 			}
 			//macros sortcuts for non-arrays
 			else {
-				//allow support for {macro} instead of {{{macro}}} for legacy support
-				$report->raw_query = preg_replace('/([^\{])(\{'.$params['name'].'+\})([^\}])/','$1{{$2}}$3',$report->raw_query);
+				//allow {macro} instead of {{macro}} for legacy support
+				$report->raw_query = preg_replace('/([^\{])(\{'.$params['name'].'+\})([^\}])/','$1{$2}$3',$report->raw_query);
 			}
 		}
 		
@@ -120,15 +121,13 @@ class MysqlReportType extends ReportTypeBase {
 		}
 		
 		//expand macros in query
-		$m = new Mustache;
-		
-		$sql = $m->render($report->raw_query,$macros);
+		$sql = PhpReports::render($report->raw_query,$macros);
 		
 		$report->options['Query'] = $sql;
 		
 		$report->options['Query_Formatted'] = SqlFormatter::highlight($sql);
 		
-		//split queries and run each one, saving the last result		
+		//split into individual queries and run each one, saving the last result		
 		$queries = SqlFormatter::splitQuery($sql);
 		
 		foreach($queries as $query) {

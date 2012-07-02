@@ -18,8 +18,8 @@ class DebugReportFormat extends ReportFormatBase {
 		}
 		
 		
-		PhpReports::renderPage(array(
+		echo PhpReports::render('text/page',array(
 			'content'=>$content
-		),'text/page');
+		));
 	}
 }

@@ -22,11 +22,12 @@ class HtmlReportFormat extends ReportFormatBase {
 		
 		$page_template['title'] = $report->options['Name'];
 
-		if(isset($request->query['content_only'])) {
-			PhpReports::renderPage($page_template,'html/content_only');
+		if(isset($request->query['content_only'])) {		
+			echo PhpReports::render('html/content_only',$page_template);
+			exit;
 		}
 		else {
-			PhpReports::renderPage($page_template,'html/page');
+			echo PhpReports::render('html/page',$page_template);
 		}
 	}
 }

@@ -1,0 +1,21 @@
+{% if item.is_dir %}
+	<h2 id="report_{{item.Id}}" {% if not item.Title %}class='no_title'{% endif %}>
+		<a name="report_{{item.Id}}"></a>
+		{% if item.Title %}{{item.Title}}{% else %}{{item.Name}}{% endif %}
+		<a href='#' class='collapse'>{% if item.Title %}-{% else %}+{% endif %}</a>
+	</h2>
+	{% if item.children %}
+	<div class='report_list' {% if not item.Title %}style='display:none;'{% endif %}>
+		{% for item in item.children %}
+			{% include "html/report_list_item.twig" %}
+		{% endfor %}
+	</div>
+	{% endif %}
+{% else %}
+	<div class='report'>
+		<a href='{{item.url}}'>{{item.Name}}</a>
+		{% if item.Created %}
+			<em>{{ item.Created }}</em>
+		{% endif %}
+	</div>
+{% endif %}

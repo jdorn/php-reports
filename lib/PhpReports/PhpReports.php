@@ -2,10 +2,12 @@
 class PhpReports {
 	public static $config;
 	public static $request;
+	public static $twig;
 	
 	private static $loader_cache;
 	
 	public static function init($config = 'config/config.php') {
+		//set up our autoloader
 		spl_autoload_register(array('PhpReports','loader'),true,true);
 		
 		if(!file_exists($config)) {
@@ -16,7 +18,29 @@ class PhpReports {
 		self::$request = Flight::request();
 		self::$request->base = 'http://'.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
 		
+		
+		$template_dirs = array('templates');
+		if(file_exists('templates/local')) array_unshift($template_dirs, 'templates/local');
+		
+		$loader = new Twig_Loader_Chain(array(
+			new Twig_Loader_Filesystem($template_dirs), 
+			new Twig_Loader_String()
+		));
+		self::$twig = new Twig_Environment($loader);
+		
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
+	}
+	
+	public static function render($template, $macros) {		
+		$default = array(
+			'base'=>self::$request->base,
+			'report_list_url'=>self::$request->base.'/'
+		);
+		$macros = array_merge($default,$macros);
+		
+		//if a template path like 'html/report' is given, add the twig file extension
+		if(preg_match('/^[a-zA-Z_\-0-9\/]+$/',$template)) $template .= '.twig';
+		return self::$twig->render($template,$macros);
 	}
 	
 	public static function displayReport($report,$type) {
@@ -41,8 +65,8 @@ class PhpReports {
 			$classname::display($report,self::$request);
 		}
 		catch(Exception $e) {
-			self::renderPage(array(
-				'title'=>$report,
+			echo self::render('html/page',array(
+				'title'=>$report->report,
 				'header'=>'<h2>'.$error_header.'</h2>',
 				'error'=>$e->getMessage()
 			));
@@ -52,29 +76,13 @@ class PhpReports {
 	public static function listReports() {
 		$reports = self::getReports(self::$config['reportDir'].'/');
 		
-		$m = new Mustache;
-		$template_file = self::getTemplate('html/report_list');
-		$content = $m->render($template_file,array('reports'=>$reports));
+		$content = self::render('html/report_list',array('reports'=>$reports));
 
-		self::renderPage(array(
+		echo self::render('html/page',array(
 			'content'=>$content,
 			'title'=>'Report List',
 			'is_home'=>true
 		));
-	}
-	
-	public function renderPage($options, $page='html/page') {
-		$default = array(
-			'base'=>self::$request->base,
-			'report_list_url'=>self::$request->base.'/'
-		);
-		
-		$options = array_merge($options,$default);
-		
-		$page_template_file = PhpReports::getTemplate($page);
-		
-		$m = new Mustache;
-		echo $m->render($page_template_file,$options);
 	}
 	
 	protected static function getReports($dir, $base = null) {
@@ -153,21 +161,6 @@ class PhpReports {
 		return $return;
 	}
 	
-	public static function getTemplate($template) {
-		//look in the templates/local/ directory first
-		if(file_exists('templates/local/'.$template.'.mustache')) {
-			return file_get_contents('templates/local/'.$template.'.mustache');
-		}
-		//look in the main template directory
-		elseif(file_exists('templates/'.$template.'.mustache')) {
-			return file_get_contents('templates/'.$template.'.mustache');
-		}
-		//template not found
-		else {
-			throw new Exception("Template not found: $template");
-		}
-	}
-	
 	/**
 	 * Autoloader methods
 	 */
@@ -193,8 +186,18 @@ class PhpReports {
 		$files = glob($dir.'/*.php');
 		$dirs = glob($dir.'/*',GLOB_ONLYDIR);
 		
+		
 		foreach($files as $file) {
+			//for file names same as class name
 			$className = basename($file,'.php');
+			if(!isset(self::$loader_cache[$className])) self::$loader_cache[$className] = $file;
+			
+			//for PEAR style: Path_To_Class.php
+			$parts = explode('/',substr($file,0,-4));
+			array_shift($parts);
+			$className = implode('_',$parts);
+			//if any of the directories in the path are lowercase, it isn't in PEAR format
+			if(preg_match('/(^|_)[a-z]/',$className)) continue;
 			if(!isset(self::$loader_cache[$className])) self::$loader_cache[$className] = $file;
 		}
 		

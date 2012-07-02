@@ -1,0 +1,45 @@
+<form method='get' id='variable_form'>
+	<h2>Configure Report</h2>
+	
+	<input type='hidden' name='report' value='{{report}}' />
+	
+	<!--
+	<div class='input-row'>
+		<label for='var_database'>Database</label>
+		<select name='database' id='var_database'>
+		{% for database in databases %}
+			<option value='{{database.name}}' {% if database.selected %}selected="selected"{% endif %}>{{ database.name }}</option>
+		{% endfor %}
+		</select>
+	</div>
+	-->
+	
+	{% for var in vars %}
+		<div class='input-row'>
+			<label for='var_{{var.key}}'>{{var.display}}</label>
+			{% if var.is_select %}
+				{% if var.is_multiselect %}
+					<select name='macros[{{var.key}}][]' id='var_{{var.key}}' class='input' multiple=true size={{var.choices}}>
+				{% else %}
+					<select name='macros[{{var.key}}]' id='var_{{var.key}}' class='input'>
+				{% endif %}
+				{% for option in var.options %}
+					<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
+				{% endfor %}
+				</select>
+			{% else %}
+				{% if var.is_textarea %}
+					<textarea type='text' name='macros[{{var.key}}' id='var_{{var.key}}' class='input'>{{var.value}}</textarea>
+				{% else %}
+					<input type='text' name='macros[{{var.key}}]' value='{{var.value}}' id='var_{{var.key}}'  class='input'/>	
+				{% endif %}
+			{% endif %}
+			
+			{% if description %}
+				<span>{{ description|raw }}</span>
+			{% endif %}
+		</div>
+	{% endfor %}
+	
+	<input type='submit' value='Run Report' class='submit' />
+</form>

@@ -9,6 +9,6 @@ class JsonReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 
-		PhpReports::renderPage($page_template,'json/page');
+		echo PhpReports::render('json/page',$page_template);
 	}
 }

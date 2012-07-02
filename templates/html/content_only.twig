@@ -1,0 +1,15 @@
+{% if error %}
+	<div class='error'>
+		{{error}}
+	</div>
+{% endif %}
+
+{% if notice %}
+	<div class='notice'>
+		{{notice}}
+	</div>
+{% endif %}
+
+<div id='content'>
+	{{content|raw}}
+</div>

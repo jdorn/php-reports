@@ -9,6 +9,6 @@ class SqlReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
-		PhpReports::renderPage($page_template,'sql/page');
+		echo PhpReports::render('sql/page',$page_template);
 	}
 }

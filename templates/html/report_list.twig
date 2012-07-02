@@ -1,0 +1,123 @@
+<style>
+#report_list {
+	font-family: arial;
+}
+#report_list h1 {
+	
+}
+#report_list h2 {
+	font-size: 1.3em;
+	padding: 10px 20px 5px 0;
+	margin: 15px 0 0 0;
+	display: inline-block;
+	cursor: pointer;
+}
+#report_list h2.no_title {
+	font-size: 1em;
+	font-weight:normal;
+}
+#report_list .report_list {
+	margin-left: 20px;
+	border: 1px solid #aaa;
+	border-radius: 8px;
+	padding: 15px;
+	margin-bottom: 5px;
+}
+#report_list .report_list h2 {
+	display: block;
+	margin: 0;
+}
+#report_list .back_to_top {
+	margin-left: 20px;
+	font-size: .8em;
+}
+
+#report_list .report {
+	margin: 8px 0;
+}
+#report_list .collapse {
+	text-decoration:none;
+	vertical-align:middle;
+	color: #7777ff;
+	padding: 0 3px;
+}
+</style>
+<script>
+$(document).ready(function() {
+	function showReportList(h2,delay) {
+		var list = h2.next('.report_list');
+		
+		//expand report if needed
+		if(list.css('display') == 'none') {
+			list.show(delay || 0);
+			h2.children('.collapse').html('-');
+		}
+		
+		//expand parent report if there is one
+		var parent = h2.closest('.report_list').prev('h2');
+		if(parent.length) showReportList(parent,delay);
+	}
+	function hideReportList(h2,delay) {
+		var list = h2.next('.report_list');
+		
+		//hide report list
+		if(list.css('display') == 'block') {
+			list.hide(delay || 0);
+			
+			h2.children('.collapse').html('+');
+		}
+	}
+	function toggleReportList(h2,delay) {
+		var list = h2.next('.report_list');
+		
+		if(list.css('display') == 'block') {
+			hideReportList(h2,delay);
+		}
+		else {
+			showReportList(h2,delay);
+		}
+	}
+	
+	$('#report_list').on('click','h2',function() {
+		toggleReportList($(this),200);
+		
+		return false;
+	});
+	$('#table_of_contents').on('click','a',function() {
+		var target = $($(this).attr('href'));
+		showReportList(target);
+	});
+	
+	$('#search').keyup(function(e) {
+		var re = new RegExp($(this).val(), "i");
+		//filter the table of contents
+		$('#table_of_contents > ul > li').show().filter(function() {
+			return !re.test($(this).children('a').text());
+		}).hide();
+		
+		//filter the report sections
+		$('#report_list > div').show().filter(function() {
+			return !re.test($(this).children('h2').text());
+		}).hide();
+	});
+	
+});
+</script>
+<a name='top'></a>
+<h1>Report List</h1>
+<input type='text' id='search'/>
+<div id='table_of_contents'>
+	<ul>
+	{% for item in reports %}
+		{% include "html/report_list_table_of_contents_item.twig" %}
+	{% endfor %}
+	</ul>
+</div>
+
+<div id='report_list'>
+	{% for item in reports %}
+	<div>
+		{% include "html/report_list_item.twig" %}
+	</div>
+	{% endfor %}
+</div>

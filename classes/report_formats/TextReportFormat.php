@@ -1,14 +1,13 @@
 <?php
 class TextReportFormat extends ReportFormatBase {
 	public static function display(&$report, &$request) {
-		$page_template = array(
-			'content'=>$report->renderReportPage('text/report','text/page')
-		);
-		
 		header("Content-type: text/plain");
 		header("Pragma: no-cache");
 		header("Expires: 0");
-
+		
+		//run the report
+		$report->renderReportPage('text/page','text/page');
+		
 		/**
 		 * This code taken from Stack Overflow answer by ehudokai
 		 * http://stackoverflow.com/a/4597190
