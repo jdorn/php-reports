@@ -99,9 +99,10 @@ $(document).ready(function() {
 			h2.children('.collapse').html('-');
 		}
 		
-		//expand parent report if there is one
-		var parent = h2.closest('.report_list').prev('h2');
-		if(parent.length) showReportList(parent,delay);
+		//show all child reports
+		$('.report',list).show();
+		
+		h2.parents('.report_list').show();
 	}
 	function hideReportList(h2,delay) {
 		var list = h2.next('.report_list');
@@ -172,7 +173,7 @@ $(document).ready(function() {
 		if(!val) {
 			$("#report_list > .report_list").show();
 			$("#report_list .report_list .report_list.default-show").show();
-			$("#report_list .report").removeClass('selected');
+			$("#report_list .report").show().removeClass('selected');
 			return;
 		}
 		
@@ -185,16 +186,20 @@ $(document).ready(function() {
 		
 		//hide all reports
 		$("#report_list .report_list").hide();
-		$("#report_list .report").removeClass('selected');
+		$("#report_list .report").hide().removeClass('selected');
 		
-		//show matching reports
+		//loop through all matches
 		for(var i in matching) {
+			//if a directory matches, show it and all the child reports
 			if(!matching[i].report) {
-				$('#report_'+matching[i].id).show().next('.report_list').show();
+				$('#report_'+matching[i].id).show().next('.report_list').show().children('.report').show();
 			}
+			//if a single report matches, show it and highlight it
 			else {
-				$('#report_'+matching[i].id).parent().addClass('selected');
+				$('#report_'+matching[i].id).parent().addClass('selected').show();
 			}
+			
+			//show all the parent directories
 			$('#report_'+matching[i].id).parents('.report_list').show();
 		}
 	});
@@ -202,6 +207,9 @@ $(document).ready(function() {
 });
 </script>
 <a name='top'></a>
+<div style='float:right; font-size: .8em;'>
+	{{ links|raw }}
+</div>
 <h1>Report List</h1>
 <div id='table_of_contents'>
 	<h3>Table of Contents <a href='#' id='hide_table_of_contents'>show / hide</a></h3>

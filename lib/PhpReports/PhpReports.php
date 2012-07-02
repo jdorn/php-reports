@@ -76,13 +76,18 @@ class PhpReports {
 	public static function listReports() {
 		$reports = self::getReports(self::$config['reportDir'].'/');
 		
-		$content = self::render('html/report_list',array('reports'=>$reports));
+		$template_vars = isset(self::$config['report_list'])? self::$config['report_list'] : array();
+		$template_vars['reports'] = $reports;
 
-		echo self::render('html/page',array(
+		$content = self::render('html/report_list',$template_vars);
+
+		$template_vars = array(
 			'content'=>$content,
 			'title'=>'Report List',
 			'is_home'=>true
-		));
+		);
+
+		echo self::render('html/page',$template_vars);
 	}
 	
 	protected static function getReports($dir, $base = null) {
