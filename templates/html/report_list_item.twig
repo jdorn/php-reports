@@ -11,9 +11,24 @@
 		{% endfor %}
 	</div>
 	{% endif %}
-{% else %}
+{% elseif not item.ignore %}
 	<div class='report'>
 		<a href='{{item.url}}' id='report_{{item.Id}}'>{{item.Name}}</a>
+		{% if item.Variables %}
+			<img alt='Configurable' title='Configurable' src='{{base}}/public/images/ui-slider-vertical-050.png' />
+		{% endif %}
+		{% if item.Charts %}
+			<img alt='Contains graphs/charts' title='Contains graphs/charts' src='{{base}}/public/images/chart.png' />
+		{% endif %}
+		{% if item.stop %}
+			<img alt='Warning!' title='Warning!' src='{{base}}/public/images/prohibition.png' />
+		{% endif %}
+		{% if item.Caution %}
+			<img alt='Contains graphs/charts' title='Contains graphs/charts' src='{{base}}/public/images/chart.png' />
+		{% endif %}
+		{% if item.Detail %}
+			<img alt='Contains drill down links' title='Contains drill down links' src='{{base}}/public/images/drill.png' />
+		{% endif %}
 		{% if item.Created %}
 			<em>{{ item.Created }}</em>
 		{% endif %}
