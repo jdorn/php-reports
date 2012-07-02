@@ -1,4 +1,4 @@
-{% if not noreport %}
+{% if not nodata %}
 	<table id='result_table'>
 		{% if vertical %}
 			{% for row in VerticalRows %}
@@ -36,7 +36,7 @@
 		{% endif %}
 	</table>
 
-	{% if not vertical %}
+	{% if not vertical and not nodata %}
 	<script type='text/javascript'>
 	$('#result_table').dataTable({
 		bPaginate: false,

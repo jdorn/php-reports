@@ -57,7 +57,11 @@ class ChartHeader extends HeaderBase {
 		'yrange'=>array(
 			'type'=>'string',
 			'default'=>''
-		)
+		),
+		'all'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		),
 	);
 	
 	public static function init($params, &$report) {
@@ -103,9 +107,10 @@ class ChartHeader extends HeaderBase {
 		}
 		
 		if(isset($value['x'])) $value['columns'] = $value['x'];
-		else $value['columns'] = array();
+		else $value['columns'] = array(1);
 		
-		if(isset($value['y'])) $value['columns'] = array_merge($value['x'],$value['y']);
+		if(isset($value['y'])) $value['columns'] = array_merge($value['columns'],$value['y']);
+		else $value['all'] = true;
 		
 		unset($value['x']);
 		unset($value['y']);
@@ -123,6 +128,7 @@ class ChartHeader extends HeaderBase {
 			
 			if($k===0) {
 				$i=1;
+				$unsorted = 1000;
 				foreach($row['values'] as $key=>$value) {
 					$row['values'][$key]['i'] = $i;
 					$i++;
@@ -132,6 +138,11 @@ class ChartHeader extends HeaderBase {
 					}
 					elseif(($temp = array_search($row['values'][$key]['key'], $report->options['Charts'][$num]['columns']))!==false) {
 						$cols[$temp] = $key;
+					}
+					//if all columns are included, add after any specifically defined ones
+					elseif($report->options['Charts'][$num]['all']) {
+						$cols[$unsorted] = $key;
+						$unsorted ++;
 					}
 				}
 				
@@ -192,7 +203,7 @@ class ChartHeader extends HeaderBase {
 					$val['is_null'] = true;
 				}
 				elseif($types[$key] === 'date') {
-					$val['value'] = date('Y-m-d H:i:s',strtotime($val['value']));
+					$val['value'] = date('m/d/Y H:i:s',strtotime($val['value']));
 					$val['is_date'] = true;
 				}
 				elseif($types[$key] === 'number') {

@@ -16,6 +16,10 @@
 		<link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
 	{% endif %}
 	<style>
+	html, body {
+		padding: 0;
+		margin: 0;
+	}
 	* {
 		font-family: arial, san serif;
 	}
@@ -54,36 +58,54 @@
 		white-space: -o-pre-wrap;		/* Opera 7 */
 		word-wrap: break-word;			/* Internet Explorer 5.5+ */
 	}
+	#top_bar {
+		height: 21px;
+		line-height: 21px;
+		font-size: .8em;
+		color: #333;
+		border-bottom: 1px solid #aaa;
+		padding: 0 10px;
+	}
+	#holder {
+		padding: 0 10px 30px;
+	}
 	</style>
 </head>
 <body>
-{% if not is_home and report_list_url %}
-	<div id='links_holder'>
-		<a href='{{report_list_url}}'>Reports Home</a>
+	<div id='top_bar'>
+		<div class='breadcrumb'>
+			{% for display, url in breadcrumb %}
+				{% if loop.last %}
+					<strong>{{display}}</strong>
+				{% else %}
+					<a href="{{base}}/{{url}}">{{display}}</a> &gt;
+				{% endif %}
+			{% endfor %}
+		</div>
 	</div>
-{% endif %}
+	<div id='holder'>
+		{% if header %}
+			<div>
+				{{header|raw}}
+			</div>
+		{% endif %}
 
-{% if header %}
-	<div>
-		{{header|raw}}
+		{% if error %}
+			<div class='error'>
+				{{error}}
+			</div>
+		{% endif %}
+
+		{% if notice %}
+			<div class='notice'>
+				{{notice}}
+			</div>
+		{% endif %}
+
+		<div id='content'>
+			{{content|raw}}
+		</div>
 	</div>
-{% endif %}
-
-{% if error %}
-	<div class='error'>
-		{{error}}
-	</div>
-{% endif %}
-
-{% if notice %}
-	<div class='notice'>
-		{{notice}}
-	</div>
-{% endif %}
-
-<div id='content'>
-	{{content|raw}}
-</div>
 
 </body>
 </html>

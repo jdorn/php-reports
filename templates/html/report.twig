@@ -106,7 +106,7 @@ h1 {
 	function drawCharts() {
 		{% for chart in Charts %}
 			var data_{{chart.num}} = new google.visualization.DataTable();
-			
+					
 			{% for value in chart.Rows[0].values %}
 				{% if value.is_date %}
 				data_{{chart.num}}.addColumn('date',"{{value.key}}");
@@ -117,21 +117,24 @@ h1 {
 				{% endif %}
 			{% endfor %}
 		
-			data_{{chart.num}}.addRows([{% for row in chart.Rows %}
-	{% if not row.first %},{% endif %}
-	[
-	{% for value in row.values %}
-		{% if not value.first %},{% endif %}
-		{% if value.is_date %}
-		new Date("{{value.value|raw}}")
-		{% elseif value.is_number %}
-		{{ value.value }}
-		{% else %}
-		"{{ value.value }}"
-		{% endif %}
-	{% endfor %}
-	]
-{% endfor %}]);
+			var rows = [
+			{% for row in chart.Rows %}
+				{% if not row.first %},{% endif %}
+				[
+				{% for value in row.values %}
+					{% if not value.first %},{% endif %}
+					{% if value.is_date %}
+					new Date("{{value.value|raw}}")
+					{% elseif value.is_number %}
+					{{ value.value }}
+					{% else %}
+					"{{ value.value }}"
+					{% endif %}
+				{% endfor %}
+				]
+			{% endfor %}];
+		
+			data_{{chart.num}}.addRows(rows);
 
 			var options_{{chart.num}} = {
 				title: '{{chart.title}}',
@@ -149,11 +152,11 @@ h1 {
 	</script>
 	
 	{% for chart in Charts %}
-	<div id='chart_div_{{chart.num}}' style='{% if chart.width %}width={{chart.width}}px;{% endif %}{% if chart.height %}height={{chart.height}}px{% endif %}'></div>
+	<div id='chart_div_{{chart.num}}' style='{% if chart.width %}width={{chart.width}};{% endif %}{% if chart.height %}height={{chart.height}};{% endif %}'></div>
 	{% endfor %}
 {% endif %}
 
-{% if query %}
+{% if Query_Formatted %}
 <a href='#' class='show_query'>show query</a>
 <div id='query_holder' style='display:none;'>
 	{{Query_Formatted|raw}}
@@ -198,49 +201,49 @@ $('#database_select').change(function() {
 {% endif %}
 
 {% if not is_ready %}
-<div class='notice'>
-This report needs more information before running.
-</div>
+	<div class='notice'>
+	This report needs more information before running.
+	</div>
 {% endif %}
 {% if async %}
-<div class='waiting' id='async_notice'>
-	<div>
-		Your report is running.
-		{% if time_estimate %}
-			{% if time_estimate.median %}
-				This report usually takes {{time_estimate.median}} seconds.
+	<div class='waiting' id='async_notice'>
+		<div>
+			Your report is running.
+			{% if time_estimate %}
+				{% if time_estimate.median %}
+					This report usually takes {{time_estimate.median}} seconds.
+				{% endif %}
 			{% endif %}
-		{% endif %}
+		</div>
 	</div>
-</div>
-<script>
-$.ajax({
-	'url': '{{report_url|raw}}',
-	'dataType': 'html',
-	'data': {'content_only': true},
-	'success': function(data) {
-		$('#content').html(data);
-	}
-});
-</script>
+	<script>
+	$.ajax({
+		'url': '{{report_url|raw}}',
+		'dataType': 'html',
+		'data': {'content_only': true},
+		'success': function(data) {
+			$('#content').html(data);
+		}
+	});
+	</script>
+{% endif %}
 
 {% if time_estimate %}
-<div style='margin-top: 20px;'>
-	<a href='#' id='show_time_estimate'>show time estimate data</a>
-	<div style='font-size: .8em; display:none;' id='time_estimate_holder'>
-		<div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
-		<div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
-		<div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
-		<div><strong>Median: </strong> {{time_estimate.median}}</div>
-		<div><strong>Average: </strong> {{time_estimate.average}}</div>
-		<div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>	
+	<div style='margin-top: 20px;'>
+		<a href='#' id='show_time_estimate'>show time estimate data</a>
+		<div style='font-size: .8em; display:none;' id='time_estimate_holder'>
+			<div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
+			<div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
+			<div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
+			<div><strong>Median: </strong> {{time_estimate.median}}</div>
+			<div><strong>Average: </strong> {{time_estimate.average}}</div>
+			<div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>	
+		</div>
 	</div>
-</div>
-<script>
-$('#show_time_estimate').click(function() {
-	$('#time_estimate_holder').toggle(200);
-	return false;
-});
-</script>
-{% endif %}
+	<script>
+	$('#show_time_estimate').click(function() {
+		$('#time_estimate_holder').toggle(200);
+		return false;
+	});
+	</script>
 {% endif %}

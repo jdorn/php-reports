@@ -68,7 +68,8 @@ class PhpReports {
 			echo self::render('html/page',array(
 				'title'=>$report->report,
 				'header'=>'<h2>'.$error_header.'</h2>',
-				'error'=>$e->getMessage()
+				'error'=>$e->getMessage(),
+				'breadcrumb'=>array('Report List'=>'', $report->report => true)
 			));
 		}
 	}
@@ -84,7 +85,8 @@ class PhpReports {
 		$template_vars = array(
 			'content'=>$content,
 			'title'=>'Report List',
-			'is_home'=>true
+			'is_home'=>true,
+			'breadcrumb'=>array('Report List'=>true)
 		);
 
 		echo self::render('html/page',$template_vars);

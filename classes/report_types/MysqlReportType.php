@@ -20,16 +20,16 @@ class MysqlReportType extends ReportTypeBase {
 			if(isset($params['multiple']) && $params['multiple']) {
 				//allow {macro} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
 				//this is shorthand for comma separated list
-				$report->raw_query = preg_replace('/([^\{])\{'.$params['name'].'\}([^\}])/','$1{% for item in '.$params['name'].' %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}$2',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])\{'.$key.'\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}$2',$report->raw_query);
 			
 				//allow {(macro)} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
 				//this is shorthand for quoted, comma separated list
-				$report->raw_query = preg_replace('/([^\{])\{\('.$params['name'].'\)\}([^\}])/','$1{% for item in '.$params['name'].' %}{% if not item.first %},{% endif %}\'{{ item.value }}\'{% endfor %}$2',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])\{\('.$key.'\)\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}\'{{ item.value }}\'{% endfor %}$2',$report->raw_query);
 			}
 			//macros sortcuts for non-arrays
 			else {
 				//allow {macro} instead of {{macro}} for legacy support
-				$report->raw_query = preg_replace('/([^\{])(\{'.$params['name'].'+\})([^\}])/','$1{$2}$3',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])(\{'.$key.'+\})([^\}])/','$1{$2}$3',$report->raw_query);
 			}
 		}
 		

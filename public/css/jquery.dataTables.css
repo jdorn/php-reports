@@ -29,7 +29,7 @@ table.dataTable td {
 
 table.dataTable thead th, table.dataTable td, table.dataTable tfoot th, table.dataTable {
 	border-style: solid;
-	border-color: #ccc;
+	border-color: #aaa;
 }
 table.dataTable thead th, table.dataTable td, table.dataTable tfoot th {
 	border-width: 1px 1px 0 0;
@@ -79,6 +79,12 @@ table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
 .dataTables_filter {
 	float: right;
 	text-align: right;
+	padding-bottom: 8px;
+}
+.dataTables_filter input {
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	padding: 2px 8px;
 }
 
 
@@ -88,6 +94,7 @@ table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
 .dataTables_info {
 	clear: both;
 	float: left;
+	padding-top: 8px;
 }
 
 
