@@ -61,7 +61,7 @@ class DetailHeader extends HeaderBase {
 		}
 		
 		$report->options['Detail'][$params['column']] = array(
-			'report'=>$report_name,
+			'report'=>$path,
 			'macros'=>$params['macros']
 		);
 	}
