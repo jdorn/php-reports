@@ -60,9 +60,11 @@ class VariableHeader extends HeaderBase {
 			else $report->addMacro($params['name'],'');
 		}		
 		
+		$empty = (is_array($report->macros[$params['name']]) && !$report->macros[$params['name']]) || trim($report->macros[$params['name']])==='';
+		
 		//if the macro value is empty and empty isn't allowed
 		//mark the report as not ready to stop it being run
-		if(trim($report->macros[$params['name']])==='' && (!isset($params['empty']) || !$params['empty'])) {
+		if($empty && (!isset($params['empty']) || !$params['empty'])) {
 			$report->is_ready =false;
 		}
 		

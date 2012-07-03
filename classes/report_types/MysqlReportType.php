@@ -20,11 +20,11 @@ class MysqlReportType extends ReportTypeBase {
 			if(isset($params['multiple']) && $params['multiple']) {
 				//allow {macro} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
 				//this is shorthand for comma separated list
-				$report->raw_query = preg_replace('/([^\{])\{'.$key.'\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}$2',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])\{'.$key.'\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}\'{{ item.value }}\'{% endfor %}$2',$report->raw_query);
 			
 				//allow {(macro)} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
 				//this is shorthand for quoted, comma separated list
-				$report->raw_query = preg_replace('/([^\{])\{\('.$key.'\)\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}\'{{ item.value }}\'{% endfor %}$2',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])\{\('.$key.'\)\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}(\'{{ item.value }}\'){% endfor %}$2',$report->raw_query);
 			}
 			//macros sortcuts for non-arrays
 			else {
@@ -138,6 +138,11 @@ class MysqlReportType extends ReportTypeBase {
 			$result = mysql_query($query,$report->conn);
 			if(!$result) {
 				throw new Exception("Query failed: ".mysql_error($report->conn));
+			}
+			
+			//if this query had an assert=empty flag and returned results, throw error
+			if(preg_match('/^--[\s+]assert[\s]*=[\s]*empty[\s]*\n/',$query)) {
+				if(mysql_fetch_assoc($result))  throw new Exception("Assert failed.  Query did not return empty results.");
 			}
 		}
 		
