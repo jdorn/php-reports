@@ -6,7 +6,7 @@ A light weight, extendable, PHP reporting framework for managing and displaying 
 Major features include:
 
 *   Display a report from any data source that can output tabular data (SQL, MongoDB, PHP, etc.)
-*   Output reports in HTML, XML, CSV, JSON, or pretty much any other format
+*   Output reports in HTML, XML, CSV, JSON, or your own custom format
 *   Add customizable parameters to a report (e.g. start date and end date)
 *   Support for graphs and charts with the Google Data Visualization API
 *   Easily switch between database environments (e.g. Production, Staging, and Dev)
@@ -122,6 +122,30 @@ Now, we'll dig into the various report headers available, the different output f
 and how to extend the Php Reports Framework to make it your own.
 
 
+Installation Instructions
+=================
+
+First, download a pre-packaged zip or tar file or get the latest code from git:
+
+```
+git clone git://github.com/jdorn/php-reports.git
+cd php-reports
+git submodule init
+git submodule update
+```
+
+Then, set up the config file that defines things like database connections, file paths, etc.
+
+You can use the sample config as a starting point if you want.
+
+```
+cp config/config.php.sample config/config.php
+```
+
+The config settings are commented and should be pretty self explanatory.
+
+After that, it's time to make some reports!  Detailed report documentation is below.
+
 Detailed Documentation
 =================
 
@@ -153,6 +177,18 @@ Many headers also have a shortcut syntax for one or more common use cases.
 declarations are also possible with single quoted values and unquoted or single
 quoted strings.
 
+Here's an example SQL report:
+
+```sql
+-- This is the report name
+-- HEADERNAME: {
+--	"param1": "value1"
+-- }
+-- HEADERNAME2: shortcut, syntax
+
+SELECT * FROM ...
+```
+
 VariableHeader
 -------------
 
@@ -167,8 +203,9 @@ Used to prompt a user for a value before running a report.
     *   "text" (the default)
     *   "select" (dropdown list)
     *   "textarea"
-    *   "date" (will be parsed with strtotime and turned into "YYYY-MM-DD HH:MM:SS" format)
-*   __options__ If the variable type is "select", this should be an array of choices.
+    *   "date" (will be parsed with strtotime)
+*   __format__ If type is "date", this specifies the date format to convert to.  It defaults to "YYYY-MM-DD HH:MM:SS".
+*   __options__ If the type is "select", this should be an array of choices.
 *   __default__ The default value for the variable.
 *   __empty__ If set to true, the report will run even if the value is empty.
 *   __multiple__ If set to true, multiple values can be chosen.
@@ -404,9 +441,9 @@ a string or date column followed by one or more number columns.  Histograms requ
 ### JSON Format
 *	__columns__ An array of columns to use in the chart.  Columns can be specified by column number (starting at 1) or column name.  Defaults to all columns in order.
 *	__type__ The type of chart.  Possible values are:
-	*   LineChart
-	*	GeoChart
-	*	AnnotatedTimeline
+	*   LineChart (the default)
+	*	GeoChart (map)
+	*	AnnotatedTimeline (similar to Google Finance)
 	*	BarChart
 	*	ColumnChart
 *	__title__ An optional title for the chart
@@ -439,3 +476,165 @@ CHART: {
 }
 ```
 This will display a histogram of product prices.  Data will be broken up into 10 buckets and displayed as a column chart.
+
+Filters
+===================
+
+Filters modify data in a column after running a report, but before displaying it.
+
+All Filter classes extend FilterBase.
+
+Filters are applied with the FILTER header as follows:
+
+```
+FILTER: {
+	"filter": "geoip",
+	"column": 1,
+	"params": {}
+}
+```
+
+For the 1st column in every row, the following will be called.
+
+```
+$value = geoipFilter::filter($value, $params);
+```
+
+A column can have more than 1 filter and they will be applied in the order they appear in the headers.
+
+htmlFilter
+-----------------
+This marks a column as containing html data.  Normally all report data is escaped before outputting.  This filter turns off escaping.
+
+This filter has no parameters.
+
+```
+FILTER: {
+	"filter": "html",
+	"column": "My Data"
+}
+```
+
+If a column contains:
+
+```html
+<strong>Data</strong>
+```
+
+It would normally be output as:
+
+```html
+&lt;strong&gt;Data&lt;/strong&gt;
+```
+
+After the htmlFilter is applied, it will output in it's original format and you will be able to see the bold text.
+
+preFilter
+-----------------
+This wraps a column's contents in pre tags.  It is useful if you want to preserve white space in a column.
+
+This filter has no parameters.
+
+```
+FILTER: {
+	"filter": "pre",
+	"column": 2
+}
+```
+
+hideFilter
+-----------------
+This removes a column from a report.  This is useful if you want to use some columns just as a source of data for charts.
+
+This filter has no parameters.
+
+```
+FILTER: {
+	"filter": "hide",
+	"column": 3
+}
+```
+
+geoipFilter
+------------------
+This converts ip addresses into human readable locations.  It requires the geoip php extension to work.
+
+This filter has no parameters.
+
+```
+FILTER: {
+	"filter": "geoip",
+	"column": "ip"
+}
+```
+
+This will convert:
+```
+173.194.33.3
+```
+Into:
+```
+Mountain View, CA
+```
+
+classFilter
+--------------------
+Add a css class to the column.
+
+```
+FILTER: {
+	"filter": "class",
+	"column": 1,
+	"params": {
+		"class": "right"
+	}
+}
+```
+
+There are a couple of pre-defined css classes that are useful, but feel free to add your own to the template.
+*	right (right aligned)
+*	center (center justified)
+
+barFilter
+---------------------
+Turns a numeric column into a horizontal bar chart.  All bars will be scaled to the highest value in the column.
+
+```
+FILTER: {
+	"filter": "bar",
+	"column": 2,
+	"params": {
+		"width": 300
+	}
+}
+```
+
+The 'width' parameter specified the maximum bar width in pixels.  It defaults to 200px.
+
+linkFilter
+----------------------
+Turns a column into a link.  The value of the column is used as the href.
+
+```
+FILTER: {
+	"filter": "link",
+	"column": 1,
+	"params": {
+		"display": "View",
+		"blank": true
+	}
+}
+```
+
+This will turn the following:
+```
+http://localhost/product/view/1/
+```
+Into:
+```
+<a href="http://localhost/product/view/1/" target="_blank">View</a>
+```
+
+By default, the 'display' parameter is set to the href value.
+
+The 'blank' parameter, if set to true, will open the link in a new window.  The default is false.
