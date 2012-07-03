@@ -9,12 +9,6 @@ h1 {
 	margin: 10px 0;
 	padding: 0;
 }
-#report_description {
-	padding: 5px 0;
-}
-.show_query, #show_time_estimate {
-	font-size: .8em;
-}
 .csv_link {
 	font-size: .9em;
 	margin-left: 20px;
@@ -46,29 +40,8 @@ h1 {
 	border: 1px solid #aaa;
 	margin-top: 10px;
 }
-
-#result_table td .bar{
-	height: 18px; 
-	display:inline-block; 
-	margin-right: 5px; 
-	vertical-align:middle;
-	background: #6bba70; /* Old browsers */
-	background: -moz-linear-gradient(top, #6bba70 0%, #255e2b 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#6bba70), color-stop(100%,#255e2b)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #6bba70 0%,#255e2b 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #6bba70 0%,#255e2b 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #6bba70 0%,#255e2b 100%); /* IE10+ */
-	background: linear-gradient(top, #6bba70 0%,#255e2b 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6bba70', endColorstr='#255e2b',GradientType=0 ); /* IE6-9 */
-}
-.currency {
-	text-align:right;
-}
-.right, .rpad2 {
-	text-align:right;
-}
-.center {
-	text-align:center;
+#report_content {
+	margin: 8px 0;
 }
 </style>
 
@@ -80,7 +53,6 @@ h1 {
 
 {{variable_form|raw}}
 
-{% if is_ready and not async %}
 <em class='database_message'>Running on database
 <select id='database_select'>
 {% for option in Databases %}
@@ -89,75 +61,14 @@ h1 {
 </select>
 </em>
 
-{% if csv_link %}
-<a href='{{csv_link}}' class='csv_link'>export to csv</a>
-{% endif %}
+<a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link'>export to csv</a>
 
 <div id='report_content'>
-	{{content|raw}}
-</div>
-
-<div style='clear:both;'></div>
-
-<p>Query took {{Time}} seconds</p>
-
-{% if has_charts %}
-<iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
-<script>
-  $('#chart_container').iframeAutoHeight();
-</script>
-{% endif %}
-
-{% if Query_Formatted %}
-<a href='#' class='show_query'>show query</a>
-<div id='query_holder' style='display:none;'>
-	{{Query_Formatted|raw}}
-</div>
-<script>
-$('.show_query').click(function() {
-	showing = $('#query_holder').css('display') == 'none';
-	
-	$('#query_holder').toggle(500);
-	
-	if(showing) {
-		$('html, body').animate({scrollTop: $("#query_holder").offset().top}, 1000);
-	}
-	
-	return false;
-});
-$('.included_report').each(function() {
-	var self = $(this);
-	self.css('display','none').css('background-color','#f4f4f4').css('padding-left','10px');
-	var link = $('<a>').attr('href','#').text('View Included Report').css('display','block').click(function() {
-		self.toggle(200);
-		return false;
-	});
-	
-	self.before(link);
-});
-</script>
-{% endif %}
-
-<script>
-$('#database_select').change(function() {
-	var url = window.location.href.split('?')[0];
-	var querystring = window.location.href.split('?')[1].split('#')[0];
-	
-	querystring = querystring.replace(/&?database=[^&]*/,'');
-	querystring += '&database='+$(this).val();
-	
-	window.location.href = url+'?'+querystring;
-	return false;
-});
-</script>
-{% endif %}
-
 {% if not is_ready %}
 	<div class='notice'>
 	This report needs more information before running.
 	</div>
-{% endif %}
-{% if async %}
+{% elseif async %}
 	<div class='waiting' id='async_notice'>
 		<div>
 			Your report is running.
@@ -174,11 +85,27 @@ $('#database_select').change(function() {
 		'dataType': 'html',
 		'data': {'content_only': true},
 		'success': function(data) {
-			$('#content').html(data);
+			$('#report_content').html(data);
 		}
 	});
 	</script>
+{% else %}
+	{{content|raw}}
 {% endif %}
+</div>
+
+<script>
+$('#database_select').change(function() {
+	var url = window.location.href.split('?')[0];
+	var querystring = window.location.href.split('?')[1].split('#')[0];
+	
+	querystring = querystring.replace(/&?database=[^&]*/,'');
+	querystring += '&database='+$(this).val();
+	
+	window.location.href = url+'?'+querystring;
+	return false;
+});
+</script>
 
 {% if time_estimate %}
 	<div style='margin-top: 20px;'>

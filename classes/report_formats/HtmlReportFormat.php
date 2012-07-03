@@ -7,27 +7,36 @@ class HtmlReportFormat extends ReportFormatBase {
 		$report->async = !isset($request->query['content_only']);
 		if(isset($request->query['no_async'])) $report->async = false;
 		
-		try {
-			$page_template = array(
-				'content'=>$report->renderReportPage('html/table','html/report'),
-				'has_charts'=>$report->options['has_charts'],
-			);
-		}
-		catch(Exception $e) {
-			$page_template = array(
-				'error'=>$e->getMessage(),
-				'content'=>$report->options['Query_Formatted'],
-			);
-		}
-		
-		$page_template['title'] = $report->options['Name'];
-		$page_template['breadcrumb'] = array('Report List'=>'',$report->options['Name']=>true);
-
-		if(isset($request->query['content_only'])) {		
-			echo PhpReports::render('html/content_only',$page_template);
-			exit;
+		if(isset($request->query['content_only'])) {
+			try {
+				$content = $report->renderReportPage('html/table','html/content_only');
+				echo $content;
+			}
+			catch(Exception $e) {
+				$page_template = array(
+					'error'=>$e->getMessage(),
+					'content'=>$report->options['Query_Formatted'],
+				);
+				echo PhpReports::render('html/content_only',$page_template);
+			}
 		}
 		else {
+			try {
+				$page_template = array(
+					'title'=>$report->options['Name'],
+					'breadcrumb'=>array('Report List'=>'',$report->options['Name']=>true),
+					'has_charts'=>$report->options['has_charts'],
+					'content'=>$report->renderReportPage('html/table','html/report'),
+				);
+			}
+			catch(Exception $e) {
+				$page_template = array(
+					'title'=>$report->options['Name'],
+					'breadcrumb'=>array('Report List'=>'',$report->options['Name']=>true),
+					'error'=>$e->getMessage(),
+					'content'=>$report->options['Query_Formatted'],
+				);
+			}
 			echo PhpReports::render('html/page',$page_template);
 		}
 	}

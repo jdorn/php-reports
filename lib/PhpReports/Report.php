@@ -466,7 +466,13 @@ class Report {
 			FileSystemCache::store($this->report, $report_times, 'report_times');
 		}
 		
-		return PhpReports::render($template, $this->options);
+		$template_vars = array(
+			'report_url'=>PhpReports::$request->base.'/report/?'.$_SERVER['QUERY_STRING'],
+			'report_querystring'=>$_SERVER['QUERY_STRING'],
+			'base'=>PhpReports::$request->base
+		);
+		
+		return PhpReports::render($template, array_merge($template_vars,$this->options));
 	}
 	
 	public function renderReportPage($content_template='html/table',$report_template='html/report') {

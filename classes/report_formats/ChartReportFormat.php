@@ -16,7 +16,7 @@ class ChartReportFormat extends ReportFormatBase {
 				'error'=>$e->getMessage(),
 				'content'=>$report->options['Query_Formatted'],
 			);
-		}	
+		}
 		
 		echo PhpReports::render('html/chart_page',$page_template);
 		exit;
