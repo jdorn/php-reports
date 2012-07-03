@@ -105,7 +105,7 @@
 	padding: 2px 8px;
 }
 #searchbar {
-	margin: 10px 0 0 0;
+	margin: 0 0 10px 0;
 }
 #searchbar.fixed {
 	background: white;
@@ -114,14 +114,15 @@
     width:100%;
     z-index:100;
 	border-bottom: 1px solid #aaa;
-	padding: 5px 0;
+	padding: 5px 10px;
 	margin: 0 -10px;
 	-moz-box-shadow:    0 3px 6px 2px rgba(68,68,68,0.6);
 	-webkit-box-shadow: 0 3px 6px 3px rgba(68,68,68,0.6);
 	box-shadow:         0 3px 6px 2px rgba(68,68,68,0.6);
+	opacity: .8;
 }
-#searchbar.fixed #search {
-	margin-left: 10px;
+#searchbar.fixed:hover {
+	opacity: 1;
 }
 #searchbar a {
 	display:none;
@@ -203,6 +204,9 @@ $(document).ready(function() {
 			$("#report_list h2.title").removeClass('collapsed').addClass('expanded');
 			$("#report_list h2.no_title").removeClass('expanded').addClass('collapsed');
 			$("#report_list .report").show().removeClass('selected');
+		
+			refresh_report_list();
+		
 			return;
 		}
 		
@@ -232,10 +236,19 @@ $(document).ready(function() {
 		}
 		
 		//make sure we aren't scrolled above the report list
-		if($(window).scrollTop() < ($('#report_list').offset().top - 70)) {
-			$(window).scrollTop($('#report_list').offset().top - 70);
+		if($(window).scrollTop() < ($('#report_list').offset().top - 50)) {
+			$(window).scrollTop($('#report_list').offset().top - 50);
 		}
+		
+		refresh_report_list();
 	});
+	
+	//there is a bug with webkit where the page isn't redrawn
+	//when changing the innerhtml
+	var refresh_report_list = function() {
+		var height = $('#report_list').height();
+		$('#report_list').height(height+1).height(height);
+	};
 	
 	//make the search bar fixed when scolling down through reports
 	var original_search_offset = $('#searchbar').next().offset().top;
@@ -244,7 +257,7 @@ $(document).ready(function() {
 		var $el = $('#searchbar');
 		
 		if(!search_bar_fixed) {
-			original_search_offset = $el.next().offset().top - 75;
+			original_search_offset = $el.next().offset().top - 55;
 		}
 		
 		if ($(this).scrollTop() >= original_search_offset){
@@ -266,6 +279,11 @@ $(document).ready(function() {
 	{{ links|raw }}
 </div>
 <h1>Report List</h1>
+<div id='searchbar'>
+	Search
+	<input type='text' id='search'/>
+	<a href='#reportlist'>Back to top</a>
+</div>
 <div id='table_of_contents'>
 	<h3>Table of Contents <a href='#' id='hide_table_of_contents'>show / hide</a></h3>
 	<div class='report_list'>
@@ -275,10 +293,6 @@ $(document).ready(function() {
 	</div>
 </div>
 
-<div id='searchbar'>
-	<input type='text' id='search' title='search' class='jq_watermark'/>
-	<a href='#reportlist'>Back to top</a>
-</div>
 <div id='report_list'>
 	<a name='reportlist'></a>
 	<h3>All Reports</h3>
