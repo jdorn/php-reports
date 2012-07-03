@@ -9,6 +9,8 @@ class CautionHeader extends HeaderBase {
 	
 	public static function init($params, &$report) {
 		$report->options['Caution'] = $params['value'];
+			
+		$report->exportHeader('Caution',$params);
 	}
 	
 	public static function parseShortcut($value) {

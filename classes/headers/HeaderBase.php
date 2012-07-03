@@ -5,10 +5,13 @@ class HeaderBase {
 	public static function parse($key, $value, &$report) {				
 		$params = null;
 		
+		if(is_array($value)) {
+			$params = $value;
+		}
 		//try to json_decode value
 		//this is a wrapper json_decode function that supports non-strict JSON
 		//for example, {key:"value",'key2':'value2',}
-		if($value[0] === '{') {
+		elseif($value[0] === '{') {
 			$params = PhpReports::json_decode($value, true);
 		}
 		

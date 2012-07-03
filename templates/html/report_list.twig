@@ -103,7 +103,32 @@
 	border: 1px solid #aaa;
 	border-radius: 5px;
 	padding: 2px 8px;
-	margin-left: 12px;
+}
+#searchbar {
+	margin: 10px 0 0 0;
+}
+#searchbar.fixed {
+	background: white;
+    position:fixed;
+    top:0;
+    width:100%;
+    z-index:100;
+	border-bottom: 1px solid #aaa;
+	padding: 5px 0;
+	margin: 0 -10px;
+	-moz-box-shadow:    0 3px 6px 2px rgba(68,68,68,0.6);
+	-webkit-box-shadow: 0 3px 6px 3px rgba(68,68,68,0.6);
+	box-shadow:         0 3px 6px 2px rgba(68,68,68,0.6);
+}
+#searchbar.fixed #search {
+	margin-left: 10px;
+}
+#searchbar a {
+	display:none;
+}
+#searchbar.fixed a {
+	display:inline-block;
+	margin-left: 20px;
 }
 </style>
 <script>
@@ -124,6 +149,7 @@ $(document).ready(function() {
 		else showReportList(h2,delay);
 	}
 	
+	//toggle links
 	$('#report_list').on('click','h2',function() {
 		toggleReportList($(this),200);
 		
@@ -133,11 +159,14 @@ $(document).ready(function() {
 		$('#table_of_contents > .report_list').toggle(200);
 		return false;
 	});
+	
+	//when a link is clicked in table of contents, make sure the section is visible
 	$('#table_of_contents').on('click','a',function() {
 		var target = $($(this).attr('href'));
 		showReportList(target);
 	});
 	
+	//generate report list
 	{% macro jsonreportdir(item) %}
 		{% if item.is_dir %}
 			{
@@ -156,7 +185,6 @@ $(document).ready(function() {
 			},
 		{% endif %}
 	{% endmacro %}
-	
 	var reports = [
 		{% for item in reports %}
 		{{ _self.jsonreportdir(item) }}
@@ -165,6 +193,7 @@ $(document).ready(function() {
 	];
 	reports.pop();
 	
+	//report search
 	$('#search').keyup(function(e) {
 		var val = $(this).val();
 		
@@ -201,8 +230,35 @@ $(document).ready(function() {
 				$('#report_'+matching[i].id).parents('.report_list').prev('h2').addClass('expanded').removeClass('collapsed');
 			}
 		}
+		
+		//make sure we aren't scrolled above the report list
+		if($(window).scrollTop() < ($('#report_list').offset().top - 70)) {
+			$(window).scrollTop($('#report_list').offset().top - 70);
+		}
 	});
 	
+	//make the search bar fixed when scolling down through reports
+	var original_search_offset = $('#searchbar').next().offset().top;
+	var search_bar_fixed = false;
+	$(window).scroll(function(e){
+		var $el = $('#searchbar');
+		
+		if(!search_bar_fixed) {
+			original_search_offset = $el.next().offset().top - 75;
+		}
+		
+		if ($(this).scrollTop() >= original_search_offset){
+			if(!search_bar_fixed) {
+				$el.addClass('fixed');
+				search_bar_fixed = true;
+			}
+		}
+		else if(search_bar_fixed) {
+			$el.removeClass('fixed');
+			search_bar_fixed = false;
+		}
+	});
+
 });
 </script>
 <a name='top'></a>
@@ -219,9 +275,13 @@ $(document).ready(function() {
 	</div>
 </div>
 
-<div id='report_list'>
-	<h3>All Reports</h3>
+<div id='searchbar'>
 	<input type='text' id='search' title='search' class='jq_watermark'/>
+	<a href='#reportlist'>Back to top</a>
+</div>
+<div id='report_list'>
+	<a name='reportlist'></a>
+	<h3>All Reports</h3>
 	{% for item in reports %}
 	<div class='report_list {% if item.Title %}default-show{% else %}default-hide{% endif %}'>
 		{% include "html/report_list_item.twig" %}

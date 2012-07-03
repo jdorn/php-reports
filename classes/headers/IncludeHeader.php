@@ -29,14 +29,10 @@ class IncludeHeader extends HeaderBase {
 		
 		$included_report = new Report($report_path);
 		
-		/*
-		//This is for importing the included report's headers
-		//Disabled for now, since it is causing problems with inheritance
-		foreach($included_report->header_lines as $line) {
-			print_r($line);
-			$report->parseHeader($line['name'],$line['value']);
+		//parse any exported headers from the included report
+		foreach($included_report->exported_headers as $header) {
+			$report->parseHeader($line['name'],$line['params']);
 		}
-		*/
 		
 		if(!isset($report->options['Includes'])) $report->options['Includes'] = array();
 		

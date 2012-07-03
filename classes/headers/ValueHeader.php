@@ -16,6 +16,8 @@ class ValueHeader extends HeaderBase {
 			
 			$report->options['Variables'][$params['name']]['default'] = $params['value'];
 			$report->macros[$params['name']] = $params['value'];
+			
+			$report->exportHeader('Value',$params);
 		}
 		else {
 			throw new Exception("Providing value for unknown variable $params[name]");
@@ -34,11 +36,5 @@ class ValueHeader extends HeaderBase {
 			'name'=>$var,
 			'value'=>$default
 		);
-	}
-	
-	public static function afterParse(&$report) {
-		foreach($report->options['Includes'] as $included_report) {
-			$report->importHeaders($included_report,'Value');
-		}
 	}
 }

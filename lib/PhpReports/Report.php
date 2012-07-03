@@ -2,6 +2,7 @@
 class Report {
 	public $report;
 	public $macros = array();
+	public $exported_headers = array();
 	public $options = array();
 	public $template_vars = array();
 	public $is_ready = false;
@@ -57,6 +58,9 @@ class Report {
 	
 	public function addMacro($name, $value) {
 		$this->macros[$name] = $value;
+	}
+	public function exportHeader($name,$params) {
+		$this->exported_headers[] = array('name'=>$name,'params'=>$params);
 	}
 	
 	public function getCacheKey() {
@@ -184,14 +188,6 @@ class Report {
 		}
 		
 		if(!isset($this->options['Name'])) $this->options['Name'] = $this->report;
-	}
-	
-	public function importHeaders($report, $name=null) {
-		foreach($report->header_lines as $line) {
-			if(!$name || $line['name']===$name) {
-				$this->parseHeader($line['name'],$line['value']);
-			}
-		}
 	}
 	
 	public function parseHeader($name,$value) {

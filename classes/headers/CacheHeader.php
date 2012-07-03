@@ -10,6 +10,8 @@ class CacheHeader extends HeaderBase {
 	
 	public static function init($params, &$report) {
 		$report->options['Cache'] = intval($params['ttl']);
+		
+		$report->exportHeader('Cache',$params);
 	}
 	
 	public static function parseShortcut($value) {

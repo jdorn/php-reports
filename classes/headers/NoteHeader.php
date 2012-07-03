@@ -9,6 +9,8 @@ class NoteHeader extends HeaderBase {
 	
 	public static function init($params, &$report) {
 		$report->options['Note'] = $params['value'];
+		
+		$report->exportHeader('Note',$params);
 	}
 	
 	public static function parseShortcut($value) {

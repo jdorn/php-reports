@@ -65,6 +65,8 @@ class VariableHeader extends HeaderBase {
 		if(trim($report->macros[$params['name']])==='' && (!isset($params['empty']) || !$params['empty'])) {
 			$report->is_ready =false;
 		}
+		
+		$report->exportHeader('Variable',$params);
 	}
 	
 	public static function parseShortcut($value) {
@@ -129,10 +131,6 @@ class VariableHeader extends HeaderBase {
 	
 	public static function afterParse(&$report) {
 		$classname = $report->options['Type'].'ReportType';
-		
-		foreach($report->options['Includes'] as $included_report) {
-			$report->importHeaders($included_report,'Variable');
-		}
 		
 		foreach($report->options['Variables'] as $var=>$params) {
 			//if it's a select variable and the options are pulled from a database

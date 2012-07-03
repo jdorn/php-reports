@@ -50,6 +50,15 @@ class OptionsHeader extends HeaderBase {
 	public static function init($params, &$report) {
 		foreach($params as $key=>$value) {
 			$report->options[$key] = $value;
+			
+			//if the value is different from the default, export it
+			if($value && $value !== self::$validation[$key]['default']) {
+				//export the acceess option if defined
+				//all other options should not be exported
+				if($key === 'access') {
+					$report->exportHeader('Options',array($key=>$value));
+				}
+			}
 		}
 	}
 	
