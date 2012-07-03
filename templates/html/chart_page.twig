@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{title}}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script>
+	google.load("visualization", "1", {packages:["corechart","geochart","annotatedtimeline"]});
+	</script>
+	<style>
+	html, body {
+		padding: 0;
+		margin: 0;
+	}
+	* {
+		font-family: arial, san serif;
+	}
+	.error {
+		color: red;
+		padding: 20px;
+		border: 1px solid red;
+		background-color: #fdd;
+		border-radius: 6px;
+	}
+	.notice {
+		color: #34e;
+		padding: 20px;
+		border: 1px solid #34e;
+		background-color: #ffd;
+		border-radius: 6px;
+	}
+	pre {
+		white-space: pre-wrap;			/* css-3 */
+		white-space: -moz-pre-wrap;		/* Mozilla, since 1999 */
+		white-space: -pre-wrap;			/* Opera 4-6 */
+		white-space: -o-pre-wrap;		/* Opera 7 */
+		word-wrap: break-word;			/* Internet Explorer 5.5+ */
+	}
+	</style>
+</head>
+<body>
+{% if error %}
+	<div class='error'>
+		{{error}}
+	</div>
+{% endif %}
+
+{% if notice %}
+	<div class='notice'>
+		{{notice}}
+	</div>
+{% endif %}
+
+<div id='content'>
+	{{content|raw}}
+</div>
+</body>
+</html>

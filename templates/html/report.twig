@@ -102,58 +102,10 @@ h1 {
 <p>Query took {{Time}} seconds</p>
 
 {% if has_charts %}
-	<script type="text/javascript">
-	function drawCharts() {
-		{% for chart in Charts %}
-			var data_{{chart.num}} = new google.visualization.DataTable();
-					
-			{% for value in chart.Rows[0].values %}
-				{% if value.is_date %}
-				data_{{chart.num}}.addColumn('date',"{{value.key}}");
-				{% elseif value.is_number %}
-				data_{{chart.num}}.addColumn('number',"{{value.key}}");
-				{% else %}
-				data_{{chart.num}}.addColumn('string',"{{value.key}}");
-				{% endif %}
-			{% endfor %}
-		
-			var rows = [
-			{% for row in chart.Rows %}
-				{% if not row.first %},{% endif %}
-				[
-				{% for value in row.values %}
-					{% if not value.first %},{% endif %}
-					{% if value.is_date %}
-					new Date("{{value.value|raw}}")
-					{% elseif value.is_number %}
-					{{ value.value }}
-					{% else %}
-					"{{ value.value }}"
-					{% endif %}
-				{% endfor %}
-				]
-			{% endfor %}];
-		
-			data_{{chart.num}}.addRows(rows);
-
-			var options_{{chart.num}} = {
-				title: '{{chart.title}}',
-				displayMode: 'markers',
-				colorAxis: {colors: ['blue', 'red']},
-				sizeAxis: {minValue: 1,  maxSize:  10},
-				displayAnnotations: true
-			};
-
-			var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
-			chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
-		{% endfor %}
-	}
-	drawCharts();
-	</script>
-	
-	{% for chart in Charts %}
-	<div id='chart_div_{{chart.num}}' style='{% if chart.width %}width={{chart.width}};{% endif %}{% if chart.height %}height={{chart.height}};{% endif %}'></div>
-	{% endfor %}
+<iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
+<script>
+  $('#chart_container').iframeAutoHeight();
+</script>
 {% endif %}
 
 {% if Query_Formatted %}

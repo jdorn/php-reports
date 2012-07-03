@@ -481,6 +481,7 @@ class Report {
 			'is_ready'=>$this->is_ready,
 			'async'=>$this->async,
 			'report_url'=>PhpReports::$request->base.'/report/?'.$_SERVER['QUERY_STRING'],
+			'report_querystring'=>$_SERVER['QUERY_STRING'],
 			'base'=>PhpReports::$request->base,
 			'content'=> $content,
 			'variable_form'=>$variable_form
