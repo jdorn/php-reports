@@ -1,0 +1,20 @@
+<div class='waiting' id='async_notice'>
+	<div>
+		Your report is running.
+		{% if time_estimate %}
+			{% if time_estimate.median %}
+				This report usually takes {{time_estimate.median}} seconds.
+			{% endif %}
+		{% endif %}
+	</div>
+</div>
+<script>
+$.ajax({
+	'url': '{{report_url|raw}}',
+	'dataType': 'html',
+	'data': {'content_only': true},
+	'success': function(data) {
+		$('#report_content').html(data);
+	}
+});
+</script>

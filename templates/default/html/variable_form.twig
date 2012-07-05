@@ -7,7 +7,7 @@
 	<div class='input-row'>
 		<label for='var_database'>Database</label>
 		<select name='database' id='var_database'>
-		{% for database in databases %}
+		{% for database in Databases %}
 			<option value='{{database.name}}' {% if database.selected %}selected="selected"{% endif %}>{{ database.name }}</option>
 		{% endfor %}
 		</select>

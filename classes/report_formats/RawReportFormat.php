@@ -5,8 +5,6 @@ class RawReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
-		echo PhpReports::render('text/page',array(
-			'content'=>$report->getRaw()
-		));
+		echo $report->getRaw();
 	}
 }

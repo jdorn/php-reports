@@ -4,7 +4,6 @@ class Report {
 	public $macros = array();
 	public $exported_headers = array();
 	public $options = array();
-	public $template_vars = array();
 	public $is_ready = false;
 	public $async = false;
 	public $headers = array();
@@ -16,6 +15,7 @@ class Report {
 	protected $raw_headers;
 	protected $filters = array();
 	protected $filemtime;
+	protected $has_run = false;
 	
 	public function __construct($report,$macros = array(), $database = null, $use_cache = null) {
 		$reportDir = PhpReports::$config['reportDir'];
@@ -255,20 +255,10 @@ class Report {
 		return $this->raw;
 	}
 	
-	public function renderVariableForm($template='html/variable_form') {
-		foreach($this->headers as $header) {
-			$classname = $header.'Header';
-			$classname::afterParse($this);
-		}
+	public function prepareVariableForm() {
+		$vars = array();
 		
 		if($this->options['Variables']) {
-			$template_vars = array(
-				'vars'=>array(),
-				'database'=>$this->options['Database'],
-				'databases'=>$this->options['Databases'],
-				'report'=>$this->report
-			);
-			
 			foreach($this->options['Variables'] as $var => $params) {
 				if(!isset($params['name'])) $params['name'] = ucwords(str_replace(array('_','-'),' ',$var));
 				if(!isset($params['type'])) $params['type'] = 'string';
@@ -301,15 +291,14 @@ class Report {
 					}
 				}
 				
-				$template_vars['vars'][] = $params;
-			}
-			
-			return PhpReports::render($template, $template_vars);
+				$vars[] = $params;
+			}	
 		}
-		else return '';
+		
+		return $vars;
 	}
 	
-	public function runReport() {
+	protected function _runReport() {
 		if(!$this->is_ready) {
 			throw new Exception("Report is not ready.  Missing variables");
 		}		
@@ -428,19 +417,27 @@ class Report {
 		$this->options['Rows'] = $rows;
 	}
 	
-	public function renderReportContent($template='html/table') {
+	public function run() {
+		if($this->has_run) return true;
+		
+		//at this point, all the headers are parsed and we haven't run the report yet
+		foreach($this->headers as $header) {
+			$classname = $header.'Header';
+			$classname::afterParse($this);
+		}
+		
+		//record how long it takes to run the report
 		$start = microtime(true);
 		
 		if($this->is_ready && !$this->async) {
-			//if this report should be cached
+			//if the report is cached
 			if($options = $this->retrieveFromCache()) {				
 				$this->options = $options;
 				$this->options['FromCache'] = true;
 			}
 			else {
-				$this->runReport();
+				$this->_runReport();
 				$this->prepareRows();
-				
 				$this->storeInCache();
 			}
 		}
@@ -466,18 +463,11 @@ class Report {
 			FileSystemCache::store($this->report, $report_times, 'report_times');
 		}
 		
-		$template_vars = array(
-			'report_url'=>PhpReports::$request->base.'/report/?'.$_SERVER['QUERY_STRING'],
-			'report_querystring'=>$_SERVER['QUERY_STRING'],
-			'base'=>PhpReports::$request->base
-		);
-		
-		return PhpReports::render($template, array_merge($template_vars,$this->options));
+		$this->has_run = true;
 	}
 	
-	public function renderReportPage($content_template='html/table',$report_template='html/report') {
-		$variable_form = $this->renderVariableForm();
-		$content = $this->renderReportContent($content_template);
+	public function renderReportPage($template='html/report') {
+		$this->run();
 		
 		$template_vars = array(
 			'is_ready'=>$this->is_ready,
@@ -485,13 +475,13 @@ class Report {
 			'report_url'=>PhpReports::$request->base.'/report/?'.$_SERVER['QUERY_STRING'],
 			'report_querystring'=>$_SERVER['QUERY_STRING'],
 			'base'=>PhpReports::$request->base,
-			'content'=> $content,
-			'variable_form'=>$variable_form
+			'report'=>$this->report,
+			'vars'=>$this->prepareVariableForm()
 		);
 		
 		$template_vars = array_merge($template_vars,$this->options);
 		
-		return PhpReports::render($report_template, $template_vars);
+		return PhpReports::render($template, $template_vars);
 	}
 }
 ?>

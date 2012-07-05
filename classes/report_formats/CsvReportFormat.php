@@ -4,10 +4,6 @@ class CsvReportFormat extends ReportFormatBase {
 		//always use cache for CSV reports
 		$report->use_cache = true;
 		
-		$page_template = array(
-			'content'=>$report->renderReportPage('csv/report','csv/page')
-		);
-		
 		$file_name = preg_replace(array('/[\s]+/','/[^0-9a-zA-Z\-_\.]/'),array('_',''),$report->options['Name']);
 		
 		header("Content-type: application/csv");
@@ -15,6 +11,6 @@ class CsvReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
-		echo PhpReports::render('csv/page',$page_template);
+		echo $report->renderReportPage('csv/report');
 	}
 }

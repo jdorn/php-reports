@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{% block title %}{{title}}{% endblock %}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	{% block stylesheets %}
+	<link rel='stylesheet' href='{{base}}/public/css/style.css' />
+	{% endblock %}
+	
+	{% block javascripts %}
+	<script src='{{base}}/public/js/jquery-1.7.2.min.js'></script>
+	<script src='{{base}}/public/js/jquery.watermark.min.js'></script>
+	{% endblock %}
+</head>
+<body>
+	<div id='top_bar'>
+	{% block topbar %}
+		<div class='breadcrumb'>
+		{% block breadcrumb %}
+			{% for display, url in breadcrumb %}
+				{% if loop.last %}
+					<strong>{{display}}</strong>
+				{% else %}
+					<a href="{{base}}/{{url}}">{{display}}</a> &gt;
+				{% endif %}
+			{% endfor %}
+		{% endblock %}
+		</div>
+		<div class='header_links'>
+			{% block header_links %}{% endblock %}
+		</div>
+	{% endblock %}
+	</div>
+	<div id='holder'>
+		<div class='header'>
+		{% block header %}
+			{{ header|raw }}
+		{% endblock %}
+		</div>
+
+		{% block notice_area %}
+			{% if error %}
+				<div class='error'>
+					{{error}}
+				</div>
+			{% endif %}
+
+			{% if notice %}
+				<div class='notice'>
+					{{notice}}
+				</div>
+			{% endif %}
+		{% endblock %}
+
+		<div id='content'>
+		{% block content %}
+			{{content|raw}}
+		{% endblock %}
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{% extends "html/page.twig" %}
+
+{% block title %}{{ Name }}{% endblock %}
+
+{% block breadcrumb %}
+	{% set breadcrumb = {"Report List": "", (Name): true} %}
+	{{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel='stylesheet' href='{{base}}/public/css/report.css' />
+	{% if not vertical %}
+		<link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
+	{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{% if has_charts %}
+		<script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.js"></script>
+	{% endif %}
+	{% if not vertical %}
+		<script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
+	{% endif %}
+{% endblock %}
+
+{% block header %}
+	<h1>{{Name}}</h1>
+	{% if description %}
+		<div id='report_description'>{{Description|raw}}</div>
+	{% endif %}
+	
+	{% if Variables is not empty %}
+		{% include "html/variable_form.twig" %}
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<div>
+		{% block database_chooser %}
+			<div style='float:left;'>
+				<em class='database_message'>Running on database</em>
+				<select id='database_select'>
+				{% for option in Databases %}
+					<option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<script>
+			$('#database_select').change(function() {
+				var url = window.location.href.split('?')[0];
+				var querystring = window.location.href.split('?')[1].split('#')[0];
+				
+				querystring = querystring.replace(/&?database=[^&]*/,'');
+				querystring += '&database='+$(this).val();
+				
+				window.location.href = url+'?'+querystring;
+				return false;
+			});
+			</script>
+		{% endblock %}
+		<div class='export_links' style='float:left;'>
+		{% block export_links %}
+			<a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link'>export to csv</a>
+		{% endblock %}
+		</div>
+		<div style='clear:both;'></div>
+	</div>
+	
+	<div id='report_content'>
+	{% if not is_ready %}
+		<div class='notice'>
+		This report needs more information before running.
+		</div>
+	{% elseif async %}
+		{% include "html/report_ajax_loading.twig" %}
+	{% else %}
+		{% include "html/report_content.twig" %}
+	{% endif %}
+	</div>
+
+	{% block time_estimate %}
+		{% if time_estimate %}
+			<div style='margin-top: 20px;'>
+				<a href='#' id='show_time_estimate'>show time estimate data</a>
+				<div style='font-size: .8em; display:none;' id='time_estimate_holder'>
+					<div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
+					<div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
+					<div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
+					<div><strong>Median: </strong> {{time_estimate.median}}</div>
+					<div><strong>Average: </strong> {{time_estimate.average}}</div>
+					<div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>	
+				</div>
+			</div>
+			<script>
+			$('#show_time_estimate').click(function() {
+				$('#time_estimate_holder').toggle(200);
+				return false;
+			});
+			</script>
+		{% endif %}
+	{% endblock %}
+{% endblock %}

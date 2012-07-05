@@ -1,0 +1,132 @@
+#table_of_contents {
+	padding-bottom: 5px;
+	border-bottom: 1px solid #ccc;
+}
+#table_of_contents h3 {
+	margin: 0 0 5px 0;
+	padding: 0;
+}
+#table_of_contents > .report_list {
+	padding: 10px 0;
+}
+#table_of_contents .count {
+	font-size: .8em;
+	padding-left: 10px;
+}
+#table_of_contents .directory {
+	padding-left: 20px;
+	margin: 5px 0;
+}
+#table_of_contents .directory .directory {
+	background: url("../images/list_image.png") no-repeat top left;
+}
+#report_list h1 {
+	
+}
+#report_list h2 {
+	font-size: 1.3em;
+	padding: 5px 20px 5px 0;
+	margin: 0;
+	display: inline-block;
+	cursor: pointer;
+	background: transparent url("../images/toggle.png") no-repeat center right;
+	float:left;
+}
+#report_list .report_list .report_list h2 {
+	color: #444;
+	font-size: 1.2em;
+}
+#report_list .report_list .report_list .report_list h2 {
+	color: #555;
+	font-size: 1.1em;
+}
+#report_list h2.no_title {
+	font-size: 1em;
+	font-weight:normal;
+}
+#report_list .report_list {
+	margin-left: 20px;
+	border: 1px dotted #aaa;
+	border-width: 0 0 0 1px;
+	padding: 7px;
+	font-size: 95%;
+	clear:left;
+}
+#report_list > .report_list {
+	border:0;
+	margin-left: 5px;
+}
+#report_list .report_list h2 {
+	display: block;
+	margin: 0;
+}
+#report_list h2.collapsed~.report_list {
+	display:none;
+}
+#report_list h2.expanded {
+}
+#report_list h2.collapsed {
+	background-image: url("../images/toggle-expand.png");
+}
+
+#report_list .back_to_top {
+	margin-left: 20px;
+	font-size: .8em;
+}
+
+#report_list .report {
+	padding: 8px 0;
+}
+#report_list .report.selected {
+	background-color: #FCFFBD;
+	padding-left: 8px;
+	border: 2px solid #F2FF00;
+	border-radius: 3px;
+}
+#report_list .report img {
+	vertical-align: middle;
+}
+#report_list .collapse {
+	text-decoration:none;
+	vertical-align:middle;
+	color: #7777ff;
+	padding: 0 3px;
+}
+#hide_table_of_contents {
+	font-size: .7em;
+	vertical-align:middle;
+	margin-left: 10px;
+	font-weight:normal;
+}
+#search {
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	padding: 2px 8px;
+}
+#searchbar {
+	margin: 0 0 10px 0;
+}
+#searchbar.fixed {
+	background: white;
+    position:fixed;
+    top:0;
+    width:100%;
+    z-index:100;
+	border-bottom: 1px solid #aaa;
+	padding: 5px 10px;
+	margin: 0 -10px;
+	-moz-box-shadow:    0 3px 6px 2px rgba(68,68,68,0.6);
+	-webkit-box-shadow: 0 3px 6px 3px rgba(68,68,68,0.6);
+	box-shadow:         0 3px 6px 2px rgba(68,68,68,0.6);
+	opacity: .8;
+}
+#searchbar.fixed:hover {
+	opacity: 1;
+}
+#searchbar a {
+	display:none;
+}
+#searchbar.fixed a {
+	display:inline-block;
+	margin-left: 20px;
+}

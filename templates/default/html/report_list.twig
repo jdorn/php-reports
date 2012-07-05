@@ -1,0 +1,80 @@
+{% extends "html/page.twig" %}
+
+{% block title %}Report List{% endblock %}
+
+{% set breadcrumb = {"Report List": true} %}
+
+{%block javascripts %}
+	{{ parent() }}
+	<script type='text/javascript'>
+	//generate report list
+	{% macro jsonreportdir(item) %}
+		{% if item.is_dir %}
+			{
+				name: "{{ item.Title|trim }}",
+				id: "{{ item.Id }}",
+				report: false
+			},
+			{% for item in item.children %}
+				{{ _self.jsonreportdir(item) }}
+			{% endfor %}
+		{% elseif not item.is_dir %}
+			{
+				name: "{{ item.Name|trim }}",
+				id: "{{ item.Id }}",
+				report: true
+			},
+		{% endif %}
+	{% endmacro %}
+	var reports = [
+		{% for item in reports %}
+		{{ _self.jsonreportdir(item) }}
+		{% endfor %}
+		null
+	];
+	reports.pop();
+	</script>
+	<script type='text/javascript' src='{{base}}/public/js/report_list.js'></script>
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel='stylesheet' href='{{base}}/public/css/report_list.css' />
+{% endblock %}
+
+{% block header %}
+	<a name='top'></a>
+	<h1>Report List</h1>
+{% endblock %}
+
+{% block content %}
+	<div id='searchbar'>
+	{% block searchbar %}
+		Search
+		<input type='text' id='search'/>
+		<a href='#reportlist'>Back to top</a>
+	{% endblock %}
+	</div>
+	<div id='table_of_contents'>
+	{% block table_of_contents %}
+		<h3>Table of Contents <a href='#' id='hide_table_of_contents'>show / hide</a></h3>
+		<div class='report_list'>
+		{% for item in reports %}
+			{% include "html/report_list_table_of_contents_item.twig" %}
+		{% endfor %}
+		</div>
+	{% endblock %}
+	</div>
+
+	<div id='report_list'>
+	{% block report_list %}
+		<a name='reportlist'></a>
+		<h3>All Reports</h3>
+		{% for item in reports %}
+		<div class='report_list {% if item.Title %}default-show{% else %}default-hide{% endif %}'>
+			{% include "html/report_list_item.twig" %}
+		</div>
+		{% endfor %}
+	{% endblock %}
+	</div>
+{% endblock %}

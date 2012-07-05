@@ -1,0 +1,48 @@
+{% if not nodata %}
+	<table id='result_table'>
+		{% if vertical %}
+			{% for row in VerticalRows %}
+			<tr>
+				{% for value in row.values %}
+				{% if value.is_header %}{% set tag = 'th' %}{% else %}{% set tag = 'td' %}{% endif %}
+				<{{ tag }} class="{{ class }}">
+					{% if value.raw %}{{ value.value|raw }}{% else %}{{ value.value }}{% endif %}
+				</{{ tag }}>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		{% else %}
+		<thead>
+			<tr class='header'>
+			{% for value in Rows[0].values %}
+				<th class="{{value.class}}">{{value.key}}</th>
+			{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for row in Rows %}
+			<tr>
+				{% for value in row.values %}
+				<td class="{{value.class}}">
+					{% if value.value %}
+						{% if value.raw %}{{ value.value|raw }}{% else %}{{ value.value }}{% endif %}
+					{% else %}
+					&nbsp;
+					{% endif %}
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</tbody>
+		{% endif %}
+	</table>
+
+	{% if not vertical and not nodata %}
+	<script type='text/javascript'>
+	$('#result_table').dataTable({
+		bPaginate: false,
+		aaSorting: []
+	});
+	</script>
+	{% endif %}
+	<div style='clear:both;'></div>
+{% endif %}

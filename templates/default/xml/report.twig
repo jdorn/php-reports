@@ -1,0 +1,13 @@
+{% extends "xml/page.twig" %}
+
+{% block content %}
+<Results>
+{% for row in Rows %}
+	<Row>
+	{% for value in row.values %}
+		<{{value.key_collapsed}}>{% if value.raw %}{{value.raw_value|striptags}}{% else %}{{value.value|striptags}}{% endif %}</{{value.key_collapsed}}>
+	{% endfor %}
+	</Row>
+{% endfor %}
+</Results>
+{% endblock %}

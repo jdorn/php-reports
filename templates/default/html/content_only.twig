@@ -1,0 +1,19 @@
+{% block notice_area %}
+	{% if error %}
+		<div class='error'>
+			{{error}}
+		</div>
+	{% endif %}
+
+	{% if notice %}
+		<div class='notice'>
+			{{notice}}
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{% if not error %}
+		{% include "html/report_content.twig" %}
+	{% endif %}
+{% endblock %}

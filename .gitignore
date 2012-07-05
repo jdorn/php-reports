@@ -1,5 +1,6 @@
 config/config.php
-reports/transactions/
+reports/
 cache/
-classes/local/
-templates/local/
+classes/local/*.php
+templates/local/*.twig
+

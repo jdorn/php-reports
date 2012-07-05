@@ -18,8 +18,10 @@ class PhpReports {
 		self::$request = Flight::request();
 		self::$request->base = 'http://'.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
 		
-		
-		$template_dirs = array('templates');
+		//the load order for templates is: "templates/local", "templates/default", "templates"
+		//this means loading the template "html/report.twig" will load the local first and then the default
+		//if you want to extend a default template from within a local template, you can do {% extends "default/html/report.twig" %} and it will fall back to the last loader
+		$template_dirs = array('templates/default','templates');
 		if(file_exists('templates/local')) array_unshift($template_dirs, 'templates/local');
 		
 		$loader = new Twig_Loader_Chain(array(
@@ -80,16 +82,7 @@ class PhpReports {
 		$template_vars = isset(self::$config['report_list'])? self::$config['report_list'] : array();
 		$template_vars['reports'] = $reports;
 
-		$content = self::render('html/report_list',$template_vars);
-
-		$template_vars = array(
-			'content'=>$content,
-			'title'=>'Report List',
-			'is_home'=>true,
-			'breadcrumb'=>array('Report List'=>true)
-		);
-
-		echo self::render('html/page',$template_vars);
+		echo self::render('html/report_list',$template_vars);
 	}
 	
 	protected static function getReports($dir, $base = null) {

@@ -10,16 +10,13 @@ class DebugReportFormat extends ReportFormatBase {
 		$content .= "****************** All Report Options ******************\n\n".print_r($report->options,true)."\n\n\n";
 		
 		if($report->is_ready) {
-			$report->renderReportContent();
+			$report->run();
 		
 			$content .= "****************** Generated Query ******************\n\n".print_r($report->options['Query'],true)."\n\n\n";
 			
 			$content .= "****************** Report Rows ******************\n\n".print_r($report->options['Rows'],true)."\n\n\n";
 		}
 		
-		
-		echo PhpReports::render('text/page',array(
-			'content'=>$content
-		));
+		echo $content;
 	}
 }

@@ -6,7 +6,7 @@ class TextReportFormat extends ReportFormatBase {
 		header("Expires: 0");
 		
 		//run the report
-		$report->renderReportPage('text/page','text/page');
+		$report->run();
 		
 		/**
 		 * This code taken from Stack Overflow answer by ehudokai

@@ -1,0 +1,43 @@
+{% include "html/table.twig" %}
+<p>Query took {{Time}} seconds</p>
+
+{% block chart_area %}
+	{% if has_charts %}
+		<iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
+		<script>
+		  $('#chart_container').iframeAutoHeight();
+		</script>
+	{% endif %}
+{% endblock %}
+
+{% block show_query %}
+	{% if Query_Formatted %}
+		<a href='#' class='show_query'>show query</a>
+		<div id='query_holder' style='display:none;'>
+			{{Query_Formatted|raw}}
+		</div>
+		<script>
+		$('.show_query').click(function() {
+			showing = $('#query_holder').css('display') == 'none';
+			
+			$('#query_holder').toggle(500);
+			
+			if(showing) {
+				$('html, body').animate({scrollTop: $("#query_holder").offset().top}, 1000);
+			}
+			
+			return false;
+		});
+		$('.included_report').each(function() {
+			var self = $(this);
+			self.css('display','none').css('background-color','#f4f4f4').css('padding-left','10px');
+			var link = $('<a>').attr('href','#').text('View Included Report').css('display','block').click(function() {
+				self.toggle(200);
+				return false;
+			});
+			
+			self.before(link);
+		});
+		</script>
+	{% endif %}
+{% endblock %}
