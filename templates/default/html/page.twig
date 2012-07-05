@@ -16,7 +16,7 @@
 <body>
 	<div id='top_bar'>
 	{% block topbar %}
-		<div class='breadcrumb'>
+		<div id='breadcrumb'>
 		{% block breadcrumb %}
 			{% for display, url in breadcrumb %}
 				{% if loop.last %}
@@ -27,7 +27,7 @@
 			{% endfor %}
 		{% endblock %}
 		</div>
-		<div class='header_links'>
+		<div id='header_links'>
 			{% block header_links %}{% endblock %}
 		</div>
 	{% endblock %}
