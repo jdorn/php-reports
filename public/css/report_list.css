@@ -20,8 +20,8 @@
 #table_of_contents .directory .directory {
 	background: url("../images/list_image.png") no-repeat top left;
 }
-#report_list h1 {
-	
+#report_list {
+	height: auto;
 }
 #report_list h2 {
 	font-size: 1.3em;

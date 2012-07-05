@@ -84,8 +84,9 @@ $(document).ready(function() {
 	//there is a bug with webkit where the page isn't redrawn
 	//when changing the innerhtml
 	var refresh_report_list = function() {
-		var height = $('#report_list').height('height').height();
-		$('#report_list').height(height+1);
+		$('#report_list').css('display','inline-block');
+		$('#report_list').offset();
+		$('#report_list').css('display','block');
 	};
 	
 	//make the search bar fixed when scolling down through reports
