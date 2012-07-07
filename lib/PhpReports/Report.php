@@ -172,18 +172,12 @@ class Report {
 		//try to infer report type from file extension
 		if(!isset($this->options['Type'])) {
 			$file_type = array_pop(explode('.',$this->report));
-			switch($file_type) {
-				case 'js':
-					$this->options['Type'] = 'Mongo';
-					break;
-				case 'sql':
-					$this->options['Type'] = 'Mysql';
-					break;
-				case 'php':
-					$this->options['Type'] = 'Php';
-					break;
-				default:
-					throw new Exception("Unknown report type - ".$this->report);
+			
+			if(!isset(PhpReports::$config['default_file_extension_mapping'][$file_type])) {
+				throw new Exception("Unknown report type - ".$this->report);
+			}
+			else {
+				$this->options['Type'] = PhpReports::$config['default_file_extension_mapping'][$file_type];
 			}
 		}
 		

@@ -120,7 +120,7 @@ class PhpReports {
 				//files to skip
 				if(strpos(basename($report),'.') === false) continue;
 				$ext = array_pop(explode('.',$report));
-				if(!in_array($ext,array('sql','js','php'))) continue;
+				if(!isset(self::$config['default_file_extension_mapping'][$ext])) continue;
 			
 				//check if report data is cached and newer than when the report file was created
 				//the url parameter ?nocache will bypass this and not use cache

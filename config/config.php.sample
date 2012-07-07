@@ -1,21 +1,44 @@
 <?php
 return array(
+	//the root directory of all your reports
+	//reports can be organized in subdirectories
 	'reportDir' => 'sample_reports',
+
+	//the directory where things will be cached
+	//this is relative to the project root by default, but can be set to an absolute path too
+	//the cache has some relatively long lived data so don't use /tmp if you can avoid it
+	//(for example historical report timing data is stored there)
 	'cacheDir' => 'cache',
+
+	//this maps file extensions to report types
+	//to override this for a specific report, simply add a TYPE header
+	//any file extension not in this array will be ignored when pulling the report list
+	'default_file_extension_mapping' => array(
+		'sql'=>'Mysql',
+		'php'=>'Php',
+		'js'=>'Mongo',
+	),
+
+	//this defines the database environments
+	//the keys are the environment names (e.g. "dev", "production")
+	//the values are arrays that contain connection info
 	'databases' => array(
 		'main'=>array(
+			//this is what is used as the "host" macro within reports
 			'host'=>'localhost',
+
 			'mysql'=>array(
 				'host'=>'localhost',
 				'user'=>'root',
 				'pass'=>'',
 				'database'=>'test'
 			),
+
 			'mongo'=>array(
 				'host'=>'localhost',
 				'port'=>'27017'
-			)
-		)
-	)
+			),
+		),
+	),
 );
 ?>
