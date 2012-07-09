@@ -24,11 +24,12 @@ abstract class PhpReportType extends ReportTypeBase {
 		
 	}
 	
-	public static function run(&$report) {
-		
+	public static function run(&$report) {		
 		$eval = "<?php /*BEGIN REPORT MACROS*/ ?><?php ";
 		foreach($report->macros as $key=>$value) {
-			$eval .= "\n".'$'.$key.' = "'.addslashes($value).'";';
+			$value = var_export($value,true);
+			
+			$eval .= "\n".'$'.$key.' = '.$value.';';
 		}
 		$eval .= "\n?><?php /*END REPORT MACROS*/ ?>".$report->raw_query;
 		
