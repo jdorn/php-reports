@@ -17,7 +17,7 @@ class Report {
 	protected $filemtime;
 	protected $has_run = false;
 	
-	public function __construct($report,$macros = array(), $database = null, $use_cache = null) {
+	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {
 		$reportDir = PhpReports::$config['reportDir'];
 		
 		if(!file_exists($reportDir.'/'.$report)) {
@@ -49,7 +49,7 @@ class Report {
 		
 		$this->parseHeaders();
 		
-		$this->options['Database'] = $database;
+		$this->options['Environment'] = $environment;
 		
 		$this->initDb();
 		
@@ -67,7 +67,7 @@ class Report {
 		return md5(serialize(array(
 			'report'=>$this->report,
 			'macros'=>$this->macros,
-			'database'=>$this->options['Database']
+			'database'=>$this->options['Environment']
 		)));
 	}
 
@@ -99,7 +99,7 @@ class Report {
 		$this->options = array(
 			'Filters'=>array(),
 			'Variables'=>array(),
-			'Includes'=>array()
+			'Includes'=>array(),
 		);
 		$this->headers = array();
 		
@@ -181,6 +181,8 @@ class Report {
 			}
 		}
 		
+		if(!isset($this->options['Database'])) $this->options['Database'] = strtolower($this->options['Type']);
+		
 		if(!isset($this->options['Name'])) $this->options['Name'] = $this->report;
 	}
 	
@@ -216,24 +218,24 @@ class Report {
 	
 	protected function initDb() {
 		//if the database isn't set, use the first defined one from config
-		$databases = PhpReports::$config['databases'];
-		if(!$this->options['Database']) {
-			$this->options['Database'] = current(array_keys($databases));
+		$environments = PhpReports::$config['environments'];
+		if(!$this->options['Environment']) {
+			$this->options['Environment'] = current(array_keys($environments));
 		}
 		
 		//set database options
-		$database_options = array();
-		foreach($databases as $key=>$params) {
-			$database_options[] = array(
+		$environment_options = array();
+		foreach($environments as $key=>$params) {
+			$environment_options[] = array(
 				'name'=>$key,
-				'selected'=>$key===$this->options['Database']
+				'selected'=>$key===$this->options['Environment']
 			);
 		}
-		$this->options['Databases'] = $database_options;
+		$this->options['Environments'] = $environment_options;
 		
 		//add a host macro
-		if(isset($databases[$this->options['Database']]['host'])) {
-			$this->macros['host'] = $databases[$this->options['Database']]['host'];
+		if(isset($environments[$this->options['Environment']]['host'])) {
+			$this->macros['host'] = $environments[$this->options['Environment']]['host'];
 		}
 		
 		$classname = $this->options['Type'].'ReportType';

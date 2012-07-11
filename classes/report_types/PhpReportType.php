@@ -34,7 +34,7 @@ abstract class PhpReportType extends ReportTypeBase {
 		$eval .= "\n?><?php /*END REPORT MACROS*/ ?>".$report->raw_query;
 		
 		$config = PhpReports::$config;
-		$database = PhpReports::$config['databases'][$report->options['Database']];
+		$database = PhpReports::$config['environments'][$report->options['Environment']];
 		
 		$report->options['Query'] = $report->raw_query;
 		

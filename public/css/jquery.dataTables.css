@@ -3,9 +3,7 @@
  * Table
  */
 table.dataTable {
-	margin: 0 auto;
 	clear: both;
-	width: 100%;
 	border-collapse: collapse;
 	font-family: arial, sans serif;
 }

@@ -14,7 +14,11 @@ class PhpReports {
 			throw new Exception("Cannot find config file");
 		}
 		
-		self::$config = include($config);
+		$default_config = include('config/config.php.sample');
+		$config = include($config);
+	
+		self::$config = array_merge($default_config, $config);
+		
 		self::$request = Flight::request();
 		self::$request->base = 'http://'.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
 		
@@ -45,7 +49,7 @@ class PhpReports {
 		return self::$twig->render($template,$macros);
 	}
 	
-	public static function displayReport($report,$type) {
+	public static function displayReport($report,$type) {		
 		$classname = ucfirst(strtolower($type)).'ReportFormat';
 		
 		$error_header = 'An error occurred while running your report';

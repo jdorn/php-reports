@@ -42,7 +42,7 @@
 			<div style='float:left;'>
 				<em class='database_message'>Running on database</em>
 				<select id='database_select'>
-				{% for option in Databases %}
+				{% for option in Environments %}
 					<option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
 				{% endfor %}
 				</select>
@@ -52,8 +52,8 @@
 				var url = window.location.href.split('?')[0];
 				var querystring = window.location.href.split('?')[1].split('#')[0];
 				
-				querystring = querystring.replace(/&?database=[^&]*/,'');
-				querystring += '&database='+$(this).val();
+				querystring = querystring.replace(/&?environment=[^&]*/,'');
+				querystring += '&environment='+$(this).val();
 				
 				window.location.href = url+'?'+querystring;
 				return false;

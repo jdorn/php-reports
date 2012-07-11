@@ -22,7 +22,7 @@ return array(
 	//this defines the database environments
 	//the keys are the environment names (e.g. "dev", "production")
 	//the values are arrays that contain connection info
-	'databases' => array(
+	'environments' => array(
 		'main'=>array(
 			//this is what is used as the "host" macro within reports
 			'host'=>'localhost',

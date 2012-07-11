@@ -4,6 +4,7 @@
 	{% endblock %}
 	
 	<input type='hidden' name='report' value='{{report}}' />
+	<input type='hidden' name='environment' value='{{environment}}' />
 	
 	{% for var in vars %}
 		{% block variable_form_row %}

@@ -1,13 +1,13 @@
 <?php
 class MysqlReportType extends ReportTypeBase {
 	public static function init(&$report) {		
-		$databases = PhpReports::$config['databases'];
+		$environments = PhpReports::$config['environments'];
 		
-		if(!isset($databases[$report->options['Database']]['mysql'])) {
-			throw new Exception("No mysql info defined for database '".$report->options['Database']."'");
+		if(!isset($environments[$report->options['Environment']][$report->options['Database']])) {
+			throw new Exception("No ".$report->options['Database']." info defined for environment '".$report->options['Environment']."'");
 		}
 		
-		$mysql = $databases[$report->options['Database']]['mysql'];
+		$mysql = $environments[$report->options['Environment']][$report->options['Database']];
 		
 		//default host macro to mysql's host if it isn't defined elsewhere
 		if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
@@ -47,8 +47,8 @@ class MysqlReportType extends ReportTypeBase {
 	public static function openConnection(&$report) {
 		if(isset($report->conn)) return;
 		
-		$databases = PhpReports::$config['databases'];
-		$config = $databases[$report->options['Database']]['mysql'];
+		$environments = PhpReports::$config['environments'];
+		$config = $environments[$report->options['Environment']][$report->options['Database']];
 		
 		//the default is to use a user with read only privileges
 		$username = $config['user'];
@@ -65,8 +65,11 @@ class MysqlReportType extends ReportTypeBase {
 		if(!($report->conn = mysql_connect($host, $username, $password))) {
 			throw new Exception('Could not connect to Mysql: '.mysql_error());
 		}
-		if(!mysql_select_db($config['database'],$report->conn)) {
-			throw new Exception('Could not select Mysql database: '.mysql_error($report->conn));
+		
+		if(isset($config['database'])) {
+			if(!mysql_select_db($config['database'],$report->conn)) {
+				throw new Exception('Could not select Mysql database: '.mysql_error($report->conn));
+			}
 		}
 	}
 	
