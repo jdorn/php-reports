@@ -76,12 +76,19 @@ class ChartHeader extends HeaderBase {
 		
 		if(!isset($report->options['Charts'])) $report->options['Charts'] = array();
 		
+		if(isset($params['width'])) $params['width'] = self::fixDimension($params['width']);
+		if(isset($params['height'])) $params['height'] = self::fixDimension($params['height']);
+		
 		$params['num'] = count($report->options['Charts'])+1;
 		$params['Rows'] = array();
 		
 		$report->options['Charts'][] = $params;
 		
 		$report->options['has_charts'] = true;
+	}
+	protected static function fixDimension($dim) {		
+		if(preg_match('/^[0-9]+$/',$dim)) $dim .= "px";
+		return $dim;
 	}
 	
 	public static function parseShortcut($value) {
@@ -298,7 +305,7 @@ class ChartHeader extends HeaderBase {
 		else return 'string';
 	}
 
-	public static function beforeRender(&$report) {
+	public static function beforeRender(&$report) {		
 		foreach($report->options['Charts'] as $num=>&$params) {
 			if(isset($params['xhistogram']) && $params['xhistogram']) {
 				$rows = self::generateHistogramRows($report->options['Rows'],$params['columns'][0],$params['buckets']);

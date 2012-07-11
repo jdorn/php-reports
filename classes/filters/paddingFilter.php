@@ -4,11 +4,11 @@ class paddingFilter extends FilterBase {
 		$value['value'] = htmlentities($value['value']);
 		$value['raw'] = true;
 		
-		if($options['type'] === 'r') {
+		if($options['direction'] === 'r') {
 			$value['value'] .= str_repeat('&nbsp;',$options['spaces']);
 			$value['class'] = 'right';
 		}
-		elseif($options['type'] === 'l') {
+		elseif($options['direction'] === 'l') {
 			$value['value'] = str_repeat('&nbsp;',$options['spaces']).$value['value'];
 		}
 		

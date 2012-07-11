@@ -24,7 +24,7 @@ class ColumnsHeader extends HeaderBase {
 				$type = 'padding';
 				
 				$options = array(
-					'type'=>$part[0],
+					'direction'=>$part[0],
 					'spaces'=>intval(substr($part,4))
 				);
 			}
