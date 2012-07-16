@@ -181,7 +181,10 @@ class ChartHeader extends HeaderBase {
 		foreach($chart_rows as $i=>$row) {
 			foreach($row as $k=>$v) {
 				$type = self::determineDataType($v['raw_value']);
-				if(!$type) continue;
+				if(!$type) {
+					$chart_rows[$i][$k]['raw_value'] = null;
+					continue;
+				}
 				elseif(!isset($types[$k])) $types[$k] = $type;
 				elseif($type === 'string') $types[$k] = 'string';
 				elseif($types[$k] === 'date' && $type === 'number') $types[$k] = 'number';
@@ -300,6 +303,7 @@ class ChartHeader extends HeaderBase {
 	
 	protected static function determineDataType($value) {
 		if(is_null($value)) return null;
+		elseif($value === '') return null;
 		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';
 		elseif(strtotime($value)) return 'date';
 		else return 'string';

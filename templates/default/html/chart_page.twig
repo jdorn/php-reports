@@ -1,5 +1,11 @@
 {% extends "html/page.twig" %}
-
+{% block stylesheets %}
+<style>
+#top_bar {
+	display:none;
+}
+</style>
+{% endblock %}
 {% block javascripts %}
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script>

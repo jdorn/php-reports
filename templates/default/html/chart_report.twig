@@ -9,14 +9,8 @@
 		{% for chart in Charts %}
 			var data_{{chart.num}} = new google.visualization.DataTable();
 					
-			{% for value in chart.Rows[0].values %}
-				{% if value.is_date %}
-				data_{{chart.num}}.addColumn('date',"{{value.key}}");
-				{% elseif value.is_number %}
-				data_{{chart.num}}.addColumn('number',"{{value.key}}");
-				{% else %}
-				data_{{chart.num}}.addColumn('string',"{{value.key}}");
-				{% endif %}
+			{% for key,value in chart.datatypes %}
+			data_{{chart.num}}.addColumn("{{value}}","{{chart.Rows[0].values[key].key}}");
 			{% endfor %}
 		
 			var rows = [
@@ -27,6 +21,8 @@
 					{% if not value.first %},{% endif %}
 					{% if value.is_date %}
 					new Date("{{value.value|raw}}")
+					{% elseif value.is_null %}
+					null
 					{% elseif value.is_number %}
 					{{ value.value }}
 					{% else %}

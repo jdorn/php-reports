@@ -2,5 +2,5 @@ config/config.php
 reports/
 cache/
 classes/local/*.php
-templates/local/*.twig
+templates/local
 

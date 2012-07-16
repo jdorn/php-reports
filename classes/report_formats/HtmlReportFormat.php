@@ -1,6 +1,7 @@
 <?php
 class HtmlReportFormat extends ReportFormatBase {
 	public static function display(&$report, &$request) {
+		
 		//determine if this is an asyncronous report or not		
 		$report->async = !isset($request->query['content_only']);
 		if(isset($request->query['no_async'])) $report->async = false;
@@ -13,6 +14,23 @@ class HtmlReportFormat extends ReportFormatBase {
 			$template = 'html/report';
 		}
 		
-		echo $report->renderReportPage($template);
+		try {
+			$html = $report->renderReportPage($template);
+			echo $html;
+		}
+		catch(Exception $e) {
+			
+			if(isset($request->query['content_only'])) {
+				$template = 'html/blank_page';
+			}
+			
+			$vars = array(
+				'title'=>$report->report,
+				'header'=>'<h2>There was an error running your report</h2>',
+				'error'=>$e->getMessage(),
+			);
+			
+			echo PhpReports::render($template, $vars);
+		}
 	}
 }
