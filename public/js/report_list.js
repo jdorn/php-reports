@@ -74,9 +74,8 @@ $(document).ready(function() {
 		}
 		
 		//make sure we aren't scrolled above the report list
-		if($(window).scrollTop() < ($('#report_list').offset().top - 50)) {
-			$(window).scrollTop($('#report_list').offset().top - 50);
-		}
+		window.location = '#reportlist';
+		readjustScroll(true);
 		
 		refresh_report_list();
 	});
@@ -110,5 +109,24 @@ $(document).ready(function() {
 			search_bar_fixed = false;
 		}
 	});
-
+	
+	//check for changes in hash tag in url
+	var current_url = null;
+	var readjustScroll = function(force) {
+		if(!search_bar_fixed) return;
+		
+		if(!force && current_url == window.location.href) return;
+		current_url = window.location.href;
+		
+		var name = current_url.split('#');
+		if(!name[1]) return;
+		
+		var target = $('a[name='+name[1]+']');
+		
+		if(!target.length) return;
+		
+		$(window).scrollTop(target.offset().top - 40);
+	};
+	setInterval(readjustScroll,200);
+	
 });

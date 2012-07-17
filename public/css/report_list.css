@@ -60,7 +60,7 @@
 	display: block;
 	margin: 0;
 }
-#report_list h2.collapsed~.report_list {
+#report_list h2.collapsed + .report_list {
 	display:none;
 }
 #report_list h2.expanded {
