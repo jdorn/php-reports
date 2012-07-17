@@ -40,12 +40,13 @@
 	<div>
 		{% block database_chooser %}
 			<div style='float:left;'>
-				<em class='database_message'>Running on database</em>
+				<em class='database_message'>Running in</em>
 				<select id='database_select'>
 				{% for option in Environments %}
 					<option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
 				{% endfor %}
 				</select>
+				<em class='database_message'>environment</em>
 			</div>
 			<script>
 			$('#database_select').change(function() {
