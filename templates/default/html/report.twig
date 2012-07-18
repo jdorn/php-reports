@@ -10,7 +10,7 @@
 {% block stylesheets %}
 	{{ parent() }}
 	<link rel='stylesheet' href='{{base}}/public/css/report.css' />
-	{% if not vertical %}
+	{% if not nodata %}
 		<link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
 	{% endif %}
 {% endblock %}
@@ -20,7 +20,7 @@
 	{% if has_charts %}
 		<script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.js"></script>
 	{% endif %}
-	{% if not vertical %}
+	{% if not nodata %}
 		<script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
 	{% endif %}
 {% endblock %}

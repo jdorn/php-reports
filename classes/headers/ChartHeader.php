@@ -130,20 +130,17 @@ class ChartHeader extends HeaderBase {
 		
 		//expand columns
 		$chart_rows = array();
-		foreach($rows as $k=>$row) {
-			$vals = array();			
+		foreach($rows as $k=>$row) {			
+			$vals = array();
 			
 			if($k===0) {
 				$i=1;
 				$unsorted = 1000;
 				foreach($row['values'] as $key=>$value) {
-					$row['values'][$key]['i'] = $i;
-					$i++;
-					
-					if(($temp = array_search($row['values'][$key]['i'], $report->options['Charts'][$num]['columns']))!==false) {
+					if(($temp = array_search($row['values'][$key]->i, $report->options['Charts'][$num]['columns']))!==false) {
 						$cols[$temp] = $key;
 					}
-					elseif(($temp = array_search($row['values'][$key]['key'], $report->options['Charts'][$num]['columns']))!==false) {
+					elseif(($temp = array_search($row['values'][$key]->key, $report->options['Charts'][$num]['columns']))!==false) {
 						$cols[$temp] = $key;
 					}
 					//if all columns are included, add after any specifically defined ones
@@ -157,19 +154,17 @@ class ChartHeader extends HeaderBase {
 			}
 			
 			foreach($cols as $key) {
-				if(isset($row['values'][$key]['chartval']) && is_array($row['values'][$key]['chartval'])) {
-					foreach($row['values'][$key]['chartval'] as $ckey=>$cval) {
-						$temp = array();
-						$temp['raw_value'] = trim($cval,'%$ ');
-						$temp['value'] = $cval;
-						$temp['key'] = $ckey;
-						$temp['first'] = !$vals;
+				if(isset($row['values'][$key]->chart_value) && is_array($row['values'][$key]->chart_value)) {
+					foreach($row['values'][$key]->chart_value as $ckey=>$cval) {
+						$temp = new ReportValue($row['values'][$key]->i, $ckey, trim($cval,'%$ '));
+						$temp->setValue($cval);
 						$vals[] = $temp;
 					}
 				}
 				else {
-					$row['values'][$key]['raw_value'] = trim($row['values'][$key]['raw_value'],'%$ ');
-					$vals[] = $row['values'][$key];
+					$temp = new ReportValue($row['values'][$key]->i, $row['values'][$key]->key, $row['values'][$key]->original_value);
+					$temp->setValue(trim($row['values'][$key]->getValue(),'%$ '));
+					$vals[] = $temp;
 				}
 			}
 			
@@ -180,9 +175,9 @@ class ChartHeader extends HeaderBase {
 		$types = array();
 		foreach($chart_rows as $i=>$row) {
 			foreach($row as $k=>$v) {
-				$type = self::determineDataType($v['raw_value']);
+				$type = self::determineDataType($v->original_value);
 				if(!$type) {
-					$chart_rows[$i][$k]['raw_value'] = null;
+					$chart_rows[$i][$k]->setValue(null);
 					continue;
 				}
 				elseif(!isset($types[$k])) $types[$k] = $type;
@@ -198,30 +193,20 @@ class ChartHeader extends HeaderBase {
 		
 		foreach($chart_rows as $i=>&$row) {
 			$vals = array();
-			foreach($row as $key=>$values) {	
-				$val = array(
-					'key'=>$values['key'],
-					'is_date'=>false,
-					'is_number'=>false,
-					'is_string'=>false,
-					'is_null'=>false,
-					'first'=>!$vals,
-					'value'=>$values['raw_value']
-				);
-				
-				if(is_null($val['value'])) {
-					$val['is_null'] = true;
+			foreach($row as $key=>$val) {			
+				if(is_null($val->getValue())) {
+					$val->datatype = 'null';
 				}
 				elseif($types[$key] === 'date') {
-					$val['value'] = date('m/d/Y H:i:s',strtotime($val['value']));
-					$val['is_date'] = true;
+					$val->setValue(date('m/d/Y H:i:s',strtotime($val->getValue())));
+					$val->datatype = 'date';
 				}
 				elseif($types[$key] === 'number') {
-					$val['value'] = round(floatval(preg_replace('/[^0-9\.]*/','',$val['value'])),6);
-					$val['is_number'] = true;
+					$val->setValue(round(floatval(preg_replace('/[^0-9\.]*/','',$val->getValue())),6));
+					$val->datatype = 'number';
 				}
-				elseif($types[$key] === 'string') {
-					$val['is_string'] = true;
+				else {
+					$val->datatype = 'string';
 				}
 				
 				$vals[] = $val;
@@ -240,9 +225,9 @@ class ChartHeader extends HeaderBase {
 		//if a name is given as the column, determine the column index
 		if(!is_numeric($column)) {
 			foreach($rows[0]['values'] as $k=>$v) {
-				if($v['key'] == $column) {
+				if($v->key == $column) {
 					$column = $k;
-					$column_key = $v['key'];
+					$column_key = $v->key;
 					break;
 				}
 			}
@@ -250,13 +235,13 @@ class ChartHeader extends HeaderBase {
 		//if an index is given, convert to 0-based
 		else {
 			$column --;
-			$column_key = $rows[0]['values'][$column]['key'];
+			$column_key = $rows[0]['values'][$column]->key;
 		}
 		
 		//get a list of values for the histogram
 		$vals = array();
 		foreach($rows as &$row) {
-			$vals[] = floatval(preg_replace('/[^0-9.]*/','',$row['values'][$column]['raw_value']));
+			$vals[] = floatval(preg_replace('/[^0-9.]*/','',$row['values'][$column]->getValue()));
 		}
 		sort($vals);
 		
@@ -282,18 +267,8 @@ class ChartHeader extends HeaderBase {
 		foreach($buckets as $name=>$count) {
 			$chart_rows[] = array(
 				'values'=>array(
-					array(
-						'raw_value'=>$name,
-						'value'=>$name,
-						'key'=>$name,
-						'first'=>true
-					),
-					array(
-						'raw_value'=>$count,
-						'value'=>$count,
-						'key'=>'value',
-						'first'=>false
-					)
+					new ReportValue(1,$name,$name),
+					new ReportValue(2,'value',$count)
 				),
 				'first'=>!$chart_rows
 			);

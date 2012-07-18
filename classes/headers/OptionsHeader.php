@@ -94,23 +94,20 @@ class OptionsHeader extends HeaderBase {
 			$rows = array();
 			foreach($report->options['Rows'] as $row) {
 				foreach($row['values'] as $value) {
-					if(!isset($rows[$value['key']])) {
-						$rows[$value['key']] = array(
+					if(!isset($rows[$value->key])) {
+						$header = new ReportValue(1, 'key', $value->key);
+						$header->class = 'left lpad';
+						$header->is_header = true;
+						
+						$rows[$value->key] = array(
 							'values'=>array(
-								array(
-									'value'=>$value['key'],
-									'raw_value'=>$value['key'],
-									'is_header'=>true,
-									'class'=>isset($value['class'])? $value['class'] : '',
-									'first'=>true
-								)
+								$header
 							),
 							'first'=>!$rows
 						);
 					}
 					
-					$value['first'] = false;
-					$rows[$value['key']]['values'][] = $value;
+					$rows[$value->key]['values'][] = $value;
 				}
 			}
 			

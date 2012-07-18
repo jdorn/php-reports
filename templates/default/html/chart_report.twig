@@ -15,18 +15,18 @@
 		
 			var rows = [
 			{% for row in chart.Rows %}
-				{% if not row.first %},{% endif %}
+				{% if not loop.first %},{% endif %}
 				[
 				{% for value in row.values %}
-					{% if not value.first %},{% endif %}
-					{% if value.is_date %}
-					new Date("{{value.value|raw}}")
-					{% elseif value.is_null %}
+					{% if not loop.first %},{% endif %}
+					{% if value.datatype == "date" %}
+					new Date("{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}")
+					{% elseif value.datatype == "null" %}
 					null
-					{% elseif value.is_number %}
-					{{ value.value }}
+					{% elseif value.datatype == "number" %}
+					{{ value.getValue() }}
 					{% else %}
-					"{{ value.value }}"
+					"{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}"
 					{% endif %}
 				{% endfor %}
 				]

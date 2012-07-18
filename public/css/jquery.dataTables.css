@@ -10,10 +10,14 @@ table.dataTable {
 
 table.dataTable thead th {
 	padding: 3px 18px 3px 10px;
-	font-weight: bold;
 	cursor: pointer;
 	*cursor: hand;
 	background-color: #cfc;
+	font-weight: bold;
+}
+table.dataTable tbody th {
+	font-weight: bold;
+	background-color: #f0f9f0;
 }
 
 table.dataTable tfoot th {
@@ -21,15 +25,15 @@ table.dataTable tfoot th {
 	font-weight: bold;
 }
 
-table.dataTable td {
+table.dataTable tbody td, table.dataTable tbody th {
 	padding: 3px 10px;
 }
 
-table.dataTable thead th, table.dataTable td, table.dataTable tfoot th, table.dataTable {
+table.dataTable thead th, table.dataTable tbody td, table.dataTable tbody th, table.dataTable tfoot th, table.dataTable {
 	border-style: solid;
 	border-color: #aaa;
 }
-table.dataTable thead th, table.dataTable td, table.dataTable tfoot th {
+table.dataTable thead th, table.dataTable tbody td, table.dataTable tbody th, table.dataTable tfoot th {
 	border-width: 1px 1px 0 0;
 }
 table.dataTable {

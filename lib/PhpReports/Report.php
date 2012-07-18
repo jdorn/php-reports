@@ -379,13 +379,8 @@ class Report {
 			$rowval = array();
 			
 			$i=1;
-			foreach($row as $key=>$value) {						
-				$val = array(
-					'key'=>$key,
-					'key_collapsed'=>trim(preg_replace(array('/\s+/','/[^a-zA-Z0-9_]*/'),array('_',''),$key),'_'),
-					'value'=>utf8_encode($value),
-					'raw_value'=>($value)
-				);
+			foreach($row as $key=>$value) {
+				$val = new ReportValue($i, $key, $value);
 				
 				//apply filters for the column key
 				$val = $this->applyFilters($key,$val);
@@ -393,7 +388,6 @@ class Report {
 				if($val) $val = $this->applyFilters($i,$val);
 				
 				if($val) {
-					$val['first'] = !$rowval;
 					$rowval[] = $val;
 				}
 				

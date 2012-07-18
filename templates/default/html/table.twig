@@ -1,16 +1,27 @@
 {% if not nodata %}
 	<table id='result_table'>
 		{% if vertical %}
+		<thead>
+			<tr class='header'>
+				{% for value in VerticalRows[0].values %}
+				<th class="{{ value.class }}">
+					{% if loop.first %}Key{% else %}Value {{ loop.index -1 }}{% endif %}
+				</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
 			{% for row in VerticalRows %}
 			<tr>
 				{% for value in row.values %}
-				{% if value.is_header %}{% set tag = 'th' %}{% else %}{% set tag = 'td' %}{% endif %}
-				<{{ tag }} class="{{ class }}">
-					{% if value.raw %}{{ value.value|raw }}{% else %}{{ value.value }}{% endif %}
+				{% if value.is_header is defined and value.is_header %}{% set tag = 'th' %}{% else %}{% set tag = 'td' %}{% endif %}
+				<{{ tag }} class="{{ value.class }}">
+					{{ value.getValue(true)|raw }}
 				</{{ tag }}>
 				{% endfor %}
 			</tr>
 			{% endfor %}
+		</tbody>
 		{% else %}
 		<thead>
 			<tr class='header'>
@@ -24,8 +35,8 @@
 			<tr>
 				{% for value in row.values %}
 				<td class="{{value.class}}">
-					{% if value.value %}
-						{% if value.raw %}{{ value.value|raw }}{% else %}{{ value.value }}{% endif %}
+					{% if value.getValue() %}
+						{{ value.getValue(true)|raw }}
 					{% else %}
 					&nbsp;
 					{% endif %}
@@ -36,7 +47,7 @@
 		{% endif %}
 	</table>
 
-	{% if not vertical and not nodata %}
+	{% if not nodata %}
 	<script type='text/javascript'>
 	$('#result_table').dataTable({
 		bPaginate: false,

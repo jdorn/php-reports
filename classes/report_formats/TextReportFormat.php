@@ -17,16 +17,16 @@ class TextReportFormat extends ReportFormatBase {
 		$sizes = array();
 		$first_row = $report->options['Rows'][0];
 		foreach($first_row['values'] as $key=>$value){
-			$key = $value['key'];
-			$value = $value['raw_value'];
+			$key = $value->key;
+			$value = $value->getValue();
 			
 			//initialize to the size of the column name
 			$sizes[$key] = strlen($key);
 		}
 		foreach($report->options['Rows'] as $row) {
 			foreach($row['values'] as $key=>$value){
-				$key = $value['key'];
-				$value = $value['raw_value'];
+				$key = $value->key;
+				$value = $value->getValue();
 				
 				$length = strlen($value);
 				if($length > $sizes[$key]) $sizes[$key] = $length; // get largest result size
@@ -41,8 +41,8 @@ class TextReportFormat extends ReportFormatBase {
 
 		// column names
 		foreach($first_row['values'] as $key=>$value){
-			$key = $value['key'];
-			$value = $value['raw_value'];
+			$key = $value->key;
+			$value = $value->getValue();
 			
 			echo "| ";
 			echo str_pad($key,$sizes[$key]+1);
@@ -58,8 +58,8 @@ class TextReportFormat extends ReportFormatBase {
 		//output data
 		foreach($report->options['Rows'] as $row) {
 			foreach($row['values'] as $key=>$value){
-				$key = $value['key'];
-				$value = $value['raw_value'];
+				$key = $value->key;
+				$value = $value->getValue();
 				
 				echo "| ";
 				echo str_pad($value,$sizes[$key]+1);

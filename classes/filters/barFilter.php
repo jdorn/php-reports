@@ -4,11 +4,9 @@ class barFilter extends FilterBase {
 		if(isset($options['width'])) $max = $options['width'];
 		else $max = 200;
 		
-		$width = round($max*($value['raw_value']/max($report->options['Values'][$value['key']])));
+		$width = round($max*($value->getValue()/max($report->options['Values'][$value->key])));
 		
-		$value['value'] = "<div style='width: ".$width."px;' class='bar'></div>";
-		$value['value'] .= "<span style='color:#999; font-size:.8em; vertical-align:middle;'>".$value['raw_value']."</span>";
-		$value['raw'] = true;
+		$value->setValue("<div style='width: ".$width."px;' class='bar'></div>"."<span style='color:#999; font-size:.8em; vertical-align:middle;'>".$value->getValue(true)."</span>",true);
 		
 		return $value;
 	}

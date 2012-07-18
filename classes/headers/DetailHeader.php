@@ -138,9 +138,9 @@ class DetailHeader extends HeaderBase {
 					//if the macro needs to be replaced with the value of another column
 					if(isset($v['column'])) {
 						if(isset($cols[$v['column']])) {
-							$v = $row['values'][$cols[$v['column']]]['raw_value'];
+							$v = $row['values'][$cols[$v['column']]]->getValue();
 						}
-						else $v = $row['values'][$v['column']-1]['raw_value'];
+						else $v = $row['values'][$v['column']-1]->getValue();
 					}
 					//if the macro is just a constant
 					elseif(isset($v['constant'])) {
@@ -164,8 +164,7 @@ class DetailHeader extends HeaderBase {
 					}
 				}
 				
-				$row['values'][$i]['value'] = '<a href="'.htmlentities($url).'">'.$row['values'][$i]['value'].'</a>';
-				$row['values'][$i]['raw'] = true;
+				$row['values'][$i]->setValue('<a href="'.htmlentities($url).'">'.$row['values'][$i]->getValue(true).'</a>',true);
 			}
 		}
 	}

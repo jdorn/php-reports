@@ -1,8 +1,8 @@
-[{% for row in Rows %}{% if not row.first %},{% endif %}
+[{% for row in Rows %}{% if not loop.first %},{% endif %}
 
-	{{'{'}}{% for value in row.values %}{% if not value.first %},{% endif %}
+	{{'{'}}{% for value in row.values %}{% if not loop.first %},{% endif %}
 
-		"{{value.key}}":"{% if value.raw %}{{value.raw_value|replace({'\\':'\\\\','"':'\\"' })|raw }}{% else %}{{value.value|replace({'\\':'\\\\','"':'\\"' })|raw }}{% endif %}"{% endfor %}
+		"{{value.key}}":"{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}"{% endfor %}
 
 	}{% endfor %}
 
