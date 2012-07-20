@@ -30,7 +30,7 @@ class ReportValue {
 	}
 	
 	public function setValue($value, $html = false) {
-		$value = trim($value);
+		if(is_string($value)) $value = trim($value);
 		
 		if($html) {
 			$this->is_html = true;
@@ -38,14 +38,14 @@ class ReportValue {
 		}
 		else {
 			$this->is_html = false;
-			$this->filtered_value = htmlentities($value);
+			$this->filtered_value = is_string($value)? htmlentities($value) : $value;
 			$this->html_value = $value;
 		}
 	}
 	
-	public function getValue($html = false) {
-		if($html) return utf8_encode($this->html_value);
-		else return utf8_encode($this->filtered_value);
+	public function getValue($html = false) {		
+		if($html) return is_string($this->html_value)? utf8_encode($this->html_value) : $this->html_value;
+		else return is_string($this->filtered_value)? utf8_encode($this->filtered_value) : $this->filtered_value;
 	}
 	
 	public function getKeyCollapsed() {

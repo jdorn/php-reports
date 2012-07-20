@@ -53,6 +53,7 @@ class PhpReports {
 		$classname = ucfirst(strtolower($type)).'ReportFormat';
 		
 		$error_header = 'An error occurred while running your report';
+		$content = '';
 		
 		try {
 			if(!class_exists($classname)) {
@@ -69,12 +70,14 @@ class PhpReports {
 			}
 			
 			$classname::display($report,self::$request);
+			$content = $report->options['QueryFormatted'];
 		}
 		catch(Exception $e) {
 			echo self::render('html/page',array(
 				'title'=>$report->report,
 				'header'=>'<h2>'.$error_header.'</h2>',
 				'error'=>$e->getMessage(),
+				'content'=>$content,
 				'breadcrumb'=>array('Report List'=>'', $report->report => true)
 			));
 		}

@@ -28,6 +28,7 @@ class HtmlReportFormat extends ReportFormatBase {
 				'title'=>$report->report,
 				'header'=>'<h2>There was an error running your report</h2>',
 				'error'=>$e->getMessage(),
+				'content'=>"<h2>Report Query</h2>".$report->options['Query_Formatted'],
 			);
 			
 			echo PhpReports::render($template, $vars);

@@ -184,7 +184,7 @@ class ChartHeader extends HeaderBase {
 				elseif($type === 'string') $types[$k] = 'string';
 				elseif($types[$k] === 'date' && $type === 'number') $types[$k] = 'number';
 			}
-		}
+		}		
 		
 		$report->options['Charts'][$num]['datatypes'] = $types;
 		
