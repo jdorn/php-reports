@@ -17,7 +17,7 @@ class ReportValue {
 		$this->i = $i;
 		$this->key = $key;
 		$this->original_value = $value;
-		$this->filtered_value = strip_tags($value);
+		$this->filtered_value = is_string($value)? strip_tags($value) : $value;
 		$this->html_value = $value;
 		$this->chart_value = $value;
 		
@@ -29,7 +29,7 @@ class ReportValue {
 		$this->class = trim($this->class . ' ' .$class);
 	}
 	
-	public function setValue($value, $html = false) {
+	public function setValue($value, $html = false) {		
 		if(is_string($value)) $value = trim($value);
 		
 		if($html) {
@@ -43,9 +43,39 @@ class ReportValue {
 		}
 	}
 	
-	public function getValue($html = false) {		
-		if($html) return is_string($this->html_value)? utf8_encode($this->html_value) : $this->html_value;
-		else return is_string($this->filtered_value)? utf8_encode($this->filtered_value) : $this->filtered_value;
+	protected function _getType($value) {
+		if(is_null($value)) return null;
+		elseif(trim($value) === '') return null;
+		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';
+		elseif(strtotime($value)) return 'date';
+		else return 'string';
+	}
+	protected function _getDisplayValue($value, $html=false, $date=false) {
+		$type = $this->_getType($value);
+		
+		if($type === null) {
+			if($html) return '&nbsp;';
+			else return null;
+		}
+		elseif($type === 'number') {
+			return $value;
+		}
+		elseif($type === 'date') {
+			if($date) return date($date,strtotime($value));
+			else return $value;
+		}
+		elseif($type === 'string') {
+			return utf8_encode($value);
+		}
+	}
+	
+	public function getValue($html = false, $date = false) {
+		if($html) {
+			return $this->_getDisplayValue($this->html_value, true, $date);
+		}
+		else {
+			return $this->_getDisplayValue($this->filtered_value, false, $date);
+		}
 	}
 	
 	public function getKeyCollapsed() {

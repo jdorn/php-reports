@@ -35,11 +35,7 @@
 			<tr>
 				{% for value in row.values %}
 				<td class="{{value.class}}">
-					{% if value.getValue() %}
-						{{ value.getValue(true)|raw }}
-					{% else %}
-					&nbsp;
-					{% endif %}
+					{{ value.getValue(true)|raw }}
 				{% endfor %}
 			</tr>
 			{% endfor %}
