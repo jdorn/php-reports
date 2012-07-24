@@ -1,0 +1,46 @@
+{% extends "html/page.twig" %}
+
+{% block title %}{{ Name }}{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+#editor * {
+	font-family:"Courier New", Courier, monospace;
+}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ base }}/public/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+	{% set breadcrumb = {"Report List": "", (options.Name): url, "Edit": true} %}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+<h2>Edit Report: {{options.Name}}</h2>
+
+<div id="editor" style='position:relative; width: 100%; height: 600px;'>{{raw}}</div>
+
+<div style='margin: 20px 0;'>
+	<a href='#' class='button'>Submit</a>
+</div>
+
+<script>
+	var editor = ace.edit("editor");    
+	editor.setTheme("ace/theme/eclipse");
+	
+	//set the mode
+	{% if options.Type == 'Mysql' %}
+    editor.getSession().setMode("ace/mode/sql");
+    {% elseif options.Type == 'Mongo' %}
+    editor.getSession().setMode("ace/mode/javascript");
+    {% elseif options.Type == 'Php' %}
+    editor.getSession().setMode("ace/mode/php");
+    {% endif %}
+</script>
+{% endblock %}

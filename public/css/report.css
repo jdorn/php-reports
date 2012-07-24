@@ -33,12 +33,6 @@ h1 {
 	border-radius: 5px;
 	border: 1px solid #aaa;
 }
-#variable_form .submit {
-	padding: 5px 10px;
-	border-radius: 8px;
-	border: 1px solid #aaa;
-	margin-top: 10px;
-}
 #report_content {
 	margin: 8px 0;
 }

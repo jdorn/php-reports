@@ -25,16 +25,16 @@
 					</select>
 				{% else %}
 					{% if var.is_textarea %}
-						<textarea type='text' name='macros[{{var.key}}' id='var_{{var.key}}' class='input'>{{var.value}}</textarea>
+						<textarea type='text' name='macros[{{var.key}}]' id='var_{{var.key}}' class='input' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
 					{% else %}
 						<input type='text' name='macros[{{var.key}}]' value='{{var.value}}' id='var_{{var.key}}'  class='input'/>	
 					{% endif %}
 				{% endif %}
 			{% endblock %}
 			
-			{% if description %}
+			{% if var.description %}
 				{% block variable_form_description %}
-						<span>{{ description|raw }}</span>
+						<span>{{ var.description|raw }}</span>
 				{% endblock %}
 			{% endif %}
 		</div>
@@ -42,6 +42,6 @@
 	{% endfor %}
 	
 	{% block variable_form_submit %}
-	<input type='submit' value='Run Report' class='submit' />
+	<input type='submit' value='Run Report' class='submit button' />
 	{% endblock %}
 </form>

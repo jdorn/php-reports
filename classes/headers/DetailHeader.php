@@ -123,14 +123,14 @@ class DetailHeader extends HeaderBase {
 		//map columns to keys
 		$cols = array();
 		foreach($report->options['Rows'][0]['values'] as $key=>$value) {
-			$cols[$value['key']] = $key;
+			$cols[$value->key] = $key;
 		}
 		
 		foreach($report->options['Rows'] as &$row) {
 			foreach($details as $key=>&$detail) {
 				if(isset($cols[$key])) $i = $cols[$key];
 				else $i = $key-1;
-								
+				
 				$url = PhpReports::$request->base.'/report/html/?report='.$detail['report'];
 				
 				$macros = array();

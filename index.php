@@ -25,4 +25,9 @@ Flight::route('/report/@format',function($format) {
 	PhpReports::displayReport($_REQUEST['report'],$format);
 });
 
+//reports in a specific format (e.g. 'html','csv','json','xml', etc.)
+Flight::route('/edit',function() {
+	PhpReports::editReport($_REQUEST['report']);
+});
+
 Flight::start();

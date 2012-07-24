@@ -57,3 +57,13 @@ pre {
 #holder {
 	padding: 0 10px 30px;
 }
+
+.button {
+	padding: 5px 10px;
+	border-radius: 8px;
+	border: 1px solid #aaa;
+	background: #ddd;
+	color: #333;
+	text-decoration:none;
+	display: inline-block;
+}

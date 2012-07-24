@@ -17,7 +17,7 @@ class Report {
 	protected $filemtime;
 	protected $has_run = false;
 	
-	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {
+	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {		
 		$reportDir = PhpReports::$config['reportDir'];
 		
 		if(!file_exists($reportDir.'/'.$report)) {
@@ -249,6 +249,9 @@ class Report {
 	
 	public function getRaw() {
 		return $this->raw;
+	}
+	public function getUrl() {
+		return 'report/html/?report='.urlencode($this->report);
 	}
 	
 	public function prepareVariableForm() {

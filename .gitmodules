@@ -7,3 +7,4 @@
 [submodule "lib/flight"]
 	path = lib/flight
 	url = git://github.com/mikecao/flight.git
+

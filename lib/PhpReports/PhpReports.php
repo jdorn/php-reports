@@ -82,7 +82,22 @@ class PhpReports {
 			));
 		}
 	}
+	
+	public static function editReport($report) {
+		try {
+			$report = ReportFormatBase::prepareReport($report);
+		}
+		catch(Exception $e) {
+			throw $e;
+		}
 		
+		echo self::render('html/report_editor',array(
+			'options'=>$report->options,
+			'raw'=>$report->getRaw(),
+			'url'=>$report->getUrl(),
+		));
+	}
+	
 	public static function listReports() {
 		$reports = self::getReports(self::$config['reportDir'].'/');
 		
