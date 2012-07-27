@@ -8,6 +8,38 @@
 #editor * {
 	font-family:"Courier New", Courier, monospace;
 }
+
+#preview_holder {
+	border-top: 1px solid #999;
+	margin-top: 30px;
+	display:none;
+}
+#preview_holder h3 a {
+	font-size: .8em;
+	font-weight:normal;
+	margin-left: 20px;
+}
+
+#preview_area .section {
+	margin: 10px;
+}
+#preview_area .section .line_number {
+	color: #999;
+	margin-left: -10px;
+	font-style: italic;
+}
+#preview_area ins {
+	text-decoration:none;
+	background-color: #55ff55;
+}
+#preview_area del {
+	text-decoration:none;
+	background-color: #ff5555;
+}
+
+#notice_holder, #error_holder {
+	margin: 5px 0 20px;
+}
 </style>
 {% endblock %}
 
@@ -17,17 +49,33 @@
 {% endblock %}
 
 {% block breadcrumb %}
-	{% set breadcrumb = {"Report List": "", (options.Name): url, "Edit": true} %}
+	{% set report_url = "report/html/?" ~ querystring %}
+	{% set breadcrumb = {"Report List": "", (options.Name): report_url, "Edit": true} %}
 	{{ parent() }}
 {% endblock %}
 
 {% block content %}
 <h2>Edit Report: {{options.Name}}</h2>
 
+<div id='notice_holder' class='notice' style='display:none;'></div>
+<div id='error_holder' class='error' style='display:none;'></div>
+
 <div id="editor" style='position:relative; width: 100%; height: 600px;'>{{raw}}</div>
 
 <div style='margin: 20px 0;'>
-	<a href='#' class='button'>Submit</a>
+	<a href='#' class='button' id='preview_button'>Preview</a>
+	<a href='#' class='button' id='save_button'>Save Changes</a>
+	<a href='{{ url }}' style='font-size:.8em; margin-left: 20px;'>Cancel</a>
+</div>
+
+<div id='preview_holder'>
+	<h3>
+		Preview Changes
+		<a name='preview_changes'></a>
+		<a href='#' id='close_preview'>hide</a>
+	</h3>
+	
+	<div id='preview_area'></div>
 </div>
 
 <script>
@@ -42,5 +90,48 @@
     {% elseif options.Type == 'Php' %}
     editor.getSession().setMode("ace/mode/php");
     {% endif %}
+    
+    $("#preview_button").click(function() {
+		//open a modal with diff output
+		$.post(
+			"{{ base }}/edit/?{{ querystring }}",
+			{
+				contents: editor.getSession().getDocument().getAllLines().join("\n"),
+				preview: true
+			},
+			function(data) {
+				$("#preview_area").html(data);
+				$("#preview_holder").show(200);
+				window.location.href = '#preview_changes';
+			},
+			'html'
+		);
+		
+		return false;
+    });
+    
+    $("#save_button").click(function() {
+		//save report
+		$.post(
+			"{{ base }}/edit/?{{ querystring }}",
+			{
+				contents: editor.getSession().getDocument().getAllLines().join("\n"),
+				save: true
+			},
+			function(data) {
+				$("#notice_holder").html("Report File Saved Successfully").show(200).delay(3000).hide(200);
+			},
+			'html'
+		).error(function() {
+			$("#error_holder").html("There was a problem saving the report.").show(200).delay(3000).hide(200);
+		});
+		
+		return false;
+    });
+    
+    $("#close_preview").click(function() {
+		$("#preview_holder").hide(200);
+		return false;
+    });
 </script>
 {% endblock %}

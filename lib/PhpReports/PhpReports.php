@@ -40,7 +40,9 @@ class PhpReports {
 	public static function render($template, $macros) {		
 		$default = array(
 			'base'=>self::$request->base,
-			'report_list_url'=>self::$request->base.'/'
+			'report_list_url'=>self::$request->base.'/',
+			'request'=>$request,
+			'querystring'=>$_SERVER['QUERY_STRING'],
 		);
 		$macros = array_merge($default,$macros);
 		
@@ -91,11 +93,18 @@ class PhpReports {
 			throw $e;
 		}
 		
-		echo self::render('html/report_editor',array(
-			'options'=>$report->options,
-			'raw'=>$report->getRaw(),
-			'url'=>$report->getUrl(),
-		));
+		if(isset($_POST['preview'])) {
+			echo "<pre>".SimpleDiff::htmlDiffSummary($report->getRaw(),$_POST['contents'])."</pre>";
+		}
+		elseif(isset($_POST['save'])) {
+			$report->setReportFileContents($_POST['contents']);
+		}
+		else {
+			echo self::render('html/report_editor',array(
+				'options'=>$report->options,
+				'raw'=>$report->getRaw(),
+			));
+		}
 	}
 	
 	public static function listReports() {
