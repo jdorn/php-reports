@@ -44,7 +44,11 @@ class OptionsHeader extends HeaderBase {
 		'nodata'=>array(
 			'type'=>'boolean',
 			'default'=>false
-		)
+		),
+		'version'=>array(
+			'type'=>'number',
+			'default'=>1
+		),
 	);
 	
 	public static function init($params, &$report) {
