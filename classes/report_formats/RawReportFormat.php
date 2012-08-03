@@ -5,6 +5,13 @@ class RawReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
-		echo $report->getRaw();
+		echo $report;
+	}
+	
+	//no need to instantiate a report object, just return the source
+	public static function prepareReport($report) {
+		$report = file_get_contents(PhpReports::$config['reportDir'].'/'.$report);
+		
+		return $report;
 	}
 }
