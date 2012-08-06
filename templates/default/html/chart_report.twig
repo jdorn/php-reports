@@ -39,8 +39,18 @@
 				displayMode: 'markers',
 				colorAxis: {colors: ['blue', 'red']},
 				sizeAxis: {minValue: 1,  maxSize:  10},
-				displayAnnotations: true
+				displayAnnotations: true,
+				colors: []
 			};
+			
+			{% for color in chart.colors %}
+				options_{{chart.num}}.colors.push('{{color}}');
+			{% endfor %}
+
+
+			if(!options_{{chart.num}}.colors.length) {
+				delete options_{{chart.num}}.colors;
+			}
 
 			var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
 			chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});

@@ -62,6 +62,10 @@ class ChartHeader extends HeaderBase {
 			'type'=>'boolean',
 			'default'=>false
 		),
+		'colors'=>array(
+			'type'=>'array',
+			'default'=>array()
+		),
 	);
 	
 	public static function init($params, &$report) {
@@ -101,7 +105,8 @@ class ChartHeader extends HeaderBase {
 				$key = trim($key);
 				$val = trim($val);
 				
-				if($key === 'y' || $key === 'x') {
+				//some parameters can have multiple values separated by ":"
+				if(in_array($key,array('x','y','colors'),true)) {
 					$val = explode(':',$val);
 				}
 			}
