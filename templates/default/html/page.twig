@@ -42,7 +42,11 @@
 		{% block notice_area %}
 			{% if error %}
 				<div class='error'>
-					{{error}}
+					{% if error.message is defined %}
+						{{error.message}}
+					{% else %}
+						{{error}}
+					{% endif %}
 				</div>
 			{% endif %}
 

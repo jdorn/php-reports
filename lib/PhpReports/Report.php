@@ -20,18 +20,16 @@ class Report {
 	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {				
 		$this->report = $report;
 		
-		if(!file_exists($this->getFileLocation())) {
+		if(!file_exists(self::getFileLocation($report))) {
 			throw new Exception('Report not found - '.$report);
 		}
 		
-		$this->filemtime = filemtime($this->getFileLocation());
-		
+		$this->filemtime = filemtime(self::getFileLocation($report));
 		
 		$this->use_cache = $use_cache;
 		
-		//get the raw report file and convert EOL to unix style
-		$this->raw = file_get_contents($this->getFileLocation());
-		$this->raw = str_replace(array("\r\n","\r"),"\n",$this->raw);
+		//get the raw report file
+		$this->raw = self::getReportFileContents($report);
 		
 		//if there are no headers in this report
 		if(strpos($this->raw,"\n\n") === false) {
@@ -55,18 +53,25 @@ class Report {
 		$this->getTimeEstimate();
 	}
 	
-	protected function getFileLocation() {
+	public static function getFileLocation($report) {
 		$reportDir = PhpReports::$config['reportDir'];
-		return $reportDir.'/'.$this->report;
+		return $reportDir.'/'.$report;
 	}
 	
-	public function setReportFileContents($new_contents) {
-		echo "SAVING CONTENTS TO ".$this->getFileLocation();
-		echo "\n".$new_contents;
+	public static function setReportFileContents($report, $new_contents) {
+		echo "SAVING CONTENTS TO ".self::getFileLocation($report);
 		
-		if(!file_put_contents($this->getFileLocation(),$new_contents)) {
+		if(!file_put_contents(self::getFileLocation($report),$new_contents)) {
 			throw new Exception("Failed to set report contents");
 		}
+		
+		echo "\n".$new_contents;
+	}
+	public static function getReportFileContents($report) {
+		$contents = file_get_contents(self::getFileLocation($report));
+		
+		//convert EOL to unix format
+		return str_replace(array("\r\n","\r"),"\n",$contents);
 	}
 	
 	public function addMacro($name, $value) {

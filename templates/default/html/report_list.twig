@@ -48,6 +48,26 @@
 {% endblock %}
 
 {% block content %}
+	{% if report_errors is not empty %}
+		<p><img src='{{base}}/public/images/errorIcon.gif' /> There are errors with 1 or more reports.  <a href='#' id='expand_errors_link'>See all errors</a></p>
+		<div class='error' style='margin: 0 0 20px 0; display:none;' id='report_errors_holder'>
+		{% for error in report_errors %}
+			<div>
+				<strong>{{ error.report }}</strong> - {{ error.exception.message }} 
+				<span style='padding-left: 20px;'>
+					<a href='{{base}}/report/raw/?report={{error.report}}' style='margin-right: 10px;' target='_blank'>view source</a>
+					<a href='{{base}}/edit/?report={{error.report}}' target='_blank'>edit</a>
+				</span>
+			</div>
+		{% endfor %}
+		</div>
+		<script>
+		$('#expand_errors_link').click(function() {
+			$('#report_errors_holder').toggle(200);
+		});
+		</script>
+	{% endif %}
+
 	<div id='searchbar'>
 	{% block searchbar %}
 		Search

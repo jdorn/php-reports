@@ -11,6 +11,7 @@ html, body {
 	border: 1px solid red;
 	background-color: #fdd;
 	border-radius: 6px;
+	margin: 5px 0;
 }
 .notice {
 	color: #34e;

@@ -18,7 +18,7 @@ class HeaderBase {
 		//if it couldn't be parsed as json, try parsing it as a shortcut form
 		if(!$params) $params = static::parseShortcut($value);
 		
-		if(!$params) throw new Exception("Could not parse header $key");
+		if(!$params) throw new Exception("Could not parse header '$key'");
 		
 		//run defined validation rules and fill in default params
 		try {
@@ -83,7 +83,7 @@ class HeaderBase {
 		
 		//every possible param must be defined in the validation rules
 		foreach($params as $k=>$v) {
-			if(!isset(static::$validation[$k])) $errors[] = "Unknown parameter $k for ".get_called_class();
+			if(!isset(static::$validation[$k])) $errors[] = "Unknown parameter '$k'";
 		}
 		
 		if($errors) {

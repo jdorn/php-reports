@@ -86,37 +86,52 @@ class PhpReports {
 	}
 	
 	public static function editReport($report) {
+		$template_vars = array();
+		
 		try {
 			$report = ReportFormatBase::prepareReport($report);
+			
+			$template_vars = array(
+				'report'=>$report->report,
+				'options'=>$report->options,
+				'contents'=>$report->getRaw(),
+				'extension'=>array_pop(explode('.',$report->report))
+			);
 		}
+		//if there is an error parsing the report
 		catch(Exception $e) {
-			throw $e;
+			$template_vars = array(
+				'report'=>$report,
+				'contents'=>Report::getReportFileContents($report),
+				'options'=>array(),
+				'extension'=>array_pop(explode('.',$report)),
+				'error'=>$e
+			);
 		}
 		
 		if(isset($_POST['preview'])) {
-			echo "<pre>".SimpleDiff::htmlDiffSummary($report->getRaw(),$_POST['contents'])."</pre>";
+			echo "<pre>".SimpleDiff::htmlDiffSummary($template_vars['contents'],$_POST['contents'])."</pre>";
 		}
 		elseif(isset($_POST['save'])) {
-			$report->setReportFileContents($_POST['contents']);
+			Report::setReportFileContents($template_vars['report'],$_POST['contents']);
 		}
 		else {
-			echo self::render('html/report_editor',array(
-				'options'=>$report->options,
-				'raw'=>$report->getRaw(),
-			));
+			echo self::render('html/report_editor',$template_vars);
 		}
 	}
 	
 	public static function listReports() {
-		$reports = self::getReports(self::$config['reportDir'].'/');
+		$errors = array();
 		
-		$template_vars = isset(self::$config['report_list'])? self::$config['report_list'] : array();
+		$reports = self::getReports(self::$config['reportDir'].'/',null,$errors);
+		
 		$template_vars['reports'] = $reports;
+		$template_vars['report_errors'] = $errors;
 
 		echo self::render('html/report_list',$template_vars);
 	}
 	
-	protected static function getReports($dir, $base = null) {
+	protected static function getReports($dir, $base = null, &$errors = null) {
 		if($base === null) $base = $dir;
 		$reports = glob($dir.'*',GLOB_NOSORT);
 		$return = array();
@@ -129,7 +144,7 @@ class PhpReports {
 				
 				$id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
 				
-				$children = self::getReports($report.'/', $base);
+				$children = self::getReports($report.'/', $base, $errors);
 				
 				$count = 0;
 				foreach($children as $child) {
@@ -167,7 +182,11 @@ class PhpReports {
 						$temp = new Report($name);
 					}
 					catch(Exception $e) {
-						echo "<div><strong>$name</strong> - ".$e->getMessage()."</div>";
+						if(!$errors) $errors = array();
+						$errors[] = array(
+							'report'=>$name,
+							'exception'=>$e
+						);
 						continue;
 					}
 					
