@@ -123,6 +123,10 @@ class MysqlReportType extends ReportTypeBase {
 			if($value === 'ALL') $macros[$key.'_all'] = true;
 		}
 		
+		//add the config and environment settings as macros
+		$macros['config'] = PhpReports::$config;
+		$macros['environment'] = PhpReports::$config['environments'][$report->options['Environment']];
+		
 		//expand macros in query
 		$sql = PhpReports::render($report->raw_query,$macros);
 		
