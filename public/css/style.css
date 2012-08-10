@@ -68,3 +68,6 @@ pre {
 	text-decoration:none;
 	display: inline-block;
 }
+label {
+	vertical-align:top;
+}

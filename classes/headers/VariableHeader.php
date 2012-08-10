@@ -82,53 +82,95 @@ class VariableHeader extends HeaderBase {
 		$parts = explode(',',$params);
 		$params = array(
 			'name'=>$var,
-			'display'=>$parts[0]
+			'display'=>trim($parts[0])
 		);
 		
-		//more information than just name and options
-		if(isset($parts[1])) {
-			//name, LIST, options style (multiselect)
-			if(trim($parts[1]) === "LIST" && isset($parts[2])) {
-				$params['type'] = 'select';
-				$params['multiple'] = true;					
-				$params['options'] = explode('|',$parts[2]);
-			}
-			//name, LIST style (textarea)
-			elseif(trim($parts[1]) === "LIST") {
-				$params['multiple'] = true;
-				if(isset($report->macros[$var])) $report->macros[$var] = explode("\n",trim($report->macros[$var]));
-			}				
-			//name, options style (select)
-			else {
-				$params['type'] = 'select';
-				
-				//name, Table.Column style
-				if(preg_match('/[^\|\.]*\.[^\|\.]*/',$parts[1])) {
-					list($table,$column) = explode('.',$parts[1],2);
-					$var_params = array(
-						'table'=>$table,
-						'column'=>$column
-					);
-					
-					//name, Table.Column, ALL style
-					if(isset($parts[2]) && trim($parts[2])==='ALL') {
-						$var_params['all'] = true;
-					}
-					//name, Table.Column, Where[, ALL] style
-					elseif(isset($parts[2])) {
-						$var_params['where'] = $parts[2];
-						
-						if(isset($parts[3]) && trim($parts[3])==='ALL') {
-							$var_params['all'] = true;
-						}
-					}
-					
-					$params['database_options'] = $var_params;
-				}
-				else {
-					$params['options'] = explode('|',$parts[1]);
-				}
-			}
+		unset($parts[0]);
+		
+		$extra = implode(',',$parts);
+		
+		//just "name, label"
+		if(!$extra) return $params;
+		
+		//if the 3rd item is "LIST", use multi-select
+		if(preg_match('/^\s*LIST\s*,/',$extra)) {
+			$params['multiple'] = true;
+			$extra = array_pop(explode(',',$extra,2));
+		}
+		
+		//table.column, where clause, ALL
+		if(preg_match('/^\s*[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+\s*,[^,]+,\s*ALL\s*$/', $extra)) {
+			list($table_column, $where, $all) = explode(',',$extra, 3);
+			list($table,$column) = explode('.',$table_column,2);
+			
+			$params['type'] = 'select';
+			$params['multiple'] = true;
+			
+			$var_params = array(
+				'table'=>$table,
+				'column'=>$column,
+				'all'=>true,
+				'where'=>$where
+			);
+			
+			$params['database_options'] = $var_params;
+		}
+		
+		//table.column, ALL
+		elseif(preg_match('/^\s*[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+\s*,\s*ALL\s*$/', $extra)) {
+			list($table_column, $all) = explode(',',$extra, 2);
+			list($table,$column) = explode('.',$table_column,2);
+			
+			$params['type'] = 'select';
+			$params['multiple'] = true;
+			
+			$var_params = array(
+				'table'=>$table,
+				'column'=>$column,
+				'all'=>true
+			);
+			
+			$params['database_options'] = $var_params;
+		}
+		
+		//table.column, where clause
+		elseif(preg_match('/^\s*[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+\s*,[^,]+$/', $extra)) {
+			list($table_column, $where) = explode(',',$extra, 2);
+			list($table,$column) = explode('.',$table_column,2);
+			
+			$params['type'] = 'select';
+			$params['multiple'] = true;
+			
+			$var_params = array(
+				'table'=>$table,
+				'column'=>$column,
+				'where'=>$where
+			);
+			
+			$params['database_options'] = $var_params;
+		}
+		
+		//table.column
+		elseif(preg_match('/^\s*[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+\s*$/', $extra)) {
+			list($table,$column) = explode('.',$extra,2);
+			
+			$params['type'] = 'select';
+			
+			$var_params = array(
+				'table'=>$table,
+				'column'=>$column
+			);
+			
+			$params['database_options'] = $var_params;
+		}
+		
+		//option1|option2
+		elseif(preg_match('/^\s*([a-zA-Z0-9_\- ]+\|)+[a-zA-Z0-9_\- ]+$/',$extra)) {
+			$options = explode('|',$extra);
+			
+			$params['type'] = 'select';
+			$params['multiple'] = true;					
+			$params['options'] = $options;
 		}
 		
 		return $params;
