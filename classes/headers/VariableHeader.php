@@ -169,7 +169,7 @@ class VariableHeader extends HeaderBase {
 			$options = explode('|',$extra);
 			
 			$params['type'] = 'select';
-			$params['multiple'] = true;					
+			$params['multiple'] = false;					
 			$params['options'] = $options;
 		}
 		
