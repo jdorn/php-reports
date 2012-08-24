@@ -294,6 +294,7 @@ class Report {
 							);
 						}
 						if($params['options'][$key]['value'] == $params['value']) $params['options'][$key]['selected'] = true;
+						elseif(is_array($params['value']) && in_array($params['options'][$key]['value'],$params['value'])) $params['options'][$key]['selected'] = true;
 						else $params['options'][$key]['selected'] = false;
 						
 						if($params['multiple']) {
