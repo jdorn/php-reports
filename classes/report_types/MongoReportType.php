@@ -34,7 +34,14 @@ abstract class MongoReportType extends ReportTypeBase {
 	public static function run(&$report) {		
 		$eval = '';
 		foreach($report->macros as $key=>$value) {
-			$eval .= 'var '.$key.' = "'.addslashes($value).'";'."\n";
+			if(is_array($value)) {
+				$value = json_encode($value);
+			}
+			else {
+				$value = '"'.addslashes($value).'"';
+			}
+			
+			$eval .= 'var '.$key.' = '.$value.';'."\n";
 		}
 		$eval .= $report->raw_query;
 		
@@ -58,10 +65,11 @@ abstract class MongoReportType extends ReportTypeBase {
 		
 		$result = shell_exec($command);
 		
-		$rows = json_decode($result,true);
+		$result = trim($result);
 		
-		if(!$rows) throw new Exception($result);
+		$json = json_decode($result, true);
+		if($json === NULL) throw new Exception($result);
 		
-		return $rows;
+		return $json;
 	}
 }
