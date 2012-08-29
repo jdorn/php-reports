@@ -12,6 +12,15 @@
 			{% block variable_form_row_label %}
 				<label for='var_{{var.key}}'>{{var.display}}</label>
 			{% endblock %}
+			{% block variable_form_row_modifier_input %}
+				{% if var.modifier_options %}
+				<select name='macros[{{var.key}}_modifier]' id='var_{{var.key}}_modifier' class='input'>
+				{% for option in var.modifier_options %}
+					<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
+				{% endfor %}
+				</select>
+				{% endif %}
+			{% endblock %}
 			{% block variable_form_row_input %}
 				{% if var.is_select %}
 					{% if var.is_multiselect %}

@@ -309,6 +309,23 @@ class Report {
 					}
 				}
 				
+				if(isset($params['modifier_options'])) {
+					$modifier_value = isset($this->macros[$var.'_modifier'])? $this->macros[$var.'_modifier'] : null;
+					
+					foreach($params['modifier_options'] as $key=>$option) {
+						if(!is_array($option)) {
+							$params['modifier_options'][$key] = array(
+								'display'=>$option,
+								'value'=>$option
+							);
+						}
+						
+						if($params['modifier_options'][$key]['value'] == $modifier_value) $params['modifier_options'][$key]['selected'] = true;
+						else $params['modifier_options'][$key]['selected'] = false;
+					}
+					
+				}
+				
 				$vars[] = $params;
 			}	
 		}

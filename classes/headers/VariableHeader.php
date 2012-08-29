@@ -37,7 +37,10 @@ class VariableHeader extends HeaderBase {
 		'format'=>array(
 			'type'=>'string',
 			'default'=>'Y-m-d H:i:s'
-		)
+		),
+		'modifier_options'=>array(
+			'type'=>'array'
+		),
 	);
 	
 	public static function init($params, &$report) {		

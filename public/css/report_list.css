@@ -75,14 +75,23 @@
 }
 
 #report_list .report {
-	padding: 8px 0;
+	font: 200 16px/1.5 Helvetica, Verdana, sans-serif;
+	border-bottom: 1px solid #ddd;
+	padding-left: 3px;
+}
+#report_list .report:hover {
+	background-color: #FEFFC2;
+}
+#report_list .report a {
+	text-decoration: none;
 }
 #report_list .report.selected {
-	background-color: #FCFFBD;
-	padding-left: 8px;
-	border: 2px solid #F2FF00;
-	border-radius: 3px;
+	background-color: #E3EBFF;
 }
+#report_list .report.selected:hover {
+	background-color: #FEFFC2;
+}
+
 #report_list .report img {
 	vertical-align: middle;
 }
