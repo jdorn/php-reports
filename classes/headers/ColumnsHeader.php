@@ -55,8 +55,7 @@ class ColumnsHeader extends HeaderBase {
 			elseif($part === 'url') {
 				$type = 'link';
 				$options = array(
-					'blank'=>false,
-					'display'=>$part
+					'blank'=>false
 				);
 			}
 			elseif($part === 'bar') {
