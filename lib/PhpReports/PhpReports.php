@@ -4,6 +4,8 @@ class PhpReports {
 	public static $request;
 	public static $twig;
 	
+	public static $vars;
+	
 	private static $loader_cache;
 	
 	public static function init($config = 'config/config.php') {
@@ -34,7 +36,65 @@ class PhpReports {
 		));
 		self::$twig = new Twig_Environment($loader);
 		
+		self::$twig->addFunction('dbdate',new Twig_Function_Function('PhpReports::output_variable_date'));
+		
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
+	}
+	
+	public static function setVar($key,$value) {
+		if(!self::$vars) self::$vars = array();
+		
+		self::$vars[$key] = $value;
+	}
+	public static function getVar($key, $default=null) {
+		if(isset(self::$vars[$key])) return self::$vars[$key];
+		else return $default;
+	}
+	
+	public static function output_variable_date($time, $database=null, $format=null) {		
+		$report = self::getVar('Report',null);
+		if(!$report) return strtotime('Y-m-d H:i:s',strtotime($time));
+		
+		//if a variable name was passed in
+		$var = null;
+		if(isset($report->options['Variables'][$time])) {
+			$var = $report->options['Variables'][$time];
+			$time = $report->macros[$time];
+		}
+		
+		$time = strtotime($time);
+		
+		$environment = $report->getEnvironment();
+		
+		//determine time offset
+		$offset = 0;
+		
+		if($database) {
+			if(isset($environment[$database]['time_offset'])) $offset = $environment[$database]['time_offset'];
+		}
+		else {
+			$database = $report->getDatabase();
+			if(isset($database['time_offset'])) $offset = $database['time_offset'];
+		}
+		
+		//if the time needs to be adjusted
+		if($offset) {
+			$time = strtotime((($offset > 0)? '+' : '-').abs($offset).' hours',$time);
+		}
+		
+		//determine output format
+		if($format) {
+			$time = date($format,$time);
+		}
+		elseif($var && isset($var['format'])) {
+			$time = date($var['format'],$time);
+		}
+		//default to Y-m-d H:i:s
+		else {
+			$time = date('Y-m-d H:i:s',$time);
+		}
+		
+		return $time;
 	}
 	
 	public static function render($template, $macros) {		

@@ -74,6 +74,21 @@ class Report {
 		return str_replace(array("\r\n","\r"),"\n",$contents);
 	}
 	
+	public function getDatabase() {
+		if(isset($this->options['Database']) && $this->options['Database']) {
+			$environment = $this->getEnvironment();
+			
+			if(isset($environment[$this->options['Database']])) {
+				return $environment[$this->options['Database']];
+			}
+		}
+		
+		return array();
+	}
+	public function getEnvironment() {
+		return PhpReports::$config['environments'][$this->options['Environment']];
+	}
+	
 	public function addMacro($name, $value) {
 		$this->macros[$name] = $value;
 	}
@@ -336,7 +351,9 @@ class Report {
 	protected function _runReport() {
 		if(!$this->is_ready) {
 			throw new Exception("Report is not ready.  Missing variables");
-		}		
+		}
+		
+		PhpReports::setVar('Report',$this);
 		
 		//release the write lock on the session file
 		//so the session isn't locked while the report is running

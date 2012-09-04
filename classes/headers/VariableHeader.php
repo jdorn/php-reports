@@ -41,6 +41,9 @@ class VariableHeader extends HeaderBase {
 		'modifier_options'=>array(
 			'type'=>'array'
 		),
+		'time_offset'=>array(
+			'type'=>'number'
+		),
 	);
 	
 	public static function init($params, &$report) {		
@@ -194,9 +197,10 @@ class VariableHeader extends HeaderBase {
 	}
 	
 	public static function beforeRun(&$report) {
-		foreach($report->options['Variables'] as $var=>$params) {
+		foreach($report->options['Variables'] as $var=>$params) {			
 			//if the type is date, parse with strtotime
 			if($params['type'] === 'date' && $report->macros[$params['name']]) {
+				
 				$time = strtotime($report->macros[$params['name']]);
 				if(!$time) throw new Exception($params['display']." must be a valid datetime value.");
 				
