@@ -20,11 +20,11 @@ class MysqlReportType extends ReportTypeBase {
 			if(isset($params['multiple']) && $params['multiple']) {
 				//allow {macro} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
 				//this is shorthand for comma separated list
-				$report->raw_query = preg_replace('/([^\{])\{'.$key.'\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}\'{{ item.value }}\'{% endfor %}$2',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])\{'.$key.'\}([^\}])/','$1{% for item in '.$key.' %}{% if not loop.first %},{% endif %}\'{{ item }}\'{% endfor %}$2',$report->raw_query);
 			
 				//allow {(macro)} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
 				//this is shorthand for quoted, comma separated list
-				$report->raw_query = preg_replace('/([^\{])\{\('.$key.'\)\}([^\}])/','$1{% for item in '.$key.' %}{% if not item.first %},{% endif %}(\'{{ item.value }}\'){% endfor %}$2',$report->raw_query);
+				$report->raw_query = preg_replace('/([^\{])\{\('.$key.'\)\}([^\}])/','$1{% for item in '.$key.' %}{% if not loop.first %},{% endif %}(\'{{ item }}\'){% endfor %}$2',$report->raw_query);
 			}
 			//macros sortcuts for non-arrays
 			else {
@@ -111,13 +111,13 @@ class MysqlReportType extends ReportTypeBase {
 			if(is_array($value)) {
 				$first = true;
 				foreach($value as $key2=>$value2) {
-					$value[$key2] = array(
-						'first'=>$first,
-						'value'=>mysql_real_escape_string($value2)
-					);
+					$value[$key2] = mysql_real_escape_string(trim($value2));
 					$first = false;
 				}
 				$macros[$key] = $value;
+			}
+			else {
+				$macros[$key] = mysql_real_escape_string($value);
 			}
 			
 			if($value === 'ALL') $macros[$key.'_all'] = true;
