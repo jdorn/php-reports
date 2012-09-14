@@ -110,7 +110,6 @@ class VariableHeader extends HeaderBase {
 			list($table,$column) = explode('.',$table_column,2);
 			
 			$params['type'] = 'select';
-			$params['multiple'] = true;
 			
 			$var_params = array(
 				'table'=>$table,
@@ -128,7 +127,6 @@ class VariableHeader extends HeaderBase {
 			list($table,$column) = explode('.',$table_column,2);
 			
 			$params['type'] = 'select';
-			$params['multiple'] = true;
 			
 			$var_params = array(
 				'table'=>$table,
@@ -145,7 +143,6 @@ class VariableHeader extends HeaderBase {
 			list($table,$column) = explode('.',$table_column,2);
 			
 			$params['type'] = 'select';
-			$params['multiple'] = true;
 			
 			$var_params = array(
 				'table'=>$table,
@@ -174,8 +171,7 @@ class VariableHeader extends HeaderBase {
 		elseif(preg_match('/^\s*([a-zA-Z0-9_\- ]+\|)+[a-zA-Z0-9_\- ]+$/',$extra)) {
 			$options = explode('|',$extra);
 			
-			$params['type'] = 'select';
-			$params['multiple'] = false;					
+			$params['type'] = 'select';				
 			$params['options'] = $options;
 		}
 		
