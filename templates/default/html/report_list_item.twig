@@ -29,8 +29,8 @@
 		{% if item.Detail %}
 			<img alt='Contains drill down links' title='Contains drill down links' src='{{base}}/public/images/drill.png' />
 		{% endif %}
-		{% if item.Created %}
-			<em>{{ item.Created }}</em>
+		{% if item.Created and item.Created > date("-2 weeks")|date('U') %}
+			<img alt='Created on {{item.Created|date('Y-m-d')}}' title='Created on {{item.Created|date('Y-m-d')}}' src='{{base}}/public/images/new_icon.gif' />
 		{% endif %}
 	</div>
 {% endif %}

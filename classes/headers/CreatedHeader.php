@@ -8,7 +8,7 @@ class CreatedHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
-		$report->options['Type'] = $params['type'];
+		$report->options['Created'] = strtotime($params['date']);
 	}
 	
 	public static function parseShortcut($value) {
