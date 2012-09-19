@@ -25,6 +25,9 @@
 		{% else %}
 		<thead>
 			<tr class='header'>
+			{% if selectable %}
+				<th> </th>
+			{% endif %}
 			{% for value in Rows[0].values %}
 				<th class="{{value.class}}">{{value.key}}</th>
 			{% endfor %}
@@ -33,8 +36,18 @@
 		<tbody>
 			{% for row in Rows %}
 			<tr>
+				{% if selectable %}
+					<td style='padding: 0;'>
+						<div style='width:40px;'>
+							<input type='checkbox' class='selectable' style=' vertical-align:middle;' />
+							{% if not loop.last %}
+							<a href='#' class='filldown' title='Fill Down - copy this value to all rows below this' style='text-decoration:none;'>&darr;</a>
+							{% endif %}
+						</div>
+					</td>
+				{% endif %}
 				{% for value in row.values %}
-				<td class="{{value.class}}">
+				<td class="{{value.class}}{% if selectable and value.key == selectable %} selectable{% endif %}">
 					{{ value.getValue(true)|raw }}
 				{% endfor %}
 			</tr>
@@ -49,6 +62,46 @@
 		bPaginate: false,
 		aaSorting: []
 	});
+	
+	{% if selectable %}
+	$('#result_table').on('change','input.selectable',function() {
+		//determine selected inputs
+		var selected_inputs = $("input.selectable:checked");
+		
+		var selected = [];
+		
+		selected_inputs.each(function() {
+			var id = $.trim($(this).closest('tr').find('td.selectable').text());
+		
+			selected.push(id);
+		});
+		
+		$(".report_link").each(function() {
+			var url = $(this).attr('href');
+			var query_string = {};
+			
+			if(url.indexOf('?') != -1) {
+				query_string = decodeURIComponent($(this).attr('href').split('?')[1]).QueryStringToJSON()
+				url = url.split('?')[0];
+			}
+			
+			if(selected.length)
+				query_string.selected = selected;
+			else
+				delete query_string.selected;
+			
+			$(this).attr('href',url+'?'+$.param(query_string));
+		});
+	})
+	.on('click','.filldown',function() {
+		var input = $(this).closest('td').find('input.selectable');
+	
+		$(this).closest('tr').nextAll('tr').find('input.selectable').prop('checked',input.prop('checked'));
+		input.trigger('change');
+		return false;
+	});
+	{% endif %}
+	
 	</script>
 	{% endif %}
 	<div style='clear:both;'></div>

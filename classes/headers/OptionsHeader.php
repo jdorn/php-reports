@@ -49,6 +49,9 @@ class OptionsHeader extends HeaderBase {
 			'type'=>'number',
 			'default'=>1
 		),
+		'selectable'=>array(
+			'type'=>'string'
+		)
 	);
 	
 	public static function init($params, &$report) {
@@ -92,6 +95,26 @@ class OptionsHeader extends HeaderBase {
 	public static function beforeRender(&$report) {
 		if(isset($report->options['limit'])) {
 			$report->options['Rows'] = array_slice($report->options['Rows'],0,intval($report->options['limit']));
+		}
+		
+		if(isset($report->options['selectable']) && isset($_REQUEST['selected'])) {			
+			$selected_key = null;
+			foreach($report->options['Rows'][0]['values'] as $key=>$value) {
+				if($value->key == $report->options['selectable']) {
+					$selected_key = $key;
+					break;
+				}
+			}
+			
+			if($selected_key !== null) {
+				foreach($report->options['Rows'] as $key=>$row) {
+					
+					if(!in_array($row['values'][$selected_key]->getValue(),$_GET['selected'])) {
+						unset($report->options['Rows'][$key]);
+					}
+				}
+				$report->options['Rows'] = array_values($report->options['Rows']);
+			}
 		}
 		
 		if(isset($report->options['vertical'])) {

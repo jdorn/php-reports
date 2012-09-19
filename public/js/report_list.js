@@ -48,6 +48,9 @@ $(document).ready(function() {
 			return;
 		}
 		
+		//require at least 2 letters to search
+		if(val.length < 2) return;
+		
 		var re = new RegExp(val, "i");
 		
 		//get matching reports
@@ -74,8 +77,9 @@ $(document).ready(function() {
 		}
 		
 		//make sure we aren't scrolled above the report list
-		window.location = '#reportlist';
-		readjustScroll(true);
+		var target = $('#report_list');
+		if(!target.length) return;
+		$(window).scrollTop(target.offset().top - 40);
 		
 		refresh_report_list();
 	});
@@ -127,6 +131,6 @@ $(document).ready(function() {
 		
 		$(window).scrollTop(target.offset().top - 40);
 	};
-	setInterval(readjustScroll,200);
+	//setInterval(readjustScroll,200);
 	
 });

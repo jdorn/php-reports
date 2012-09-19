@@ -1,5 +1,5 @@
 <?php
-abstract class PhpReportType extends ReportTypeBase {
+class PhpReportType extends ReportTypeBase {
 	public static function init(&$report) {
 		$report->raw_query = "<?php\n//REPORT: ".$report->report."\n".trim($report->raw_query);
 		
