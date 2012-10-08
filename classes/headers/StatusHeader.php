@@ -9,6 +9,8 @@ class StatusHeader extends HeaderBase {
 	
 	public static function init($params, &$report) {
 		$report->options['Status'] = $params['value'];
+
+		$report->options[$params['value']] = true;
 		
 		$report->exportHeader('Status',$params);
 	}

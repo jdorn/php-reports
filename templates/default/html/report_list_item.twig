@@ -14,23 +14,27 @@
 {% elseif not item.ignore %}
 	<div class='report'>
 		<a href='{{item.url}}' id='report_{{item.Id}}'>{{item.Name}}</a>
+		{% if item.stop %}
+			<img alt='Stop!' title='Stop!' src='{{base}}/public/images/traffic-light-red.png' />
+		{% endif %}
+		{% if item.Caution or item.warning %}
+			<img alt='Caution!' title='Caution!' src='{{base}}/public/images/prohibition.png' />
+		{% endif %}
 		{% if item.Variables %}
-			<img alt='Configurable' title='Configurable' src='{{base}}/public/images/ui-slider-vertical-050.png' />
+			<img alt='Configurable' title='Configurable' src='{{base}}/public/images/wrench.png' />
 		{% endif %}
 		{% if item.Charts %}
-			<img alt='Contains graphs/charts' title='Contains graphs/charts' src='{{base}}/public/images/chart.png' />
-		{% endif %}
-		{% if item.stop %}
-			<img alt='Warning!' title='Warning!' src='{{base}}/public/images/prohibition.png' />
-		{% endif %}
-		{% if item.Caution %}
 			<img alt='Contains graphs/charts' title='Contains graphs/charts' src='{{base}}/public/images/chart.png' />
 		{% endif %}
 		{% if item.Detail %}
 			<img alt='Contains drill down links' title='Contains drill down links' src='{{base}}/public/images/drill.png' />
 		{% endif %}
+		{% if item.expensive %}
+			<img alt='Expensive to run' title='Expensive to run' src='{{base}}/public/images/money_dollar.png' />
+		{% endif %}
 		{% if item.Created and item.Created > date("-2 weeks")|date('U') %}
 			<img alt='Created on {{item.Created|date('Y-m-d')}}' title='Created on {{item.Created|date('Y-m-d')}}' src='{{base}}/public/images/new_icon.gif' />
 		{% endif %}
+		<a href='{{item.url | replace({"report/html/?":"report/csv/?"})}}' style='margin-left: 5px; opacity:.6;'><img alt='Export CSV File' title='Export CSV File' src='{{base}}/public/images/document-excel-csv.png' /></a>
 	</div>
 {% endif %}
