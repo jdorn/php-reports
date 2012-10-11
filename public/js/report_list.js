@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	function showReportList(h2,delay) {
+	function showReportList(h2) {
 		//show all child reports
 		$('.report',h2.next('.report_list')).show();
 		
@@ -7,12 +7,12 @@ $(document).ready(function() {
 		h2.parent('.report_list').show();
 		h2.parent('h2').removeClass('collapsed').addClass('expanded');
 	}
-	function hideReportList(h2,delay) {
+	function hideReportList(h2) {
 		h2.removeClass('expanded').addClass('collapsed');
 	}
-	function toggleReportList(h2,delay) {
-		if(h2.hasClass('expanded')) hideReportList(h2,delay);
-		else showReportList(h2,delay);
+	function toggleReportList(h2) {
+		if(h2.hasClass('expanded')) hideReportList(h2);
+		else showReportList(h2);
 	}
 	
 	//toggle links
@@ -22,7 +22,7 @@ $(document).ready(function() {
 		return false;
 	});
 	$('#hide_table_of_contents').on('click',function() {
-		$('#table_of_contents > .report_list').toggle(200);
+		$('#table_of_contents').find('> .report_list').toggle(200);
 		return false;
 	});
 	
@@ -33,24 +33,27 @@ $(document).ready(function() {
 	});
 	
 	//report search
-	$('#search').keyup(function(e) {
+    var last_value = '';
+	$('#search').on('keyup search change',function() {
 		var val = $(this).val();
+        if(val === last_value) return;
+        last_value = val;
+
+        var report_list = $("#report_list");
 		
 		//if empty, show all reports
 		if(!val) {
-			$("#report_list > .report_list").show();
-			$("#report_list h2.title").removeClass('collapsed').addClass('expanded');
-			$("#report_list h2.no_title").removeClass('expanded').addClass('collapsed');
-			$("#report_list .report").show().removeClass('selected');
-		
-			refresh_report_list();
+            report_list.find("> .report_list").show();
+            report_list.find("h2.title").removeClass('collapsed').addClass('expanded');
+            report_list.find("h2.no_title").removeClass('expanded').addClass('collapsed');
+            report_list.find(".report").show().removeClass('selected');
 		
 			return;
 		}
-		
+
 		//require at least 2 letters to search
-		if(val.length < 2) return;
-		
+		//if(val.length < 2) return;
+
 		var re = new RegExp(val, "i");
 		
 		//get matching reports
@@ -59,78 +62,23 @@ $(document).ready(function() {
 		});
 		
 		//hide all reports
-		$("#report_list > .report_list").hide();
-		$("#report_list .report").hide().removeClass('selected');
-		$("#report_list h2").removeClass('expanded').addClass('collapsed');
+        report_list.find("> .report_list").hide();
+        report_list.find(".report").hide().removeClass('selected');
+        report_list.find("h2").removeClass('expanded').addClass('collapsed');
 		
 		//loop through all matches
 		for(var i in matching) {
+            var elem = $('#report_'+matching[i].id);
+
 			//if a directory matches, show it and all the child reports
 			if(!matching[i].report) {
-				showReportList($('#report_'+matching[i].id));
+				showReportList(elem);
 			}
 			//if a single report matches, show it and highlight it
 			else {
-				$('#report_'+matching[i].id).parent().addClass('selected').show().parents('.report_list').last().show();
-				$('#report_'+matching[i].id).parents('.report_list').prev('h2').addClass('expanded').removeClass('collapsed');
+                elem.parent().addClass('selected').show().parents('.report_list').last().show();
+                elem.parents('.report_list').prev('h2').addClass('expanded').removeClass('collapsed');
 			}
 		}
-		
-		//make sure we aren't scrolled above the report list
-		var target = $('#report_list');
-		if(!target.length) return;
-		$(window).scrollTop(target.offset().top - 40);
-		
-		refresh_report_list();
 	});
-	
-	//there is a bug with webkit where the page isn't redrawn
-	//when changing the innerhtml
-	var refresh_report_list = function() {
-		$('#report_list').css('display','inline-block');
-		$('#report_list').offset();
-		$('#report_list').css('display','block');
-	};
-	
-	//make the search bar fixed when scolling down through reports
-	var original_search_offset = $('#searchbar').next().offset().top;
-	var search_bar_fixed = false;
-	$(window).scroll(function(e){
-		var $el = $('#searchbar');
-		
-		if(!search_bar_fixed) {
-			original_search_offset = $el.next().offset().top - 55;
-		}
-		
-		if ($(this).scrollTop() >= original_search_offset){
-			if(!search_bar_fixed) {
-				$el.addClass('fixed');
-				search_bar_fixed = true;
-			}
-		}
-		else if(search_bar_fixed) {
-			$el.removeClass('fixed');
-			search_bar_fixed = false;
-		}
-	});
-	
-	//check for changes in hash tag in url
-	var current_url = null;
-	var readjustScroll = function(force) {
-		if(!search_bar_fixed) return;
-		
-		if(!force && current_url == window.location.href) return;
-		current_url = window.location.href;
-		
-		var name = current_url.split('#');
-		if(!name[1]) return;
-		
-		var target = $('a[name='+name[1]+']');
-		
-		if(!target.length) return;
-		
-		$(window).scrollTop(target.offset().top - 40);
-	};
-	//setInterval(readjustScroll,200);
-	
 });

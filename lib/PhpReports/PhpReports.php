@@ -36,7 +36,7 @@ class PhpReports {
 		));
 		self::$twig = new Twig_Environment($loader);
 		
-		self::$twig->addFunction('dbdate',new Twig_Function_Function('PhpReports::output_variable_date'));
+		self::$twig->addFunction('dbdate',new Twig_Function_Function('PhpReports::dbdate'));
 		
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 	}
@@ -51,7 +51,7 @@ class PhpReports {
 		else return $default;
 	}
 	
-	public static function output_variable_date($time, $database=null, $format=null) {		
+	public static function dbdate($time, $database=null, $format=null) {		
 		$report = self::getVar('Report',null);
 		if(!$report) return strtotime('Y-m-d H:i:s',strtotime($time));
 		
