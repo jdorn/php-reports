@@ -47,6 +47,12 @@ pre {
 	color: #333;
 	border-bottom: 1px solid #aaa;
 	padding: 3px 10px;
+	box-shadow: 0px 5px 4px rgba(0,0,0,0.3);
+	position:absolute;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	right: 0;
 }
 #breadcrumb {
 	float:left;
@@ -55,7 +61,7 @@ pre {
 	float:right;
 }
 #holder {
-	padding: 0 10px 30px;
+	padding: 25px 10px 30px;
 }
 
 .button {

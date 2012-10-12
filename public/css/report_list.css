@@ -18,6 +18,7 @@
 	bottom: 0;
 	position:absolute;
 	overflow: auto;
+	padding-top: 10px;
 }
 #table_of_contents h3 {
 	margin: 5px;

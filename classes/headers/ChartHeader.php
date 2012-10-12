@@ -181,15 +181,23 @@ class ChartHeader extends HeaderBase {
 		foreach($chart_rows as $i=>$row) {
 			foreach($row as $k=>$v) {
 				$type = self::determineDataType($v->original_value);
+				//if the value is null, it doesn't influence the column type
 				if(!$type) {
 					$chart_rows[$i][$k]->setValue(null);
 					continue;
 				}
+				//if we don't know the column type yet, set it to this row's value
 				elseif(!isset($types[$k])) $types[$k] = $type;
+				//if any row has a string value for the column, the whole column is a string type
 				elseif($type === 'string') $types[$k] = 'string';
+				//if the column is currently a date and this row is a time/datetime, set the column to datetime type
+				elseif($types[$k] === 'date' && in_array($type,array('timeofday','datetime'))) $types[$k] = 'datetime';
+				//if the column is currently a time and this row is a date/datetime, set the column to datetime type
+				elseif($types[$k] === 'timeofday' && in_array($type,array('date','datetime'))) $types[$k] = 'datetime';
+				//if the column is currently a date and this row is a number set the column type to number
 				elseif($types[$k] === 'date' && $type === 'number') $types[$k] = 'number';
 			}
-		}		
+		}
 		
 		$report->options['Charts'][$num]['datatypes'] = $types;
 		
@@ -202,8 +210,16 @@ class ChartHeader extends HeaderBase {
 				if(is_null($val->getValue())) {
 					$val->datatype = 'null';
 				}
-				elseif($types[$key] === 'date') {
+				elseif($types[$key] === 'datetime') {
 					$val->setValue(date('m/d/Y H:i:s',strtotime($val->getValue())));
+					$val->datatype = 'datetime';
+				}
+				elseif($types[$key] === 'timeofday') {
+					$val->setValue(date('H:i:s',strtotime($val->getValue())));
+					$val->datatype = 'timeofday';
+				}
+				elseif($types[$key] === 'date') {
+					$val->setValue(date('m/d/Y',strtotime($val->getValue())));
 					$val->datatype = 'date';
 				}
 				elseif($types[$key] === 'number') {
@@ -285,7 +301,11 @@ class ChartHeader extends HeaderBase {
 		if(is_null($value)) return null;
 		elseif($value === '') return null;
 		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';
-		elseif(strtotime($value)) return 'date';
+		elseif($temp = strtotime($value)) {
+			if(preg_match('/^[0-2][0-9]:/',$value)) return 'timeofday';
+			elseif(date('H:i:s',$temp) === '00:00:00') return 'date';
+			else return 'datetime';
+		}
 		else return 'string';
 	}
 

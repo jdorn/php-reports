@@ -16,8 +16,10 @@
 			var rows = [
 				{% for row in chart.Rows %}[
 					{% for value in row.values %}
-						{%- if value.datatype == "date" -%}
+						{%- if value.datatype == "date" or value.datatype == "datetime" -%}
 						new Date("{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}")
+						{%- elseif value.datatype == "timeofday" -%}
+						[{{ value.getValue()|slice(0,2) }}, {{ value.getValue()|slice(3,2) }}, {{ value.getValue()|slice(6,2) }}, 0]
 						{%- elseif value.datatype == "null" -%}
 						null
 						{%- elseif value.datatype == "number" -%}
