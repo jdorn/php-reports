@@ -53,6 +53,12 @@ class DetailHeader extends HeaderBase {
 				}
 			}
 		}
+
+		foreach($params['macros'] as $k=>$v) {
+			if(!is_array($v)) {
+				$params['macros'][$k] = array('constant'=>$v);
+			}
+		}
 		
 		if(!$found) {
 			//not a fatal error, just trigger the error
@@ -132,7 +138,7 @@ class DetailHeader extends HeaderBase {
 				else $i = $key-1;
 				
 				$url = PhpReports::$request->base.'/report/html/?report='.$detail['report'];
-				
+
 				$macros = array();
 				foreach($detail['macros'] as $k=>$v) {
 					//if the macro needs to be replaced with the value of another column
