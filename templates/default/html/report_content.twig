@@ -1,3 +1,16 @@
+{% block evaluated_variables %}
+    {% for var in vars %}
+        {% if macros[var.key] and var.type == "date" %}
+                <div>
+                    <strong>{{ var.display }}:</strong>
+                    {%  block evaluated_date_variable %}
+                        {{ macros[var.key]|date('Y-m-d H:i:s') }}
+                    {% endblock %}
+                </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
 {% include "html/table.twig" %}
 <p>Query took {{Time}} seconds</p>
 

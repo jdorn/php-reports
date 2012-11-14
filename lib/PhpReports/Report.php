@@ -522,7 +522,8 @@ class Report {
 			'report_querystring'=>$_SERVER['QUERY_STRING'],
 			'base'=>PhpReports::$request->base,
 			'report'=>$this->report,
-			'vars'=>$this->prepareVariableForm()
+			'vars'=>$this->prepareVariableForm(),
+			'macros'=>$this->macros,
 		);
 		
 		$template_vars = array_merge($template_vars,$this->options);
