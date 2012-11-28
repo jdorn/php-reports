@@ -36,11 +36,15 @@
 					{% if var.is_textarea %}
 						<textarea type='text' name='macros[{{var.key}}]' id='var_{{var.key}}' class='input' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
 					{% else %}
-						<input type='text' name='macros[{{var.key}}]' value='{{var.value}}' id='var_{{var.key}}'  class='input'/>	
+						<input type='text' name='macros[{{var.key}}]' id="macros_{{ var.key }}" value='{{var.value}}' id='var_{{var.key}}'  class='input'/>
 					{% endif %}
 				{% endif %}
 			{% endblock %}
-			
+
+            {% if var.type == "date" %}
+                <img class='date-selector' src='{{ base }}/public/images/calendar--pencil.png' style='vertical-align: middle;' />
+            {% endif %}
+
 			{% if var.description %}
 				{% block variable_form_description %}
 						<span>{{ var.description|raw }}</span>
@@ -48,6 +52,38 @@
 			{% endif %}
 		</div>
 		{% endblock %}
+
+        {% if var.type == "date" %}
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var input = $('#macros_{{ var.key }}');
+
+                var trigger = input.next('.date-selector');
+
+                trigger.DatePicker({
+                    date: '2012-01-01',
+                    current: '2012-01-01',
+                    calendars: 1,
+                    view: 'years',
+                    position: 'right',
+                    onBeforeShow: function() {
+                        if(input.val().match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
+                            trigger.DatePickerSetDate(input.val(), true);
+                        }
+                    },
+                    onChange: function(formatted, dates, el, target) {
+                        //make sure we only set the date when they pick a day and not when they are drilling down by year
+                        if(!target.parents('.datepickerDays').length) {
+                            return;
+                        }
+
+                        input.val(formatted);
+                        trigger.DatePickerHide();
+                    }
+                });
+            });
+        </script>
+        {% endif %}
 	{% endfor %}
 	
 	{% block variable_form_submit %}

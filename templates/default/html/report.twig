@@ -13,6 +13,8 @@
 	{% if not nodata %}
 		<link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
 	{% endif %}
+
+    <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/public/css/datepicker.css" />
 {% endblock %}
 
 {% block javascripts %}
@@ -23,6 +25,8 @@
 	{% if not nodata %}
 		<script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
 	{% endif %}
+
+    <script type="text/javascript" src="{{base}}/public/js/datepicker.js"></script>
 {% endblock %}
 
 {% block header %}
