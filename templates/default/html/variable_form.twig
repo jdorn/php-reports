@@ -60,11 +60,20 @@
 
                 var trigger = input.next('.date-selector');
 
+                //start with a 'year' view if the current value isn't in Y-m-d format.
+                var view;
+                if(input.val().match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
+                    view = 'days';
+                }
+                else {
+                    view = 'years';
+                }
+
                 trigger.DatePicker({
                     date: '2012-01-01',
                     current: '2012-01-01',
                     calendars: 1,
-                    view: 'years',
+                    view: view,
                     position: 'right',
                     onBeforeShow: function() {
                         if(input.val().match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
