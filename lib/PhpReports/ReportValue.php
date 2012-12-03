@@ -54,7 +54,7 @@ class ReportValue {
 		$type = $this->_getType($value);
 		
 		if($type === null) {
-			if($html) return '&nbsp;';
+			if($html && $this->is_html) return '&nbsp;';
 			else return null;
 		}
 		elseif($type === 'number') {
@@ -71,7 +71,14 @@ class ReportValue {
 	
 	public function getValue($html = false, $date = false) {
 		if($html) {
-			return $this->_getDisplayValue($this->html_value, true, $date);
+			$return = $this->_getDisplayValue($this->html_value, true, $date);
+
+			if($this->is_html) {
+				return $return;
+			}
+			else {
+				return htmlentities($return);
+			}
 		}
 		else {
 			return $this->_getDisplayValue($this->filtered_value, false, $date);
