@@ -1,19 +1,27 @@
 {% if item.is_dir %}
 	{% if item.children %}
-	<h2 id="report_{{item.Id}}" class="{% if not item.Title %}no_title collapsed{%else%}title expanded{% endif %}">
-		<a name="report_{{item.Id}}"></a>
-		{% if item.Title %}{{item.Title}}{% else %}{{item.Name}}{% endif %}
-	</h2>
-	<div class='report_list'>
-		{% for item in item.children %}
-			{% include "html/report_list_item.twig" %}
-		{% endfor %}
-	</div>
-	<div style='clear:left;'></div>
+		<a name="report_{{item.Id}}" href='#'>.</a>
+		<h2 class="{% if not item.Title %}no_title{% endif %}">
+			{% if item.Title %}{{item.Title}}{% else %}{{item.Name}}{% endif %}
+			<button type='button' class='btn' data-toggle="collapse" data-target="#report_{{item.Id}}_children"><span class='caret'></span></button>
+		</h2>
+		{% if item.Description %}
+		<p>{{ item.Description }}</p>
+		{% endif %}
+		<div class='collapse {% if item.Title %}in{% endif %}' id='report_{{item.Id}}_children'>
+			<ul class='nav nav-list well'>
+				{% for item in item.children %}
+					<li>
+						{% include "html/report_list_item.twig" %}
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
 	{% endif %}
 {% elseif not item.ignore %}
-	<div class='report'>
-		<a href='{{item.url}}' id='report_{{item.Id}}'>{{item.Name}}</a>
+	<a class='pull-right' href='{{item.url | replace({"report/html/?":"report/csv/?"})}}' style='margin-left: 5px; opacity:.6;'><img alt='Export CSV File' title='Export CSV File' src='{{base}}/public/images/document-excel-csv.png' /></a>
+	<a href='{{item.url}}' id='report_{{item.Id}}'>
+		{{item.Name}}
 		{% if item.stop %}
 			<img alt='Stop!' title='Stop!' src='{{base}}/public/images/traffic-light-red.png' />
 		{% endif %}
@@ -35,6 +43,5 @@
 		{% if item.Created and item.Created > date("-2 weeks")|date('U') %}
 			<img alt='Created on {{item.Created|date('Y-m-d')}}' title='Created on {{item.Created|date('Y-m-d')}}' src='{{base}}/public/images/new_icon.gif' />
 		{% endif %}
-		<a href='{{item.url | replace({"report/html/?":"report/csv/?"})}}' style='margin-left: 5px; opacity:.6;'><img alt='Export CSV File' title='Export CSV File' src='{{base}}/public/images/document-excel-csv.png' /></a>
-	</div>
+	</a>
 {% endif %}

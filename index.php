@@ -15,6 +15,11 @@ Flight::route('/',function() {
 	PhpReports::listReports();
 });
 
+//JSON list of reports (used for typeahead search)
+Flight::route('/report_list_json',function() {
+	echo '['.PhpReports::getReportListJSON().']';
+});
+
 //if no report format is specified, default to html
 Flight::route('/report',function() {
 	PhpReports::displayReport($_REQUEST['report'],'html');

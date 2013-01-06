@@ -4,6 +4,10 @@
 	{% for chart in Charts %}
 	<div id='chart_div_{{chart.num}}' style='{% if chart.width %}width:{{chart.width}};{% endif %}{% if chart.height %}height:{{chart.height}};{% endif %}'></div>
 	{% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
 	<script type="text/javascript">
 	function drawCharts() {
 		{% for chart in Charts %}

@@ -8,54 +8,22 @@ table.dataTable {
 	font-family: arial, sans serif;
 }
 
-table.dataTable thead th {
-	padding: 3px 18px 3px 10px;
-	cursor: pointer;
-	*cursor: hand;
-	background-color: #cfc;
-	font-weight: bold;
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+    cursor: pointer;
+    *cursor: hand;
 }
-table.dataTable tbody th {
-	font-weight: bold;
-	background-color: #f0f9f0;
-}
+ 
+table.dataTable thead .sorting { background: url('../images/sort_both.png') no-repeat center right; }
+table.dataTable thead .sorting_asc { background: url('../images/sort_asc.png') no-repeat center right; }
+table.dataTable thead .sorting_desc { background: url('../images/sort_desc.png') no-repeat center right; }
+ 
+table.dataTable thead .sorting_asc_disabled { background: url('../images/sort_asc_disabled.png') no-repeat center right; }
+table.dataTable thead .sorting_desc_disabled { background: url('../images/sort_desc_disabled.png') no-repeat center right; }
 
-table.dataTable tfoot th {
-	padding: 3px 18px 3px 10px;
-	font-weight: bold;
-}
-
-table.dataTable tbody td, table.dataTable tbody th {
-	padding: 3px 10px;
-}
-
-table.dataTable thead th, table.dataTable tbody td, table.dataTable tbody th, table.dataTable tfoot th, table.dataTable {
-	border-style: solid;
-	border-color: #aaa;
-}
-table.dataTable thead th, table.dataTable tbody td, table.dataTable tbody th, table.dataTable tfoot th {
-	border-width: 1px 1px 0 0;
-}
-table.dataTable {
-	border-width: 0 0 1px 1px;
-}
-
-table.dataTable td.center,
-table.dataTable td.dataTables_empty {
-	text-align: center;
-}
-
-/*
-table.dataTable tr.odd { background-color: #E2E4FF; }
-table.dataTable tr.even { background-color: white; }
-
-table.dataTable tr.odd td.sorting_1 { background-color: #D3D6FF; }
-table.dataTable tr.odd td.sorting_2 { background-color: #DADCFF; }
-table.dataTable tr.odd td.sorting_3 { background-color: #E0E2FF; }
-table.dataTable tr.even td.sorting_1 { background-color: #EAEBFF; }
-table.dataTable tr.even td.sorting_2 { background-color: #F2F3FF; }
-table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
-*/
 
 /*
  * Table wrapper
@@ -65,7 +33,6 @@ table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
 	clear: both;
 	*zoom: 1;
 }
-
 
 /*
  * Page length menu

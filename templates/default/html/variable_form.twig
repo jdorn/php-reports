@@ -1,101 +1,54 @@
-<form method='get' id='variable_form'>
-	{% block variable_form_title %}
-	<h2>Configure Report</h2>
-	{% endblock %}
-	
+<form class="form-horizontal well" method="get" id="variable_form">
 	<input type='hidden' name='report' value='{{report}}' />
 	<input type='hidden' name='environment' value='{{Environment}}' />
-	
-	{% for var in vars %}
-		{% block variable_form_row %}
-		<div class='input-row'>
-			{% block variable_form_row_label %}
-				<label for='var_{{var.key}}'>{{var.display}}</label>
+
+	<fieldset>
+		<legend>{% block variable_form_title %}Configure Report{% endblock %}</legend>
+		
+		{% for var in vars %}
+			{% block variable_form_row %}
+				<div class='control-group'>
+					{% block variable_form_row_label %}
+					<label for='var_{{var.key}}' class='control-label'>{{var.display}}</label>
+					{% endblock %}
+					<div class='controls'>
+						{% block variable_form_row_modifier_input %}
+							{% if var.modifier_options %}
+								<select name='macros[{{var.key}}_modifier]' id='var_{{var.key}}_modifier' class='input'>
+								{% for option in var.modifier_options %}
+									<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
+								{% endfor %}
+								</select>
+							{% endif %}
+						{% endblock %}
+						{% block variable_form_row_input %}
+							{% if var.is_select %}
+								{% if var.is_multiselect %}
+									<select name='macros[{{var.key}}][]' id='var_{{var.key}}' multiple=true size={{var.choices}}>
+								{% else %}
+									<select name='macros[{{var.key}}]' id='var_{{var.key}}'>
+								{% endif %}
+								{% for option in var.options %}
+									<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
+								{% endfor %}
+								</select>
+							{% else %}
+								{% if var.is_textarea %}
+									<textarea type='text' name='macros[{{var.key}}]' id='var_{{var.key}}' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
+								{% else %}
+									<input type='text' name='macros[{{var.key}}]' id="macros_{{ var.key }}" value='{{var.value}}' id='var_{{var.key}}'/>
+								{% endif %}
+							{% endif %}
+						{% endblock %}
+						{% block variable_form_row_description %}
+							{% if var.description %}
+								<span class='help-inline'>{{ var.description|raw }}</span>
+							{% endif %}
+						{% endblock %}
+					</div>
+				</div>
 			{% endblock %}
-			{% block variable_form_row_modifier_input %}
-				{% if var.modifier_options %}
-				<select name='macros[{{var.key}}_modifier]' id='var_{{var.key}}_modifier' class='input'>
-				{% for option in var.modifier_options %}
-					<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
-				{% endfor %}
-				</select>
-				{% endif %}
-			{% endblock %}
-			{% block variable_form_row_input %}
-				{% if var.is_select %}
-					{% if var.is_multiselect %}
-						<select name='macros[{{var.key}}][]' id='var_{{var.key}}' class='input' multiple=true size={{var.choices}}>
-					{% else %}
-						<select name='macros[{{var.key}}]' id='var_{{var.key}}' class='input'>
-					{% endif %}
-					{% for option in var.options %}
-						<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
-					{% endfor %}
-					</select>
-				{% else %}
-					{% if var.is_textarea %}
-						<textarea type='text' name='macros[{{var.key}}]' id='var_{{var.key}}' class='input' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
-					{% else %}
-						<input type='text' name='macros[{{var.key}}]' id="macros_{{ var.key }}" value='{{var.value}}' id='var_{{var.key}}'  class='input'/>
-					{% endif %}
-				{% endif %}
-			{% endblock %}
-
-            {% if var.type == "date" %}
-                <img class='date-selector' src='{{ base }}/public/images/calendar--pencil.png' style='vertical-align: middle;' />
-            {% endif %}
-
-			{% if var.description %}
-				{% block variable_form_description %}
-						<span>{{ var.description|raw }}</span>
-				{% endblock %}
-			{% endif %}
-		</div>
-		{% endblock %}
-
-        {% if var.type == "date" %}
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var input = $('#macros_{{ var.key }}');
-
-                var trigger = input.next('.date-selector');
-
-                //start with a 'year' view if the current value isn't in Y-m-d format.
-                var view;
-                if(input.val().match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
-                    view = 'days';
-                }
-                else {
-                    view = 'years';
-                }
-
-                trigger.DatePicker({
-                    date: '2012-01-01',
-                    current: '2012-01-01',
-                    calendars: 1,
-                    view: view,
-                    position: 'right',
-                    onBeforeShow: function() {
-                        if(input.val().match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
-                            trigger.DatePickerSetDate(input.val(), true);
-                        }
-                    },
-                    onChange: function(formatted, dates, el, target) {
-                        //make sure we only set the date when they pick a day and not when they are drilling down by year
-                        if(!target.parents('.datepickerDays').length) {
-                            return;
-                        }
-
-                        input.val(formatted);
-                        trigger.DatePickerHide();
-                    }
-                });
-            });
-        </script>
-        {% endif %}
-	{% endfor %}
-	
-	{% block variable_form_submit %}
-	<input type='submit' value='Run Report' class='submit button' />
-	{% endblock %}
+		{% endfor %}
+	</fieldset>	
+	<button type="submit" class="btn btn-primary">Run Report</button>
 </form>

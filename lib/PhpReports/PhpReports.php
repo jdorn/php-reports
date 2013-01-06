@@ -132,7 +132,7 @@ class PhpReports {
 			}
 			
 			$classname::display($report,self::$request);
-			$content = $report->options['QueryFormatted'];
+			$content = $report->options['Query_Formatted'];
 		}
 		catch(Exception $e) {
 			echo self::render('html/page',array(
@@ -189,6 +189,35 @@ class PhpReports {
 		$template_vars['report_errors'] = $errors;
 
 		echo self::render('html/report_list',$template_vars);
+	}
+	
+	public static function getReportListJSON($reports=null) {
+		if($reports === null) {
+			$errors = array();
+			$reports = self::getReports(self::$config['reportDir'].'/',null,$errors);
+		}
+		
+		$parts = array();
+		
+		foreach($reports as $report) {
+			if($report['is_dir'] && $report['children']) {
+				//skip if the directory doesn't have a title
+				if(!isset($report['Title']) || !$report['Title']) continue;
+				
+				$parts[] = self::getReportListJSON($report['children']);
+			}
+			else {
+				//skip if report is marked as dangerous
+				if(isset($report['stop']) || isset($report['Caution']) || isset($report['warning'])) continue;
+				
+				$parts[] = json_encode(array(
+					'name'=>$report['Name'],
+					'url'=>$report['url']
+				));
+			}
+		}
+		
+		return implode(',',$parts);
 	}
 	
 	protected static function getReports($dir, $base = null, &$errors = null) {

@@ -1,12 +1,12 @@
 {% if item.is_dir and item.Title %}
-	<div class='directory' id='toc_{{item.Id}}'>
-		<a href='#report_{{item.Id}}'>{{item.Title}}</a> <span class='count'>({{ item.count }})</span>
+	<li>
+		<a href='#report_{{item.Id}}'>{{item.Title}} <span class='label'>{{ item.count }}</span></a>
 		{% if item.children %}
-		<div class='report_list'>
-			{% for item in item.children %}
-			{% include "html/report_list_table_of_contents_item.twig" %}
-			{% endfor %}
-		</div>
-		{%endif%}
-	</div>
+			<ul class="nav nav-list">
+				{% for item in item.children %}
+					{% include "html/report_list_table_of_contents_item.twig" %}
+				{% endfor %}
+			</ul>
+		{% endif %}
+	</li>
 {% endif %}

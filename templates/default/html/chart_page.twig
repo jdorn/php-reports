@@ -1,16 +1,7 @@
-{% extends "html/page.twig" %}
-{% block stylesheets %}
-<style>
-#top_bar {
-	display:none;
-}
-</style>
-{% endblock %}
+{% extends "html/blank_page.twig" %}
 {% block javascripts %}
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script>
 	google.load("visualization", "1", {packages:["corechart","geochart","annotatedtimeline"]});
 	</script>
 {% endblock %}
-{# don't show the top bar for charts #}
-{% block topbar %}{%endblock%}

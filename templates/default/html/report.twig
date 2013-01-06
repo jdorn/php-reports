@@ -2,11 +2,6 @@
 
 {% block title %}{{ Name }}{% endblock %}
 
-{% block breadcrumb %}
-	{% set breadcrumb = {"Report List": "", (Name): true} %}
-	{{ parent() }}
-{% endblock %}
-
 {% block stylesheets %}
 	{{ parent() }}
 	<link rel='stylesheet' href='{{base}}/public/css/report.css' />
@@ -32,7 +27,7 @@
 {% block header %}
 	<h1>{{Name}}</h1>
 	{% if Description %}
-		<div id='report_description'>{{Description|raw}}</div>
+		<p id='report_description'>{{Description|raw}}</p>
 	{% endif %}
 	
 	{% if Variables is not empty %}
@@ -41,41 +36,44 @@
 {% endblock %}
 
 {% block content %}
-	<div>
+	<div class='clearfix'>
 		{% block database_chooser %}
-			<div style='float:left;'>
-				<em class='database_message'>Running in</em>
+			<form class='form-inline pull-right'>
+				<label>Running in Environment: </label>
 				<select id='database_select'>
 				{% for option in Environments %}
 					<option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
 				{% endfor %}
 				</select>
-				<em class='database_message'>environment</em>
-			</div>
+			</form>
 			<script>
-			$('#database_select').change(function() {
-				var url = window.location.href.split('?')[0];
-				var querystring = window.location.href.split('?')[1].split('#')[0];
-				
-				querystring = querystring.replace(/&?environment=[^&]*/,'');
-				querystring += '&environment='+$(this).val();
-				
-				window.location.href = url+'?'+querystring;
-				return false;
+			$(function() {
+				$('#database_select').change(function() {
+					var url = window.location.href.split('?')[0];
+					var querystring = window.location.href.split('?')[1].split('#')[0];
+					
+					querystring = querystring.replace(/&?environment=[^&]*/,'');
+					querystring += '&environment='+$(this).val();
+					
+					window.location.href = url+'?'+querystring;
+					return false;
+				});
 			});
 			</script>
 		{% endblock %}
-		<div class='export_links' style='float:left;'>
+		<div class='export_links pull-left'>
 		{% block export_links %}
-			<a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link report_link'>export to csv</a>
+			<a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link report_link btn'>
+				<i class='icon-download'></i>
+				Download CSV
+			</a>
 		{% endblock %}
 		</div>
-		<div style='clear:both;'></div>
 	</div>
 	
 	<div id='report_content'>
 	{% if not is_ready %}
-		<div class='notice'>
+		<div class='alert'>
 		This report needs more information before running.
 		</div>
 	{% elseif async %}
@@ -88,8 +86,8 @@
 	{% block time_estimate %}
 		{% if time_estimate %}
 			<div style='margin-top: 20px;'>
-				<a href='#' id='show_time_estimate'>show time estimate data</a>
-				<div style='font-size: .8em; display:none;' id='time_estimate_holder'>
+				<button class='btn btn-link' data-toggle="collapse" data-target="#time_estimate_holder">show time estimate data</button>
+				<div style='font-size: .8em;' id='time_estimate_holder' class='collapse'>
 					<div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
 					<div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
 					<div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
@@ -98,12 +96,6 @@
 					<div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>	
 				</div>
 			</div>
-			<script>
-			$('#show_time_estimate').click(function() {
-				$('#time_estimate_holder').toggle(200);
-				return false;
-			});
-			</script>
 		{% endif %}
 	{% endblock %}
 {% endblock %}

@@ -42,6 +42,9 @@ class MysqlReportType extends ReportTypeBase {
 			
 			$report->raw_query = $included_sql . $report->raw_query;
 		}
+		
+		//set a formatted query here for debugging.  It will be overwritten below after macros are substituted.
+		$report->options['Query_Formatted'] = SqlFormatter::highlight($report->raw_query);
 	}
 	
 	public static function openConnection(&$report) {

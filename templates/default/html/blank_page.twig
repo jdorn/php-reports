@@ -1,11 +1,44 @@
-{% extends "html/page.twig" %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+  </head>
 
-{% block stylesheets %}
-<style>
-#top_bar {
-	display:none;
-}
-</style>
-{% endblock %}
-{% block javascripts %}{% endblock %}
-{% block topbar %}{%endblock%}
+  <body>
+    <div class="container">
+		<div class='header'>
+		{% block header %}
+			{{ header|raw }}
+		{% endblock %}
+		</div>
+
+		{% block notice_area %}
+			{% if error %}
+				<div class='alert alert-error'>
+					{% if error.message is defined %}
+						{{error.message}}
+					{% else %}
+						{{error}}
+					{% endif %}
+				</div>
+			{% endif %}
+
+			{% if notice %}
+				<div class='alert alert-info'>
+					{{notice}}
+				</div>
+			{% endif %}
+		{% endblock %}
+
+		<div id='content'>
+		{% block content %}
+			{{content|raw}}
+		{% endblock %}
+		</div>
+    </div> <!-- /container -->
+  </body>
+</html>

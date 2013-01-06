@@ -1,136 +1,15 @@
-#search {
-	border: 1px solid #aaa;
-	border-radius: 5px;
-	padding: 0px 8px;
-}
-#searchbar {
-	position: absolute;
-	left: 230px;
-	top: 3px;
-}
-
-#table_of_contents {
-	float:left;
-	width: 220px;
-	border-right: 1px solid #ddd;
-	top: 28px;
-	left: 0;
-	bottom: 0;
-	position:absolute;
-	overflow: auto;
-	padding-top: 10px;
-}
-#table_of_contents h3 {
-	margin: 5px;
-	padding: 0;
-}
-#table_of_contents > .report_list {
-	padding: 5px 5px 20px;
-	font-size: .8em;
-}
-#table_of_contents > .report_list > .directory {
-	padding-left: 5px;
-}
-#table_of_contents .count {
-	font-size: .8em;
-	padding-left: 8px;
-}
-#table_of_contents .directory {
-	padding-left: 20px;
-	margin: 5px 0;
-}
-#table_of_contents .directory .directory {
-	background: url("../images/list_image.png") no-repeat top left;
-}
-#report_list {
-	top: 28px;
-	bottom: 0;
-	left: 230px;
-	right: 0;
-	position:absolute;
-	overflow:auto;
-}
-#report_list h2 {
-	font-size: 1.3em;
-	padding: 5px 20px 5px 0;
-	margin: 0;
-	display: inline-block;
-	cursor: pointer;
-	background: transparent url("../images/toggle.png") no-repeat center right;
-	float:left;
-}
-#report_list .report_list .report_list h2 {
-	color: #444;
-	font-size: 1.2em;
-}
-#report_list .report_list .report_list .report_list h2 {
-	color: #555;
-	font-size: 1.1em;
+#report_list a[name] {
+    padding-top: 10px;
+    margin-top: -30px;
+    visibility: hidden;
 }
 #report_list h2.no_title {
-	font-size: 1em;
-	font-weight:normal;
+	font-weight: normal;
+	color: #999;
 }
-#report_list .report_list {
-	margin-left: 20px;
-	border: 1px dotted #aaa;
-	border-width: 0 0 0 1px;
-	padding: 7px;
-	font-size: 95%;
-	clear:left;
+#report_list .nav-list h2 {
+	font-size: 1.6em;
 }
-#report_list > .report_list {
-	border:0;
-	margin-left: 5px;
-}
-#report_list .report_list h2 {
-	display: block;
-	margin: 0;
-}
-#report_list h2.collapsed + .report_list {
-	display:none;
-}
-#report_list h2.expanded {
-}
-#report_list h2.collapsed {
-	background-image: url("../images/toggle-expand.png");
-}
-
-#report_list .back_to_top {
-	margin-left: 20px;
-	font-size: .8em;
-}
-
-#report_list .report {
-	font: 200 16px/1.5 Helvetica, Verdana, sans-serif;
-	border-bottom: 1px solid #ddd;
-	padding-left: 3px;
-}
-#report_list .report:hover {
-	background-color: #FEFFC2;
-}
-#report_list .report a {
-	text-decoration: none;
-}
-#report_list .report.selected {
-	background-color: #E3EBFF;
-}
-#report_list .report.selected:hover {
-	background-color: #FEFFC2;
-}
-
-#report_list .report img {
-	vertical-align: middle;
-}
-#report_list .collapse {
-	text-decoration:none;
-	vertical-align:middle;
-	color: #7777ff;
-	padding: 0 3px;
-}
-#hide_table_of_contents {
-	font-size: .7em;
-	vertical-align:middle;
-	margin-left: 10px;
-	font-weight:normal;
+#report_list .nav-list .nav-list h2 {
+	font-size: 1.3em;
 }

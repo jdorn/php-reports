@@ -1,12 +1,12 @@
 {% block notice_area %}
 	{% if error %}
-		<div class='error'>
+		<div class='alert alert-error'>
 			{{error}}
 		</div>
 	{% endif %}
 
 	{% if notice %}
-		<div class='notice'>
+		<div class='alert alert-info'>
 			{{notice}}
 		</div>
 	{% endif %}

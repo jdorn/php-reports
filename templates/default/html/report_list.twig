@@ -4,105 +4,57 @@
 
 {% set breadcrumb = {"Report List": true} %}
 
-{%block javascripts %}
-	{{ parent() }}
-	<script type='text/javascript'>
-	//generate report list
-	{% macro jsonreportdir(item) %}
-		{% if item.is_dir %}
-			{
-				name: "{{ item.Title|trim }}",
-				id: "{{ item.Id }}",
-				report: false
-			},
-			{% for item in item.children %}
-				{{ _self.jsonreportdir(item) }}
-			{% endfor %}
-		{% elseif not item.is_dir %}
-			{
-				name: "{{ item.Name|trim }}",
-				id: "{{ item.Id }}",
-				report: true
-			},
-		{% endif %}
-	{% endmacro %}
-	var reports = [
-		{% for item in reports %}
-		{{ _self.jsonreportdir(item) }}
-		{% endfor %}
-		null
-	];
-	reports.pop();
-	</script>
-	<script type='text/javascript' src='{{base}}/public/js/report_list.js'></script>
-{% endblock %}
-
 {% block stylesheets %}
 	{{ parent() }}
 	<link rel='stylesheet' href='{{base}}/public/css/report_list.css' />
-{% endblock %}
-
-{% block breadcrumb %}
-    {{ parent() }}
-    <div id='searchbar'>
-        {% block searchbar %}
-            Search
-            <input type='search' id='search' results=5 autosave="report_list_search"/>
-        {% endblock %}
-    </div>
 {% endblock %}
 
 {% block header %}
 {% endblock %}
 
 {% block content %}
-	<div id='table_of_contents'>
+<div class='row'>
+	<div id='table_of_contents' class='span3'>
 	{% block table_of_contents %}
-		<h3>Table of Contents</h3>
-		<div class='report_list'>
-		{% for item in reports %}
-			{% include "html/report_list_table_of_contents_item.twig" %}
-		{% endfor %}
-		</div>
+		<ul class='nav nav-list'>
+			<li class='nav-header'>Table of Contents</li>
+			{% for item in reports %}
+				{% include "html/report_list_table_of_contents_item.twig" %}
+			{% endfor %}
+		</ul>
 	{% endblock %}
 	</div>
+	<div id='report_list' class='span9'>
+		{% block report_errors %}
+			{% if report_errors is not empty %}
+				<p><img src='{{base}}/public/images/errorIcon.gif' /> There are errors with 1 or more reports.  <a href='#' id='expand_errors_link' data-toggle="collapse" data-target="#report_errors_holder">See all errors</a></p>
+				<div class='collapse' id='report_errors_holder'>
+					<div class='alert alert-error alert-block'>
+						{% for error in report_errors %}
+							<div>
+								<strong>{{ error.report }}</strong> - {{ error.exception.message }}
+								<span style='padding-left: 20px;'>
+									<a href='{{base}}/report/raw/?report={{error.report}}' style='margin-right: 10px;' target='_blank'>view source</a>
+									<a href='{{base}}/edit/?report={{error.report}}' target='_blank'>edit</a>
+								</span>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+		{% endblock %}
 
-	<div id='report_list'>
-    {% block report_errors %}
-    {% if report_errors is not empty %}
-        <p><img src='{{base}}/public/images/errorIcon.gif' /> There are errors with 1 or more reports.  <a href='#' id='expand_errors_link'>See all errors</a></p>
-        <div class='error' style='margin: 0 0 20px 0; display:none;' id='report_errors_holder'>
-            {% for error in report_errors %}
-                <div>
-                    <strong>{{ error.report }}</strong> - {{ error.exception.message }}
-                    <span style='padding-left: 20px;'>
-                <a href='{{base}}/report/raw/?report={{error.report}}' style='margin-right: 10px;' target='_blank'>view source</a>
-                <a href='{{base}}/edit/?report={{error.report}}' target='_blank'>edit</a>
-            </span>
-                </div>
-            {% endfor %}
-        </div>
-        <script>
-            $('#expand_errors_link').click(function() {
-                $('#report_errors_holder').toggle(200);
-                return false;
-            });
-        </script>
-    {% endif %}
-    {% endblock %}
-
-	{% block report_list %}
-		<a name='reportlist'></a>
-		<h3>All Reports</h3>
-		{% for item in reports %}
-		<div class='report_list {% if item.Title %}default-show{% else %}default-hide{% endif %}'>
-			{% include "html/report_list_item.twig" %}
-		</div>
-		{% endfor %}
-	{% endblock %}
+		{% block report_list %}
+			<a name='reportlist'></a>
+			{% for item in reports %}
+			<div class='report_list'>
+				{% if not loop.first %}
+					<a href='#' class='pull-right' style='font-size: 12px; font-weight:normal;'>top</a>
+				{% endif %}
+				{% include "html/report_list_item.twig" %}
+			</div>
+			{% endfor %}
+		{% endblock %}
 	</div>
-{% endblock %}
-
-{% block footer %}
-<div style='height: 80%'></div>
+</div>
 {% endblock %}

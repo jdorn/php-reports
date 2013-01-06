@@ -1,48 +1,71 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>{% block title %}{{title}}{% endblock %}</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	
-	{% block stylesheets %}
-	<link rel='stylesheet' href='{{base}}/public/css/style.css' />
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    {% block stylesheets %}
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="{{base}}/public/css/bootstrap.min.css" rel="stylesheet">
 	{% endblock %}
-	
-	{% block javascripts %}
-	<script src="{{base}}/public/js/scripts.js"></script>
-	<script src='{{base}}/public/js/jquery-1.7.2.min.js'></script>
-	<script src='{{base}}/public/js/jquery.watermark.min.js'></script>
-	{% endblock %}
-</head>
-<body>
-	<div id='top_bar'>
-	{% block topbar %}
-		<div id='breadcrumb'>
-		{% block breadcrumb %}
-			{% for display, url in breadcrumb %}
-				{% if loop.last %}
-					<strong>{{display}}</strong>
-				{% else %}
-					<a href="{{base}}/{{url}}">{{display}}</a> &gt;
-				{% endif %}
-			{% endfor %}
-		{% endblock %}
-		</div>
-		<div id='header_links'>
-			{% block header_links %}{% endblock %}
-		</div>
-	{% endblock %}
-	</div>
-	<div id='holder'>
+
+	<script>
+		//this allows us to create onReady functions in the body before loading jquery
+		window.queued_jquery_calls = [];
+		window.$ = function(func) {
+			window.queued_jquery_calls.push(func);
+		}
+	</script>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+	 -->
+  </head>
+
+  <body>	
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="{{base}}">{% block brand %}PHP Reports{% endblock %}</a>
+          <div class='navbar-search'>
+            {% block searchbar %}
+              <input type='text' class='search-query' placeholder="Find Report..."/>
+            {% endblock %}
+          </div>
+          <div>
+			{% block navbar %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
 		<div class='header'>
 		{% block header %}
 			{{ header|raw }}
 		{% endblock %}
 		</div>
+		
 
 		{% block notice_area %}
 			{% if error %}
-				<div class='error'>
+				<div class='alert alert-error'>
 					{% if error.message is defined %}
 						{{error.message}}
 					{% else %}
@@ -52,7 +75,7 @@
 			{% endif %}
 
 			{% if notice %}
-				<div class='notice'>
+				<div class='alert alert-info'>
 					{{notice}}
 				</div>
 			{% endif %}
@@ -63,10 +86,50 @@
 			{{content|raw}}
 		{% endblock %}
 		</div>
-	</div>
-	
-	{% block footer %}
-	
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    {% block javascripts %}
+    <script src="{{base}}/public/js/jquery-1.8.3.min.js"></script>
+    <script src="{{base}}/public/js/bootstrap.min.js"></script>
+	<script src="{{base}}/public/js/scripts.js"></script>
+    <script>
+		//run any queued on-ready scripts
+		for(var i in queued_jquery_calls) {
+			$(queued_jquery_calls[i]);
+		}
+		//typeahead report search
+		(function() {
+			var mapping = null, source = null;
+			$('.navbar-search .search-query').typeahead({
+				source: function(q,callback) {
+					//if we've already loaded the source
+					if(source) callback(source);
+					
+					mapping = {};
+					source = [];
+					
+					//load via ajax
+					$.getJSON('{{base}}/report_list_json',function(reports) {
+						console.log(reports);
+						for(var i in reports) {
+							mapping[reports[i].name] = reports[i].url;
+							source.push(reports[i].name);
+						}
+						console.log(callback);
+						callback(source);
+					});
+				},
+				items: 20,
+				updater: function(item) {
+					window.location.href = mapping[item];
+					return '';
+				}
+			});
+		})();
+    </script>
 	{% endblock %}
-</body>
+  </body>
 </html>

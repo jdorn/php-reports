@@ -12,33 +12,6 @@ h1 {
 	font-size: .9em;
 	margin-left: 20px;
 }
-
-#variable_form {
-	border: 1px solid #aaa;
-	border-radius: 5px;
-	padding: 10px;
-	margin: 10px 0;
-	font-family: arial;
-}
-#variable_form .input-row {
-	margin: 5px 0;
-}
-#variable_form h2 {
-	font-size: 1.3em;
-	padding: 0 0 15px 0;
-	margin: 0;
-}
-#variable_form .input, #variable_form select {
-	padding: 3px 6px;
-	border-radius: 5px;
-	border: 1px solid #aaa;
-}
-#report_content {
-	margin: 8px 0;
-}
-#report_description {
-	padding: 5px 0;
-}
 #result_table td .bar{
 	height: 18px; 
 	display:inline-block; 
@@ -71,4 +44,19 @@ h1 {
 }
 #query_holder {
 	font-size: .8em;
+}
+.waiting div {
+	text-align: center;
+	padding-bottom: 25px;
+	background: url("../images/ajax-loader.gif") no-repeat bottom center;
+}
+pre {
+	white-space: pre-wrap;			/* css-3 */
+	white-space: -moz-pre-wrap;		/* Mozilla, since 1999 */
+	white-space: -pre-wrap;			/* Opera 4-6 */
+	white-space: -o-pre-wrap;		/* Opera 7 */
+	word-wrap: break-word;			/* Internet Explorer 5.5+ */
+}
+#variable_form label {
+	vertical-align:top;
 }
