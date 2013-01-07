@@ -96,10 +96,6 @@
     <script src="{{base}}/public/js/bootstrap.min.js"></script>
 	<script src="{{base}}/public/js/scripts.js"></script>
     <script>
-		//run any queued on-ready scripts
-		for(var i in queued_jquery_calls) {
-			$(queued_jquery_calls[i]);
-		}
 		//typeahead report search
 		(function() {
 			var mapping = null, source = null;
@@ -131,5 +127,11 @@
 		})();
     </script>
 	{% endblock %}
+	<script>
+		//run any queued on-ready scripts
+		for(var i in queued_jquery_calls) {
+			$(queued_jquery_calls[i]);
+		}
+	</script>
   </body>
 </html>
