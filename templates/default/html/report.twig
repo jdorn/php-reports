@@ -3,99 +3,116 @@
 {% block title %}{{ Name }}{% endblock %}
 
 {% block stylesheets %}
-	{{ parent() }}
-	<link rel='stylesheet' href='{{base}}/public/css/report.css' />
-	{% if not nodata %}
-		<link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
-	{% endif %}
-
+    {{ parent() }}
+    <link rel='stylesheet' href='{{base}}/public/css/report.css' />
+    {% if not nodata %}
+        <link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
+    {% endif %}
+    <link rel='stylesheet' href='{{base}}/public/css/daterangepicker.css' />
     <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/public/css/datepicker.css" />
+    <style>
+    .daterangepicker_holder {
+        background: white;
+        -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1);
+        -moz-box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1);
+        color: #333;
+        padding: 8px;
+        line-height: 18px;
+        cursor: pointer;
+    }
+    .daterangepicker_holder .caret {
+        margin-top: 8px;
+        margin-left: 2px;
+    }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
-	{{ parent() }}
-	{% if has_charts %}
-		<script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.js"></script>
-	{% endif %}
-	{% if not nodata %}
-		<script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
-	{% endif %}
-
-    <script type="text/javascript" src="{{base}}/public/js/datepicker.js"></script>
+    {{ parent() }}
+    {% if has_charts %}
+        <script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.js"></script>
+    {% endif %}
+    {% if not nodata %}
+        <script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
+    {% endif %}
+    <script type="text/javascript" src="{{base}}/public/js/date.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/daterangepicker.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/bootstrap-datepicker.js"></script>
 {% endblock %}
 
 {% block header %}
-	<h1>{{Name}}</h1>
-	{% if Description %}
-		<p id='report_description'>{{Description|raw}}</p>
-	{% endif %}
-	
-	{% if Variables is not empty %}
-		{% include "html/variable_form.twig" %}
-	{% endif %}
+    <h1>{{Name}}</h1>
+    {% if Description %}
+        <p id='report_description'>{{Description|raw}}</p>
+    {% endif %}
+    
+    {% if Variables is not empty %}
+        {% include "html/variable_form.twig" %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-	<div class='clearfix'>
-		{% block database_chooser %}
-			<form class='form-inline pull-right'>
-				<label>Running in Environment: </label>
-				<select id='database_select'>
-				{% for option in Environments %}
-					<option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
-				{% endfor %}
-				</select>
-			</form>
-			<script>
-			$(function() {
-				$('#database_select').change(function() {
-					var url = window.location.href.split('?')[0];
-					var querystring = window.location.href.split('?')[1].split('#')[0];
-					
-					querystring = querystring.replace(/&?environment=[^&]*/,'');
-					querystring += '&environment='+$(this).val();
-					
-					window.location.href = url+'?'+querystring;
-					return false;
-				});
-			});
-			</script>
-		{% endblock %}
-		<div class='export_links pull-left'>
-		{% block export_links %}
-			<a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link report_link btn'>
-				<i class='icon-download'></i>
-				Download CSV
-			</a>
-		{% endblock %}
-		</div>
-	</div>
-	
-	<div id='report_content'>
-	{% if not is_ready %}
-		<div class='alert'>
-		This report needs more information before running.
-		</div>
-	{% elseif async %}
-		{% include "html/report_ajax_loading.twig" %}
-	{% else %}
-		{% include "html/report_content.twig" %}
-	{% endif %}
-	</div>
+    <div class='clearfix'>
+        {% block database_chooser %}
+            <form class='form-inline pull-right'>
+                <label>Running in Environment: </label>
+                <select id='database_select'>
+                {% for option in Environments %}
+                    <option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
+                {% endfor %}
+                </select>
+            </form>
+            <script>
+            $(function() {
+                $('#database_select').change(function() {
+                    var url = window.location.href.split('?')[0];
+                    var querystring = window.location.href.split('?')[1].split('#')[0];
+                    
+                    querystring = querystring.replace(/&?environment=[^&]*/,'');
+                    querystring += '&environment='+$(this).val();
+                    
+                    window.location.href = url+'?'+querystring;
+                    return false;
+                });
+            });
+            </script>
+        {% endblock %}
+        <div class='export_links pull-left'>
+        {% block export_links %}
+            <a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link report_link btn'>
+                <i class='icon-download'></i>
+                Download CSV
+            </a>
+        {% endblock %}
+        </div>
+    </div>
+    
+    <div id='report_content'>
+    {% if not is_ready %}
+        <div class='alert'>
+        This report needs more information before running.
+        </div>
+    {% elseif async %}
+        {% include "html/report_ajax_loading.twig" %}
+    {% else %}
+        {% include "html/report_content.twig" %}
+    {% endif %}
+    </div>
 
-	{% block time_estimate %}
-		{% if time_estimate %}
-			<div style='margin-top: 20px;'>
-				<button class='btn btn-link' data-toggle="collapse" data-target="#time_estimate_holder">show time estimate data</button>
-				<div style='font-size: .8em;' id='time_estimate_holder' class='collapse'>
-					<div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
-					<div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
-					<div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
-					<div><strong>Median: </strong> {{time_estimate.median}}</div>
-					<div><strong>Average: </strong> {{time_estimate.average}}</div>
-					<div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>	
-				</div>
-			</div>
-		{% endif %}
-	{% endblock %}
+    {% block time_estimate %}
+        {% if time_estimate %}
+            <div style='margin-top: 20px;'>
+                <button class='btn btn-link' data-toggle="collapse" data-target="#time_estimate_holder">show time estimate data</button>
+                <div style='font-size: .8em;' id='time_estimate_holder' class='collapse'>
+                    <div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
+                    <div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
+                    <div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
+                    <div><strong>Median: </strong> {{time_estimate.median}}</div>
+                    <div><strong>Average: </strong> {{time_estimate.average}}</div>
+                    <div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>    
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
 {% endblock %}
