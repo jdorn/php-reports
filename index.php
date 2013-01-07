@@ -17,7 +17,10 @@ Flight::route('/',function() {
 
 //JSON list of reports (used for typeahead search)
 Flight::route('/report_list_json',function() {
-	echo '['.PhpReports::getReportListJSON().']';
+	header("Content-Type: application/json");
+	header("Cache-Control: max-age=3600");
+
+	echo PhpReports::getReportListJSON();
 });
 
 //if no report format is specified, default to html

@@ -106,7 +106,10 @@
 			$('.navbar-search .search-query').typeahead({
 				source: function(q,callback) {
 					//if we've already loaded the source
-					if(source) callback(source);
+					if(source) {
+                        callback(source);
+                        return;
+                    }
 					
 					mapping = {};
 					source = [];

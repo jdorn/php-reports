@@ -5,10 +5,10 @@
 			{% if item.Title %}{{item.Title}}{% else %}{{item.Name}}{% endif %}
 			<button type='button' class='btn' data-toggle="collapse" data-target="#report_{{item.Id}}_children"><span class='caret'></span></button>
 		</h2>
-		{% if item.Description %}
-		<p>{{ item.Description }}</p>
-		{% endif %}
 		<div class='collapse {% if item.Title %}in{% endif %}' id='report_{{item.Id}}_children'>
+            {% if item.Description %}
+                <p>{{ item.Description|raw }}</p>
+            {% endif %}
 			<ul class='nav nav-list well'>
 				{% for item in item.children %}
 					<li>

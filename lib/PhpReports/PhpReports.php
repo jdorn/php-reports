@@ -11,7 +11,7 @@ class PhpReports {
 	public static function init($config = 'config/config.php') {
 		//set up our autoloader
 		spl_autoload_register(array('PhpReports','loader'),true,true);
-		
+
 		if(!file_exists($config)) {
 			throw new Exception("Cannot find config file");
 		}
@@ -101,7 +101,7 @@ class PhpReports {
 		$default = array(
 			'base'=>self::$request->base,
 			'report_list_url'=>self::$request->base.'/',
-			'request'=>$request,
+			'request'=>self::$request,
 			'querystring'=>$_SERVER['QUERY_STRING'],
 		);
 		$macros = array_merge($default,$macros);
@@ -182,12 +182,14 @@ class PhpReports {
 	
 	public static function listReports() {
 		$errors = array();
-		
+
 		$reports = self::getReports(self::$config['reportDir'].'/',null,$errors);
-		
+
+
 		$template_vars['reports'] = $reports;
 		$template_vars['report_errors'] = $errors;
 
+		$start = microtime(true);
 		echo self::render('html/report_list',$template_vars);
 	}
 	
@@ -204,7 +206,8 @@ class PhpReports {
 				//skip if the directory doesn't have a title
 				if(!isset($report['Title']) || !$report['Title']) continue;
 				
-				$parts[] = self::getReportListJSON($report['children']);
+				$part = trim(self::getReportListJSON($report['children']),'[],');
+				if($part) $parts[] = $part;
 			}
 			else {
 				//skip if report is marked as dangerous
@@ -217,7 +220,7 @@ class PhpReports {
 			}
 		}
 		
-		return implode(',',$parts);
+		return '['.trim(implode(',',$parts),',').']';
 	}
 	
 	protected static function getReports($dir, $base = null, &$errors = null) {

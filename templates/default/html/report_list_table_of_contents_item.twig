@@ -1,6 +1,6 @@
 {% if item.is_dir and item.Title %}
 	<li>
-		<a href='#report_{{item.Id}}'>{{item.Title}} <span class='label'>{{ item.count }}</span></a>
+		<a href='#report_{{item.Id}}'>{{item.Title}}</a>
 		{% if item.children %}
 			<ul class="nav nav-list">
 				{% for item in item.children %}

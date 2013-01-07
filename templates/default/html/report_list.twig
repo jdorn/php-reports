@@ -25,22 +25,29 @@
 	{% endblock %}
 	</div>
 	<div id='report_list' class='span9'>
+        <h1 class="visible-phone">All Reports</h1>
 		{% block report_errors %}
 			{% if report_errors is not empty %}
-				<p><img src='{{base}}/public/images/errorIcon.gif' /> There are errors with 1 or more reports.  <a href='#' id='expand_errors_link' data-toggle="collapse" data-target="#report_errors_holder">See all errors</a></p>
-				<div class='collapse' id='report_errors_holder'>
-					<div class='alert alert-error alert-block'>
-						{% for error in report_errors %}
-							<div>
-								<strong>{{ error.report }}</strong> - {{ error.exception.message }}
-								<span style='padding-left: 20px;'>
-									<a href='{{base}}/report/raw/?report={{error.report}}' style='margin-right: 10px;' target='_blank'>view source</a>
-									<a href='{{base}}/edit/?report={{error.report}}' target='_blank'>edit</a>
-								</span>
-							</div>
-						{% endfor %}
-					</div>
-				</div>
+                <div class='well well-small'>
+                    <div>
+                        <img src='{{base}}/public/images/errorIcon.gif' />
+                        {{ report_errors|length }} reports contain errors
+                        <button type="button" class='btn btn-link' data-toggle="collapse" data-target="#report_errors_holder">See all errors</button>
+                    </div>
+                    <div class='collapse' id='report_errors_holder'>
+                        <div class='alert alert-error alert-block'>
+                            {% for error in report_errors %}
+                                <div>
+                                    <strong>{{ error.report }}</strong> - {{ error.exception.message }}
+                                    <span style='padding-left: 20px;'>
+                                        <a href='{{base}}/report/raw/?report={{error.report}}' style='margin-right: 10px;' target='_blank'>view source</a>
+                                        <a href='{{base}}/edit/?report={{error.report}}' target='_blank'>edit</a>
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
 			{% endif %}
 		{% endblock %}
 
