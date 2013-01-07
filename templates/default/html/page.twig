@@ -112,12 +112,10 @@
 					
 					//load via ajax
 					$.getJSON('{{base}}/report_list_json',function(reports) {
-						console.log(reports);
 						for(var i in reports) {
 							mapping[reports[i].name] = reports[i].url;
 							source.push(reports[i].name);
 						}
-						console.log(callback);
 						callback(source);
 					});
 				},
