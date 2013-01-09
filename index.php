@@ -38,4 +38,8 @@ Flight::route('/edit',function() {
 	PhpReports::editReport($_REQUEST['report']);
 });
 
+Flight::route('/set-environment',function() {
+	$_SESSION['environment'] = $_REQUEST['environment'];
+});
+
 Flight::start();

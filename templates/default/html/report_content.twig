@@ -1,24 +1,3 @@
-{% block evaluated_variables %}
-    {% for var in vars %}
-        {% if macros[var.key] and var.type == "date" %}
-			<div>
-				{{ var.display }}:
-				{%  block evaluated_date_variable %}
-					<strong>{{ macros[var.key]|date('Y-m-d H:i:s') }}</strong>
-				{% endblock %}
-			</div>
-        {% elseif macros[var.key] and var.type == "daterange" %}
-			<div>
-				{{ var.display }}:
-				{% block evaluated_daterange_variable %}
-					<strong>{{ macros[var.key].start|date('Y-m-d H:i:s') }}</strong> - 
-					<strong>{{ macros[var.key].end|date('Y-m-d H:i:s') }}</strong> 
-				{% endblock %}
-			</div>
-        {% endif %}
-    {% endfor %}
-{% endblock %}
-
 {% include "html/table.twig" %}
 <p>Query took {{Time}} seconds</p>
 

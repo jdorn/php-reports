@@ -8,10 +8,6 @@ h1 {
 	margin: 10px 0;
 	padding: 0;
 }
-.csv_link {
-	font-size: .9em;
-	margin-left: 20px;
-}
 #result_table td .bar{
 	height: 18px; 
 	display:inline-block; 

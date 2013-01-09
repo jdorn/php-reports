@@ -53,51 +53,27 @@
 {% endblock %}
 
 {% block content %}
-    <div class='clearfix'>
-        {% block database_chooser %}
-            <form class='form-inline pull-right'>
-                <label>Running in Environment: </label>
-                <select id='database_select'>
-                {% for option in Environments %}
-                    <option value='{{option.name}}' {% if option.selected %}selected="selected"{% endif %}>{{option.name}}</option>
-                {% endfor %}
-                </select>
-            </form>
-            <script>
-            $(function() {
-                $('#database_select').change(function() {
-                    var url = window.location.href.split('?')[0];
-                    var querystring = window.location.href.split('?')[1].split('#')[0];
-                    
-                    querystring = querystring.replace(/&?environment=[^&]*/,'');
-                    querystring += '&environment='+$(this).val();
-                    
-                    window.location.href = url+'?'+querystring;
-                    return false;
-                });
-            });
-            </script>
-        {% endblock %}
-        <div class='export_links pull-left'>
-        {% block export_links %}
-            <a href='{{base}}/report/csv/?{{report_querystring}}' class='csv_link report_link btn'>
+    <div class='export_links' style='margin: 10px 0;'>
+    {% block export_links %}
+        {% block csv_export_link %}
+            <a href='{{base}}/report/csv/?{{report_querystring}}' class='report_link btn'>
                 <i class='icon-download'></i>
                 Download CSV
             </a>
         {% endblock %}
-        </div>
+    {% endblock %}
     </div>
-    
+
     <div id='report_content'>
-    {% if not is_ready %}
-        <div class='alert'>
-        This report needs more information before running.
-        </div>
-    {% elseif async %}
-        {% include "html/report_ajax_loading.twig" %}
-    {% else %}
-        {% include "html/report_content.twig" %}
-    {% endif %}
+        {% if not is_ready %}
+            <div class='alert'>
+            This report needs more information before running.
+            </div>
+        {% elseif async %}
+            {% include "html/report_ajax_loading.twig" %}
+        {% else %}
+            {% include "html/report_content.twig" %}
+        {% endif %}
     </div>
 
     {% block time_estimate %}

@@ -97,11 +97,14 @@ class Report {
 	}
 	
 	public function getCacheKey() {
-		return md5(serialize(array(
+		return FileSystemCache::generateCacheKey(array(
 			'report'=>$this->report,
 			'macros'=>$this->macros,
 			'database'=>$this->options['Environment']
-		)));
+		),'report_results');
+	}
+	public function getReportTimesCacheKey() {
+		return FileSystemCache::generateCacheKey($this->report,'report_times');
 	}
 
 	protected function retrieveFromCache() {
@@ -379,7 +382,7 @@ class Report {
 	}
 	
 	protected function getTimeEstimate() {
-		$report_times = FileSystemCache::retrieve($this->report,'report_times');
+		$report_times = FileSystemCache::retrieve($this->getReportTimesCacheKey());
 		if(!$report_times) return;
 		
 		sort($report_times);
@@ -498,7 +501,7 @@ class Report {
 		
 		if($this->is_ready && !$this->async && !isset($this->options['FromCache'])) {
 			//get current report times for this report
-			$report_times = FileSystemCache::retrieve($this->report,'report_times');
+			$report_times = FileSystemCache::retrieve($this->getReportTimesCacheKey());
 			if(!$report_times) $report_times = array();
 			//only keep the last 10 times for each report
 			//this keeps the timing data up to date and relevant
@@ -506,7 +509,7 @@ class Report {
 			
 			//store report times
 			$report_times[] = $this->options['Time'];
-			FileSystemCache::store($this->report, $report_times, 'report_times');
+			FileSystemCache::store($this->getReportTimesCacheKey(), $report_times);
 		}
 		
 		$this->has_run = true;

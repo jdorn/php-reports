@@ -1,6 +1,5 @@
 <form class="form-horizontal well" method="get" id="variable_form">
 	<input type='hidden' name='report' value='{{report}}' />
-	<input type='hidden' name='environment' value='{{Environment}}' />
 
 	<fieldset>
 		<legend>{% block variable_form_title %}Configure Report{% endblock %}</legend>
@@ -23,40 +22,34 @@
 						{% endblock %}
 						{% block variable_form_row_input %}
 							{% if var.is_select %}
-								{% if var.is_multiselect %}
-									<select name='macros[{{var.key}}][]' id='var_{{var.key}}' multiple=true size={{var.choices}}>
-								{% else %}
-									<select name='macros[{{var.key}}]' id='var_{{var.key}}'>
-								{% endif %}
+								<select name='macros[{{var.key}}]' id='var_{{var.key}}' {% if var.is_multiselect %}multiple=true size={{var.choices}}{% endif %}>
 								{% for option in var.options %}
 									<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
 								{% endfor %}
 								</select>
-							{% else %}
-								{% if var.is_textarea %}
-									<textarea type='text' name='macros[{{var.key}}]' id='var_{{var.key}}' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
-								{% elseif var.type == "daterange" %}
-									<input type='hidden' name='macros[{{var.key}}][start]' id='var_{{var.key}}_start' value='{{var.value.start|date('Y-m-d H:i:s')}}' />
-									<input type='hidden' name='macros[{{var.key}}][end]' id='var_{{var.key}}_end' value='{{var.value.end|date('Y-m-d H:i:s')}}' />
-									<div class='daterangepicker_holder pull-left' data-var="{{var.key}}">
-										    <i class="icon-calendar icon-large"></i>
-											<span>
-												{% if var.value.start and var.value.end %}
-													{{ var.value.start|date('F j, Y') }} - {{ var.value.end|date('F j, Y') }}
-												{% else %}
-													<em>no date range selected</em>
-												{% endif %}
-											</span> <b class="caret"></b>
-									</div>
-								{% elseif var.type == "date" %}
-									<div class="input-append date datepicker_holder" data-date="{{var.value|date('Y-m-d')}}" data-date-format="yyyy-mm-dd">
-										<input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value|date('Y-m-d')}}' id='var_{{var.key}}'/>
-										<span class="add-on"><i class="icon-th"></i></span>
-									</div>
-								{% else %}
-									<input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value}}' id='var_{{var.key}}'/>
-								{% endif %}
-							{% endif %}
+							{% elseif var.is_textarea %}
+                                <textarea name='macros[{{var.key}}]' id='var_{{var.key}}' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
+                            {% elseif var.type == "daterange" %}
+                                <input type='hidden' name='macros[{{var.key}}][start]' id='var_{{var.key}}_start' value='{{var.value.start|date('Y-m-d H:i:s')}}' />
+                                <input type='hidden' name='macros[{{var.key}}][end]' id='var_{{var.key}}_end' value='{{var.value.end|date('Y-m-d H:i:s')}}' />
+                                <div class='daterangepicker_holder pull-left' data-var="{{var.key}}">
+                                        <i class="icon-calendar icon-large"></i>
+                                        <span>
+                                            {% if var.value.start and var.value.end %}
+                                                {{ var.value.start|date('F j, Y') }} - {{ var.value.end|date('F j, Y') }}
+                                            {% else %}
+                                                <em>no date range selected</em>
+                                            {% endif %}
+                                        </span> <b class="caret"></b>
+                                </div>
+                            {% elseif var.type == "date" %}
+                                <div class="input-append date datepicker_holder" data-date="{{var.value|date('Y-m-d')}}" data-date-format="yyyy-mm-dd">
+                                    <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value|date('Y-m-d')}}' />
+                                    <span class="add-on"><i class="icon-th"></i></span>
+                                </div>
+                            {% else %}
+                                <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value}}' />
+                            {% endif %}
 						{% endblock %}
 						{% block variable_form_row_description %}
 							{% if var.description %}

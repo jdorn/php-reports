@@ -39,6 +39,10 @@ class PhpReports {
 		self::$twig->addFunction('dbdate',new Twig_Function_Function('PhpReports::dbdate'));
 		
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
+
+		if(!isset($_SESSION['environment']) || !isset(self::$config['environments'][$_SESSION['environment']])) {
+			$_SESSION['environment'] = array_shift(array_keys(self::$config['environments']));
+		}
 	}
 	
 	public static function setVar($key,$value) {
@@ -103,6 +107,8 @@ class PhpReports {
 			'report_list_url'=>self::$request->base.'/',
 			'request'=>self::$request,
 			'querystring'=>$_SERVER['QUERY_STRING'],
+			'config'=>self::$config,
+			'environment'=>$_SESSION['environment']
 		);
 		$macros = array_merge($default,$macros);
 		
@@ -259,12 +265,14 @@ class PhpReports {
 				if(strpos(basename($report),'.') === false) continue;
 				$ext = array_pop(explode('.',$report));
 				if(!isset(self::$config['default_file_extension_mapping'][$ext])) continue;
-			
+
+				$cacheKey = FileSystemCache::generateCacheKey($report,'report_headers');
+
 				//check if report data is cached and newer than when the report file was created
 				//the url parameter ?nocache will bypass this and not use cache
 				$data =false;
 				if(!isset($_REQUEST['nocache'])) {
-					$data = FileSystemCache::retrieve($report, filemtime($report));
+					$data = FileSystemCache::retrieve($cacheKey, filemtime($report));
 				}
 				
 				//report data not cached, need to parse it
@@ -291,7 +299,7 @@ class PhpReports {
 					if(!isset($data['Name'])) $data['Name'] = ucwords(str_replace(array('_','-'),' ',basename($report)));
 					
 					//store parsed report in cache
-					FileSystemCache::store($report, $data);
+					FileSystemCache::store($cacheKey, $data);
 				}
 				
 				$return[] = $data;

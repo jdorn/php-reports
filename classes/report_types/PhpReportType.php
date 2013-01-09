@@ -50,13 +50,13 @@ class PhpReportType extends ReportTypeBase {
 		}
 		$formatted .= $code;
 		
-		$report->options['Query_Formatted'] = '<div><pre style="border-left: 1px solid black; padding-left: 20px;">'.$formatted.'</pre></div>';		
-		
+		$report->options['Query_Formatted'] = '<div><pre style="border-left: 1px solid black; padding-left: 20px;">'.$formatted.'</pre></div>';
+
 		ob_start();
 		eval('?>'.$eval);
 		$result = ob_get_contents();
 		ob_end_clean();
-		
+
 		$result = trim($result);
 		
 		$json = json_decode($result, true);

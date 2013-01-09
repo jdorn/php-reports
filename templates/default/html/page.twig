@@ -51,6 +51,40 @@
           <div>
 			{% block navbar %}{% endblock %}
           </div>
+            {% block environment_chooser %}
+                <form class='navbar-form form-inline pull-right' id="environment_select">
+                    <span class='navbar-text pull-left'>Environment</span>
+                    <select class='pull-right' style='margin-left: 10px;'>
+                        {% for option in config.environments|keys %}
+                            <option value='{{option}}' {% if option == environment %}selected="selected"{% endif %}>{{option}}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                <script>
+                    $(function() {
+                        var change_environment = function() {
+                            var environment = $('select',$("#environment_select")).val();
+
+                            $.getJSON('{{ base }}/set-environment',{
+                                environment: environment
+                            },function() {
+                                window.location.reload(true);
+                            });
+                        }
+
+                        $('#environment_select').submit(function() {
+                            change_environment();
+
+                            return false;
+                        });
+                        $('select',$('#environment_select')).change(function() {
+                            change_environment();
+
+                            return false;
+                        });
+                    });
+                </script>
+            {% endblock %}
         </div>
       </div>
     </div>
