@@ -145,17 +145,59 @@
 					source = [];
 					
 					//load via ajax
-					$.getJSON('{{base}}/report_list_json',function(reports) {
+					$.getJSON('{{base}}/report-list-json',function(reports) {
 						for(var i in reports) {
-							mapping[reports[i].name] = reports[i].url;
+							mapping[reports[i].name] = reports[i];
 							source.push(reports[i].name);
 						}
+
 						callback(source);
 					});
 				},
+                sorter: function(items) {
+                    //beginning of title match
+                    var beg = new RegExp('^'+this.query,'i');
+                    //word boundary match
+                    var boundary = new RegExp('\b'+this.query,'i');
+
+                    return items.sort(function(a,b) {
+                        //first check popularity
+                        if(mapping[a].popularity < mapping[b].popularity) return 1;
+                        else if(mapping[a].popularity > mapping[b].popularity) return -1;
+
+                        //beginning of title is most important
+                        if(beg.test(a)) {
+                            if(beg.test(b)) {
+                                return 0;
+                            }
+                            else {
+                                return -1;
+                            }
+                        }
+                        else if(beg.test(b)) {
+                            return 1;
+                        }
+                        //beginning of word is next most important
+                        else if(boundary.test(a)) {
+                            if(boundary.test(b)) {
+                                return 0;
+                            }
+                            else {
+                                return -1;
+                            }
+                        }
+                        else if(boundary.test(b)) {
+                            return 1;
+                        }
+                        else {
+                            //otherwise, they are equal
+                            return 0;
+                        }
+                    });
+                },
 				items: 20,
 				updater: function(item) {
-					window.location.href = mapping[item];
+					window.location.href = mapping[item].url;
 					return '';
 				}
 			});

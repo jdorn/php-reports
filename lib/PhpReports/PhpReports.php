@@ -204,24 +204,39 @@ class PhpReports {
 			$errors = array();
 			$reports = self::getReports(self::$config['reportDir'].'/',null,$errors);
 		}
-		
+
+		//weight by popular reports
+		$recently_run = FileSystemCache::retrieve(FileSystemCache::generateCacheKey('recently_run'));
+		$popular = array();
+		if($recently_run !== false) {
+			foreach($recently_run as $report) {
+				if(!isset($popular[$report])) $popular[$report] = 1;
+				else $popular[$report]++;
+			}
+		}
 		$parts = array();
-		
+
 		foreach($reports as $report) {
 			if($report['is_dir'] && $report['children']) {
 				//skip if the directory doesn't have a title
 				if(!isset($report['Title']) || !$report['Title']) continue;
-				
+
 				$part = trim(self::getReportListJSON($report['children']),'[],');
 				if($part) $parts[] = $part;
 			}
 			else {
 				//skip if report is marked as dangerous
-				if(isset($report['stop']) || isset($report['Caution']) || isset($report['warning'])) continue;
-				
+				if((isset($report['stop'])&&$report['stop']) || isset($report['Caution']) || isset($report['warning'])) continue;
+
+				if(isset($popular[$report['report']])) {
+					$popularity = $popular[$report['report']];
+				}
+				else $popularity = 0;
+
 				$parts[] = json_encode(array(
 					'name'=>$report['Name'],
-					'url'=>$report['url']
+					'url'=>$report['url'],
+					'popularity'=>$popularity
 				));
 			}
 		}

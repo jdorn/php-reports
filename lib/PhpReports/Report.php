@@ -489,6 +489,16 @@ class Report {
 				$this->prepareRows();
 				$this->storeInCache();
 			}
+
+			//add this to the list of recently run reports
+			$recently_run_key = FileSystemCache::generateCacheKey('recently_run');
+			$recently_run = FileSystemCache::retrieve($recently_run_key);
+			if($recently_run === false) {
+				$recently_run = array();
+			}
+			array_unshift($recently_run,$this->report);
+			if(count($recently_run) > 200) $recently_run = array_slice($recently_run,0,200);
+			FileSystemCache::store($recently_run_key,$recently_run);
 		}
 		
 		//call the beforeRender callback for each header
