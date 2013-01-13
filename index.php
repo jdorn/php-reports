@@ -41,4 +41,10 @@ Flight::route('/set-environment',function() {
 	$_SESSION['environment'] = $_REQUEST['environment'];
 });
 
+//email report
+Flight::route('/email',function() {
+	PhpReports::emailReport();	
+});
+
+
 Flight::start();

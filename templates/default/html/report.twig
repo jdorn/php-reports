@@ -61,8 +61,87 @@
                 Download CSV
             </a>
         {% endblock %}
+        {% if config.mail_settings.enabled %}
+			{% block email_report_button %}
+				<a href='#' id='email-report-link' class='btn'>
+					<i class='icon-envelope'></i>
+					Email Report
+				</a>
+				<div class="modal hide fade" id="email-report-modal">
+				  <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3>Email Report</h3>
+				  </div>
+				  <div class="modal-body">
+					<div class='alert alert-error' id='email-report-modal-alert'></div>
+				  
+					<p>A CSV file will be attached and a link will be sent</p>
+				  
+					<label for='email-report-modal-email'>Recipient Email Address</label>
+					<input type='text' id='email-report-modal-email' class='input-block-level
+					
+					<label for='email-report-modal-subject'>Subject</label>
+					<input type='text' id='email-report-modal-subject' class='input-block-level' value="Database Report - {{Name}}" />
+					
+					<label for='email-report-modal-message'>Message (optional)</label>
+					<textarea rows='4' id='email-report-modal-message' class='input-block-level'></textarea>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" class="btn" data-dismiss="modal">Cancel</button>
+					<a href="#" class="btn btn-primary submit-button" data-loading-text="sending">Send Email</a>
+				  </div>
+				</div>
+				<script>
+					$(function() {
+						$('#email-report-link').on('click',function() {
+							$('#email-report-modal-alert').hide();
+							$('#email-report-modal').modal();
+							return false;
+						});
+						$('#email-report-modal').on('click','.submit-button',function() {
+							var button = $(this);
+							button.button('loading');
+						
+							var data = {
+								email: $('#email-report-modal-email').val(),
+								subject: $('#email-report-modal-subject').val(),
+								message: $('#email-report-modal-message').val(),
+								url: window.location.href
+							};
+							
+							$.getJSON('{{base}}/email',data,function(response) {
+								if(response && response.success) {
+									$('#email-report-modal').modal('hide');
+									
+									//show success message
+									$('#email-report-success-message').show(300).delay(5000).hide(300);
+								}
+								else {
+									var error = (response && response.error)? response.error : "There was a problem sending the email";
+									$('#email-report-modal-alert').text(error).show(300);
+								}
+								button.button('reset');
+							})
+							.error(function() {
+								$('#email-report-modal-alert').text("There was an error while sending the email").show(300);
+							});
+							
+							return false;
+						});
+					});
+				</script>
+			{% endblock %}
+		{% endif %}
     {% endblock %}
     </div>
+    
+    {% if config.mail_settings.enabled %}
+		<div class='alert alert-success' style='display: none;' id='email-report-success-message'>
+			{% block email_report_success_message %}
+				Email Sent Successfully
+			{% endblock %}
+		</div>
+    {% endif %}
 
     <div id='report_content'>
         {% if not is_ready %}

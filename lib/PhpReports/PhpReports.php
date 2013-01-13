@@ -336,6 +336,107 @@ class PhpReports {
 	}
 	
 	/**
+	 * Emails a report given a TO address, a subject, and a message
+	 */
+	public static function emailReport() {		
+		if(!isset($_REQUEST['email']) || !filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL)) {
+			echo json_encode(array('error'=>'Valid email address required'));
+			return;
+		}
+		if(!isset($_REQUEST['url'])) {
+			echo json_encode(array('error'=>'Report url required'));
+			return;
+		}
+		if(!isset(PhpReports::$config['mail_setting']['enabled']) || !PhpReports::$config['mail_settings']['enabled']) {
+			echo json_encode(array('error'=>'Email is disabled on this server'));
+			return;
+		}
+		if(!isset(PhpReports::$config['mail_settings']['from'])) {
+			echo json_encode(array('error'=>'Email settings have not been properly configured on this server'));
+			return;
+		}
+		
+		$from = PhpReports::$config['mail_settings']['from'];
+		$subject = $_REQUEST['subject']? $_REQUEST['subject'] : 'Database Report';
+		$body = $_REQUEST['message']? $_REQUEST['message'] : "You've been sent a database report!";
+		$email = $_REQUEST['email'];
+		$link = $_REQUEST['url'];
+		$csv_link = str_replace('report/html/?','report/csv/?',$link);
+		
+		require_once 'lib/Swift/swift_required.php';
+
+		// Create the message
+		$message = Swift_Message::newInstance()
+		  ->setSubject($subject)
+		  ->setFrom($from)
+		  ->setTo($email)
+		  //text body
+		  ->setBody($body."\n\nThere is a CSV file attached to this email.\n\nYou can also view the report online at $link")
+		  //html body
+		  ->addPart("<p>$body</p><p>There is a CSV file attached to this email.</p>
+					<p>You can also view the report online at <a href=\"$link\">$link</a></p>", 'text/html')
+		  //attach CSV file
+		  ->attach(Swift_Attachment::fromPath($csv_link,'text/csv')->setFilename('report.csv'))
+		;
+		
+		// Create the Transport
+		$transport = self::getMailTransport();
+		$mailer = Swift_Mailer::newInstance($transport);
+
+		// Send the message
+		$result = $mailer->send($message);
+		
+		if($result) {
+			echo json_encode(array(
+				'success'=>true
+			));
+		}
+		else {
+			echo json_encode(array(
+				'error'=>'Failed to send email to requested recipient'
+			));
+		}
+	}
+	
+	/**
+	 * Determines the email transport to use based on the configuration settings
+	 */
+	protected static function getMailTransport() {
+		if(!isset(PhpReports::$config['mail_settings'])) PhpReports::$config['mail_settings'] = array();
+		if(!isset(PhpReports::$config['mail_settings']['method'])) PhpReports::$config['mail_settings']['method'] = 'mail';
+		
+		switch(PhpReports::$config['mail_settings']['method']) {
+			case 'mail':
+				return Swift_MailTransport::newInstance();
+			case 'sendmail':
+				return Swift_MailTransport::newInstance(
+					isset(PhpReports::$config['mail_settings']['command'])? PhpReports::$config['mail_settings']['command'] : '/usr/sbin/sendmail -bs'
+				);
+			case 'smtp':
+				if(!isset(PhpReports::$config['mail_settings']['server'])) throw new Exception("SMTP server must be configured");
+				$transport = Swift_SmtpTransport::newInstance(
+					PhpReports::$config['mail_settings']['server'],
+					isset(PhpReports::$config['mail_settings']['port'])? PhpReports::$config['mail_settings']['port'] : 25
+				);
+				
+				//if username/password
+				if(isset(PhpReports::$config['mail_settings']['username'])) {
+					$transport->setUsername(PhpReports::$config['mail_settings']['username']);
+					$transport->setPassword(PhpReports::$config['mail_settings']['password']);
+				}
+				
+				//if using encryption
+				if(isset(PhpReports::$config['mail_settings']['encryption'])) {
+					$transport->setEncryption(PhpReports::$config['mail_settings']['encryption']);
+				}
+				
+				return $transport;
+			default:
+				throw new Exception("Mail method must be either 'mail', 'sendmail', or 'smtp'");
+		}
+	}
+	
+	/**
 	 * Autoloader methods
 	 */
 	public static function loader($className) {		
@@ -385,6 +486,10 @@ class PhpReports {
 		}
 	}
 	
+	/**
+	 * A more lenient json_decode than the built-in PHP one.
+	 * It supports strict JSON as well as javascript syntax (i.e. unquoted/single quoted keys, single quoted values, trailing commmas)
+	 */
 	public static function json_decode($json, $assoc=false) {
 		//replace single quoted values
 		$json = preg_replace('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/e', "':'.json_encode(stripslashes('$1')).'$3'", $json);
