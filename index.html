@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Php Reports</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Php Reports - a PHP framework for displaying reports from any data source, including SQL and MongoDB">
+    <meta name="author" content="Jeremy Dorn">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+  </head>
+
+  <body>
+    <!-- Fork Me on Github ribbon -->
+    <a href="https://github.com/jdorn/php-reports"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 9999;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="http://jdorn.github.com/php-reports/">Php Reports</a>
+          <a href="https://github.com/jdorn/php-reports/archive/master.zip" class="btn btn-primary pull-left">Download ZIP</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="active"><a href="#about">About</a></li>
+              <li>
+                <a href="#">Configuration</a>
+                <ul class="nav nav-list">
+		  <li><a href="#basic_settings">Basic Settings</a></li>
+		  <li><a href="#email_settings">Email Settings</a></li>
+		  <li><a href="#environments_and_databases">Environments and Databases</a></li>
+		</ul>
+	      </li>
+	      <li>
+		<a href="#report_types">Report Types</a>
+		  <ul class="nav nav-list">
+		    <li><a href="#mysql">MySQL</a></li>
+		    <li><a href="#mongodb">MongoDB</a></li>
+		    <li><a href="#php">PHP</a></li>
+		    <li><a href="#custom_types">Custom Types</a></li>
+		  </ul>
+	      </li>
+	      <li>
+		<a href="#report_headers">Report Headers</a>
+		  <ul class="nav nav-list">
+		    <li><a href="#name_and_description">Name and Description</a></li>
+		    <li><a href="#variable">Variable</a></li>
+		    <li><a href="#filter">Filter</a></li>
+		    <li><a href="#chart">Chart</a></li>
+		    <li><a href="#include">Include</a></li>
+		    <li><a href="#detail">Detail</a></li>
+		    <li><a href="#database">Database</a></li>
+		</ul>
+	      </li>
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">		
+	  <section>
+	    <a name="about"></a>
+	    <h2>About</h2>
+	    
+	    <p>
+	      Php Reports simplifies managing and displaying database reports.  
+	    </p>
+	    
+	    <p>
+	      You write reports in SQL, javascript, or PHP (depending on the data source)
+	      and organize them however you like in a directory structure.  
+	      Php Reports takes care of the rest.
+	    </p>
+
+	    <p>Major features include:</p>
+
+	    <ul>
+	      <li>Display a report from any data source that can output tabular data (SQL, MongoDB, PHP, etc.)</li>
+	      <li>Output reports in HTML, XML, CSV, JSON, or your own custom format</li>
+	      <li>Add customizable parameters to a report (e.g. date range, keyword, etc.)</li>
+	      <li>Support for graphs and charts with the Google Data Visualization API</li>
+	      <li>Easily switch between database environments (e.g. Production, Staging, and Dev)</li>
+	      <li>Fully extendable and customizable</li>
+	    </ul>
+	  </section>
+	  <section>
+	    <a name="configuration"></a>
+	    <h2>Configuration</h2>
+	    
+	    <p>All of the configuration options are set in <code>config/config.php</code>.  A sample configuration is included in <code>config/config.php.sample</code>.</p>
+	    
+	    <p>This file must return an associative array of configuration options.  The allowed array keys are described below.</p>
+	    
+	    <section>
+	      <a name="basic_settings"></a>
+	      <h3>Basic Settings</h3>
+	      
+	      <p><strong>reportDir</strong> is the path to the directory containing all of your report files. It is relative to the project's root.</p>
+	      
+	      <p>
+		<strong>cacheDir</strong> is the path to the cache directory.  
+		This directory needs write access.  
+		Some relatively long term data is stored here, so using <code>/tmp</code> is not recommended.
+		This is also relative to the project's root.
+	      </p>
+	      
+	      <p>
+		<strong>default_file_extension_mapping</strong> defines the default file extensions for different report types.  Here is an example:
+	      </p>
+	      <pre>array(
+	'sql'=>'Mysql',
+	'php'=>'Php',
+	'js'=>'Mongo'
+)</pre>
+	      <p><em>*Note</em> - This mapping can be overridden on a report-by-report basis if needed.</p>
+	    </section>
+	    <section>
+	      <a name="email_settings"></a>
+	      <h3>Email Settings</h3>
+	      
+	      <p>
+		On each report, there is an "Email Report" button.  
+		For this to work, an outgoing mail server needs to be set up.
+		Here are the basic mail settings:
+	      </p>
+	      
+	      <pre>'email_settings'=>array(
+  'enabled'=>true,
+  'from'=>'reports@yourdomain.com'
+)</pre>
+	      <p>There are 3 different methods you can use to send email.</p>
+	      
+	      <p><strong>mail</strong> - use PHP's <code>mail</code> function.  This is the simplest method if your server is configured for it.</p>
+	      <pre>'email_settings'=>array(
+  'enabled'=>true,
+  'from'=>'reports@yourdomain.com',
+  'method'=>'mail'
+)</pre>
+
+	      <p><strong>sendmail</strong> - use your system's <code>sendmail</code> command.</p>
+	      <pre>'email_settings'=>array(
+  'enabled'=>true,
+  'from'=>'reports@yourdomain.com',
+  'method'=>'sendmail',
+  'command'=>'/usr/sbin/sendmail -bs'
+)</pre>
+	      
+	      <p><strong>smtp</strong> - use an SMTP server.  This is the most complex and flexible method.  Here is a simple example:</p>
+	      <pre>'email_settings'=>array(
+  'enabled'=>true,
+  'from'=>'reports@yourdomain.com',
+  'method'=>'smtp',
+  'server'=>'smtp.yourdomain.com',
+  'port'=>25
+)</pre>
+
+	    <p>You can also specify encryption and a username and password if needed.  Here is an example for using Gmail:</p>
+	      <pre>'email_settings'=>array(
+  'enabled'=>true,
+  'from'=>'youremail@gmail.com',
+  'method'=>'smtp',
+  'server'=>'smtp.gmail.com',
+  'port'=>465,
+  'username'=>'youremail@gmail.com',
+  'password'=>'yourpassword',
+  'encryption'=>'ssl'
+)</pre>	      
+	    </section>
+	    <section>
+	      <a name="environments_and_databases"></a>
+	      <h3>Environments and Databases</h3>
+	      
+	      <p>This is where you define the data sources the reports pull from.</p>
+	      
+	      <p>Php Reports supports multiple environments (e.g. "Production" and "Staging") and allows users to switch between them easily.</p>
+	      
+	      <p>
+		Within each environment, you define the database connection info.  
+		You can have as many different databases as you want.  
+		Here is an example:
+	      </p>
+	      
+	      <pre>'environments'=>array(
+  'production'=>array(
+    'mysql'=>array(
+      'host'=>'mysql.yourdomain.com',
+      'user'=>'readonly',
+      'pass'=>'password',
+      'database'=>'test'
+    ),
+    'mongo'=>array(
+      'host'=>'mongodb.yourdomain.com',
+      'port'=>'27017'
+    )
+  )
+)</pre>
+
+	      <p>It is recommended to use readonly database users whenever possible to protect against possible database corruption.</p>
+	      
+	    </section>
+	  </section>
+	  
+	  <section>
+	    <a name="report_types"></a>
+	    <h3>Report Types</h3>
+	    <p>Coming Soon</p>
+	  </section>
+	  
+	  <section>
+	    <a name="report_headers"></a>
+	    <h3>Report Headers</h3>
+	    <p>Coming Soon</p>
+	  </section>
+	  
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p>Php Reports - <a href='http://jdorn.github.com/php-reports/'>http://jdorn.github.com/php-reports/</a></p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+  </body>
+</html>
