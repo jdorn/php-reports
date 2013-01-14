@@ -17,6 +17,12 @@
       .sidebar-nav {
         padding: 9px 0;
       }
+      section:before {
+	display:block; 
+	content:""; 
+	height:50px; 
+	margin:-50px 0 0; 
+      }
     </style>
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -27,27 +33,30 @@
     
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#sidenav" data-offset="50">
     <!-- Fork Me on Github ribbon -->
-    <a href="https://github.com/jdorn/php-reports"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 9999;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    <a href="https://github.com/jdorn/php-reports" style="position: fixed; top: 0; right: 0; z-index: 9999;"><img src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="brand" href="http://jdorn.github.com/php-reports/">Php Reports</a>
-          <a href="https://github.com/jdorn/php-reports/archive/master.zip" class="btn btn-primary pull-left">Download ZIP</a>
+          <a href="https://github.com/jdorn/php-reports/archive/master.zip" class="btn btn-primary pull-left">
+	    <i class='icon-download icon-white'></i>
+	    Download ZIP
+	  </a>
         </div>
       </div>
     </div>
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span3">
+        <div class="span3" data-spy="affix" id="sidenav">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="active"><a href="#about">About</a></li>
               <li>
-                <a href="#">Configuration</a>
+                <a href="#configuration">Configuration</a>
                 <ul class="nav nav-list">
 		  <li><a href="#basic_settings">Basic Settings</a></li>
 		  <li><a href="#email_settings">Email Settings</a></li>
@@ -78,9 +87,8 @@
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
-        <div class="span9">		
-	  <section>
-	    <a name="about"></a>
+        <div class="offset3">		
+	  <section id="about">
 	    <h2>About</h2>
 	    
 	    <p>
@@ -104,16 +112,14 @@
 	      <li>Fully extendable and customizable</li>
 	    </ul>
 	  </section>
-	  <section>
-	    <a name="configuration"></a>
+	  <section id="configuration">
 	    <h2>Configuration</h2>
 	    
 	    <p>All of the configuration options are set in <code>config/config.php</code>.  A sample configuration is included in <code>config/config.php.sample</code>.</p>
 	    
 	    <p>This file must return an associative array of configuration options.  The allowed array keys are described below.</p>
 	    
-	    <section>
-	      <a name="basic_settings"></a>
+	    <section id="basic_settings">
 	      <h3>Basic Settings</h3>
 	      
 	      <p><strong>reportDir</strong> is the path to the directory containing all of your report files. It is relative to the project's root.</p>
@@ -135,8 +141,7 @@
 )</pre>
 	      <p><em>*Note</em> - This mapping can be overridden on a report-by-report basis if needed.</p>
 	    </section>
-	    <section>
-	      <a name="email_settings"></a>
+	    <section id="email_settings">
 	      <h3>Email Settings</h3>
 	      
 	      <p>
@@ -187,8 +192,7 @@
   'encryption'=>'ssl'
 )</pre>	      
 	    </section>
-	    <section>
-	      <a name="environments_and_databases"></a>
+	    <section id="environments_and_databases">
 	      <h3>Environments and Databases</h3>
 	      
 	      <p>This is where you define the data sources the reports pull from.</p>
@@ -221,14 +225,112 @@
 	    </section>
 	  </section>
 	  
-	  <section>
-	    <a name="report_types"></a>
-	    <h3>Report Types</h3>
-	    <p>Coming Soon</p>
+	  <section id="report_types">
+	    <h2>Report Types</h2>
+	    
+	    <p>Out of the box, Php Reports supports Mysql, MongoDB, and PHP data sources.  It's also easy to add your own custom format.</p>
+	    
+	    <section id="mysql">
+	      <h3>MySQL Reports</h3>
+	      
+	      <p>
+		MySQL reports consist of 1 or more SQL statements separated by semicolons.
+		The result of the last statement is used for the report.
+		At the top of the report is a comment block with name, description, and any other report headers you need.
+	      </p>
+	      
+	      <p>
+		All MySQL reports are parsed with the Twig templating language before running.
+	      </p>
+	      
+	      <pre>
+-- My Report
+-- This lists all the products that cost
+-- more than a given price.
+-- VARIABLE: { name: "min_price", display: "Minimum Price" }
+
+SELECT Name, Price FROM Products WHERE Price > "{{ min_price }}"</pre>
+
+	      <p>Variables and all the other headers you can use are covered in detail in the <a href="#report_headers">Report Headers</a> section.</p>
+	    </section>
+	    
+	    <section id="mongodb">
+	      <h3>MongoDB Reports</h3>
+	      
+	      <p>MongoDB reports consist of a javascript file that is run in the MongoDB Shell and outputs an array of JSON objects.  Here is an example:</p>
+	      
+	      <pre>
+// My Other Report
+// Lists all food products in a MongoDB collection
+// MONGODATABASE: MyDatabase
+// VARIABLE: { name: "active_only", display: "Active Items Only?", type: "select", options: ["yes","no"] }
+
+var query = {type: 'food'};
+
+if(active_only == 'yes') {
+    query.status = 'active';
+}
+
+var result = db.FoodItems.find(query);
+
+printjson(result);</pre>
+
+	    </section>
+	    
+	    <section id="php">
+	      <h3>PHP Reports</h3>
+	      
+	      <p>
+		You can also write reports using PHP.  
+		PHP reports must output JSON data, just like MongoDB reports above.
+	      </p>
+	      
+	      <p>
+		Writing reports in PHP is especially useful for fetching data from APIs or doing complex data processing that is out of the scope of SQL.
+		Here is an example:
+	      </p>
+	      
+	      <pre>
+<?php
+//My Third Report
+//This connects to the Stripe Payments api and shows a list of charges
+//VARIABLE: { name: "count", display: "Number of Charges" }
+
+if($count > 100 || $count < 1) throw new Exception("Number of Charges must be between 1 and 100");
+
+require_once("/path/to/Stripe/Stripe.php");
+
+$charges = Stripe_Charge::all(array("count" => $count));
+
+$rows = array();
+foreach($charges as $charge) {
+    $rows[] = array(
+        'Charge Id'=>$charge->id,
+        'Amount'=>number_format($charge->amount/100,2),
+        'Date'=>date('Y-m-d',$charge->created)
+    );
+}
+
+echo json_encode($rows);
+?></pre>
+	    </section>
+	    
+	    <section id="custom_types">
+	      <h3>Custom Report Types</h3>
+	      
+	      <p>
+		Adding your own report type is easy.  
+		Report Type classes extend <strong>ReportTypeBase</strong> and live in <code>classes/report_types/</code>.  
+		You can also place them in <code>classes/local/report_types/</code> if you want them ignored by git.
+	      </p>
+	      
+	      <p>
+		The existing report type classes are well commented and are the best place to start when making your own.
+	      </p>
+	    </section>
 	  </section>
 	  
-	  <section>
-	    <a name="report_headers"></a>
+	  <section id="report_headers">
 	    <h3>Report Headers</h3>
 	    <p>Coming Soon</p>
 	  </section>
@@ -249,6 +351,11 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function() {
+	  $('body').scrollspy('refresh');
+      });
+    </script>
 
   </body>
 </html>
