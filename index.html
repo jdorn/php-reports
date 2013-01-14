@@ -54,7 +54,8 @@
         <div class="span3" data-spy="affix" id="sidenav">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
-              <li class="active"><a href="#about">About</a></li>
+              <li><a href="#about">About</a></li>
+	      <li><a href="#getting_started">Getting Started</a></li>
               <li>
                 <a href="#configuration">Configuration</a>
                 <ul class="nav nav-list">
@@ -74,15 +75,6 @@
 	      </li>
 	      <li>
 		<a href="#report_headers">Report Headers</a>
-		  <ul class="nav nav-list">
-		    <li><a href="#name_and_description">Name and Description</a></li>
-		    <li><a href="#variable">Variable</a></li>
-		    <li><a href="#filter">Filter</a></li>
-		    <li><a href="#chart">Chart</a></li>
-		    <li><a href="#include">Include</a></li>
-		    <li><a href="#detail">Detail</a></li>
-		    <li><a href="#database">Database</a></li>
-		</ul>
 	      </li>
             </ul>
           </div><!--/.well -->
@@ -111,6 +103,29 @@
 	      <li>Easily switch between database environments (e.g. Production, Staging, and Dev)</li>
 	      <li>Fully extendable and customizable</li>
 	    </ul>
+	  </section>
+	  <section id="getting_started">
+	    <h2>Getting Started</h2>
+	    
+	    <p>
+	      Php Reports requires PHP 5.3, Apache or nginx, and a modern browser.  
+	      You'll also need MySQL and/or MongoDB plus their respective PHP extensions if you want to use those report types.
+	    </p>
+	    
+	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
+	    
+	    <pre>
+git clone git://github.com/jdorn/php-reports.git
+cd php-reports
+git submodule init
+git submodule update</pre>
+	    
+	    <p>
+	      You can also download a pre-packaged 
+	      <a href="https://github.com/jdorn/php-reports/zipball/master">zip</a> or 
+	      <a href="#https://github.com/jdorn/php-reports/tarball/master">tar</a> archive
+	    </p>	    
+	    
 	  </section>
 	  <section id="configuration">
 	    <h2>Configuration</h2>
@@ -331,8 +346,17 @@ echo json_encode($rows);
 	  </section>
 	  
 	  <section id="report_headers">
-	    <h3>Report Headers</h3>
-	    <p>Coming Soon</p>
+	    <h2>Report Headers</h2>
+	    
+	    <p>
+	      At the top of every report in a block of comments containing name, description, 
+	      and various headers that alter the appearance or behavior in some way.
+	    </p>
+	    
+	    <p>Each header is in the form of <code>HEADERNAME: value</code>.</p>
+	    
+	    <p>For full documentation, see the wiki at <a href="https://github.com/jdorn/php-reports/wiki/Report-Headers">https://github.com/jdorn/php-reports/wiki/Report-Headers</a></p>
+	    
 	  </section>
 	  
         </div><!--/span-->
