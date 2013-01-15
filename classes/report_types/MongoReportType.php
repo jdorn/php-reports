@@ -44,26 +44,28 @@ class MongoReportType extends ReportTypeBase {
 			$eval .= 'var '.$key.' = '.$value.';'."\n";
 		}
 		$eval .= $report->raw_query;
-		
-		
-		
+
 		$environments = PhpReports::$config['environments'];
 		$config = $environments[$report->options['Environment']][$report->options['Database']];
 		
 		$mongo_database = isset($report->options['Mongodatabase'])? $report->options['Mongodatabase'] : '';
-		
-		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval '.escapeshellarg($eval);
-		
-		$report->options['Query'] = '$ '.$command."\n\n".$report->raw_query;
+
+		//command without eval string
+		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval ';
+
+		//easy to read formatted query
 		$report->options['Query_Formatted'] = '<div>
-			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.
-			'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval '."'...'".
-			'</pre>'.
+			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.$command.'"..."</pre>'.
 			'Eval String:'.
-			'<pre style="border-left: 1px solid black; padding-left: 20px;">'.htmlentities($eval).'</pre>
+			'<pre class="prettyprint linenums languague-js">'.htmlentities($eval).'</pre>
 		</div>';
-		
-		$result = shell_exec($command);
+
+		//escape the eval string and add it to the command
+		$command .= escapeshellarg($eval);
+		$report->options['Query'] = '$ '.$command;
+
+		//include stderr so we can capture shell errors (like "command mongo not found")
+		$result = shell_exec($command.' 2>&1');
 		
 		$result = trim($result);
 		
