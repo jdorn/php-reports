@@ -347,7 +347,7 @@ class PhpReports {
 			echo json_encode(array('error'=>'Report url required'));
 			return;
 		}
-		if(!isset(PhpReports::$config['mail_setting']['enabled']) || !PhpReports::$config['mail_settings']['enabled']) {
+		if(!isset(PhpReports::$config['mail_settings']['enabled']) || !PhpReports::$config['mail_settings']['enabled']) {
 			echo json_encode(array('error'=>'Email is disabled on this server'));
 			return;
 		}
