@@ -23,6 +23,11 @@
 	height:50px; 
 	margin:-50px 0 0; 
       }
+      #screenshots {
+	-moz-box-shadow: 0 0 5px 5px #aaa;
+	-webkit-box-shadow: 0 0 5px 5px #aaa;
+	box-shadow: 0 0 5px 5px #aaa;
+      }
     </style>
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -79,7 +84,65 @@
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
-        <div class="offset3">		
+        <div class="offset3">
+	  <h1>Php Reports</h1>
+	  
+	  <p>A framework for displaying reports from any data source, including SQL and MongoDB.</p>
+	  
+	  <div id="screenshots" class="carousel slide">
+	    <!-- Carousel items -->
+	    <div class="carousel-inner">
+	      <div class="active item">
+		<img src="img/report-table-screenshot.png" />
+		<div class='carousel-caption'>
+		  <h4>Beautiful Reports in a Variety of Formats</h4>
+		  <p>
+		    View your reports in the browser or export to a number of different formats, including CSV, JSON, and XML.
+		  </p>
+		</div>
+	      </div>
+	      <div class="item">
+		<img src="img/configure-report-screenshot.png" />
+		<div class='carousel-caption'>
+		  <h4>Customize Your Reports</h4>
+		  <p>
+		    Add report parameters that are passed directly into the report body.
+		  </p>
+		</div>
+	      </div>
+	      <div class="item">
+		<img src="img/report-list-screenshot.png" />
+		<div class='carousel-caption'>
+		  <h4>Organize and Manage Your Reports</h4>
+		  <p>
+		    Easily keep track of hundreds or even thousands of reports with a heirarchical report list and typeahead search.
+		  </p>
+		</div>
+	      </div>
+	      <div class="item">
+		<img src="img/report-chart-screenshot.png" />
+		<div class='carousel-caption'>
+		  <h4>Report Charts and Graphs</h4>
+		  <p>
+		    Add charts or graphs easily to any report using Google's Data Visualization API.
+		  </p>
+		</div>
+	      </div>
+	      <div class="item">
+		<img src="img/editor-screenshot.png" />
+		<div class='carousel-caption'>
+		  <h4>Easy to Learn</h4>
+		  <p> 
+		    No proprietary report language.  Write MySQL reports in SQL, MongoDB reports in Javascript, and PHP reports in PHP.
+		  </p>
+		</div>
+	      </div>
+	    </div>
+	    <!-- Carousel nav -->
+	    <a class="carousel-control left" href="#screenshots" data-slide="prev">&lsaquo;</a>
+	    <a class="carousel-control right" href="#screenshots" data-slide="next">&rsaquo;</a>
+	  </div>
+	  	
 	  <section id="about">
 	    <h2>About</h2>
 	    
@@ -306,28 +369,28 @@ printjson(result);</pre>
 	      </p>
 	      
 	      <pre>
-<?php
+&lt;?php
 //My Third Report
 //This connects to the Stripe Payments api and shows a list of charges
 //VARIABLE: { name: "count", display: "Number of Charges" }
 
-if($count > 100 || $count < 1) throw new Exception("Number of Charges must be between 1 and 100");
+if($count &gt; 100 || $count &lt; 1) throw new Exception("Number of Charges must be between 1 and 100");
 
 require_once("/path/to/Stripe/Stripe.php");
 
-$charges = Stripe_Charge::all(array("count" => $count));
+$charges = Stripe_Charge::all(array("count" =&gt; $count));
 
 $rows = array();
 foreach($charges as $charge) {
     $rows[] = array(
-        'Charge Id'=>$charge->id,
-        'Amount'=>number_format($charge->amount/100,2),
-        'Date'=>date('Y-m-d',$charge->created)
+        'Charge Id'=&gt;$charge-&gt;id,
+        'Amount'=&gt;number_format($charge-&gt;amount/100,2),
+        'Date'=&gt;date('Y-m-d',$charge-&gt;created)
     );
 }
 
 echo json_encode($rows);
-?></pre>
+?&gt;</pre>
 	    </section>
 	    
 	    <section id="custom_types">
