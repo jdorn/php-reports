@@ -177,25 +177,31 @@
 	    
 	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
 	    
-	    <pre>
-git clone git://github.com/jdorn/php-reports.git
-cd php-reports
-git submodule init
-git submodule update</pre>
+	    <pre>git clone git://github.com/jdorn/php-reports.git</pre>
 	    
 	    <p>
 	      You can also download a pre-packaged 
 	      <a href="https://github.com/jdorn/php-reports/zipball/master">zip</a> or 
-	      <a href="#https://github.com/jdorn/php-reports/tarball/master">tar</a> archive
-	    </p>	    
+	      <a href="https://github.com/jdorn/php-reports/tarball/master">tar</a> archive
+	    </p>
+	    
+	    <p>A sample configuration is included in <code>config/config.php.sample</code>.  It's easiest to just use this as a base.</p>
+	    
+	    <pre>
+cd php-reports
+cp config/config.php.sample config/config.php</pre>
+
+	    <p>You should now be able to view the report list in your browser</p>
+	    
+	    <div class='alert alert-info'>
+	      If you use nginx, place the following in your server declaration - <code>try_files $uri $uri/ /index.php;</code>
+	    </div>
 	    
 	  </section>
 	  <section id="configuration">
 	    <h2>Configuration</h2>
 	    
-	    <p>All of the configuration options are set in <code>config/config.php</code>.  A sample configuration is included in <code>config/config.php.sample</code>.</p>
-	    
-	    <p>This file must return an associative array of configuration options.  The allowed array keys are described below.</p>
+	    <p>This section describes the different configuration settings.</p>
 	    
 	    <section id="basic_settings">
 	      <h3>Basic Settings</h3>
