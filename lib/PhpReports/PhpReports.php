@@ -108,7 +108,8 @@ class PhpReports {
 			'request'=>self::$request,
 			'querystring'=>$_SERVER['QUERY_STRING'],
 			'config'=>self::$config,
-			'environment'=>$_SESSION['environment']
+			'environment'=>$_SESSION['environment'],
+			'recent_reports'=>self::getRecentReports()
 		);
 		$macros = array_merge($default,$macros);
 		
@@ -189,8 +190,7 @@ class PhpReports {
 	public static function listReports() {
 		$errors = array();
 
-		$reports = self::getReports(self::$config['reportDir'].'/',null,$errors);
-
+		$reports = self::getReports(self::$config['reportDir'].'/',$errors);
 
 		$template_vars['reports'] = $reports;
 		$template_vars['report_errors'] = $errors;
@@ -198,11 +198,30 @@ class PhpReports {
 		$start = microtime(true);
 		echo self::render('html/report_list',$template_vars);
 	}
-	
+	public static function getRecentReports() {
+		$recently_run = FileSystemCache::retrieve(FileSystemCache::generateCacheKey('recently_run'));
+		$recent = array();
+		if($recently_run !== false) {
+			$i = 0;
+			foreach($recently_run as $report) {
+				if($i > 10) break;
+
+				$headers = self::getReportHeaders($report);
+
+				if(!$headers) continue;
+				if(isset($recent[$headers['url']])) continue;
+
+				$recent[$headers['url']] = $headers;
+				$i++;
+			}
+		}
+
+		return array_values($recent);
+	}
 	public static function getReportListJSON($reports=null) {
 		if($reports === null) {
 			$errors = array();
-			$reports = self::getReports(self::$config['reportDir'].'/',null,$errors);
+			$reports = self::getReports(self::$config['reportDir'].'/',$errors);
 		}
 
 		//weight by popular reports
@@ -246,9 +265,39 @@ class PhpReports {
 		
 		return '['.trim(implode(',',$parts),',').']';
 	}
+
+	protected static function getReportHeaders($report) {
+		$cacheKey = FileSystemCache::generateCacheKey($report,'report_headers');
+
+		//check if report data is cached and newer than when the report file was created
+		//the url parameter ?nocache will bypass this and not use cache
+		$data =false;
+		if(!isset($_REQUEST['nocache'])) {
+			$data = FileSystemCache::retrieve($cacheKey, filemtime($report));
+		}
+
+		//report data not cached, need to parse it
+		if($data === false) {
+			$temp = new Report($report);
+
+			$data = $temp->options;
+
+			$data['report'] = $report;
+			$data['url'] = self::$request->base.'/report/html/?report='.$report;
+			$data['is_dir'] = false;
+			$data['Id'] = str_replace(array('_','-','/',' ','.'),array('','','_','-','_'),trim($report,'/'));
+			if(!isset($data['Name'])) $data['Name'] = ucwords(str_replace(array('_','-'),' ',basename($report)));
+
+			//store parsed report in cache
+			FileSystemCache::store($cacheKey, $data);
+		}
+
+		return $data;
+	}
 	
-	protected static function getReports($dir, $base = null, &$errors = null) {
-		if($base === null) $base = $dir;
+	protected static function getReports($dir, &$errors = null) {
+		$base = self::$config['reportDir'].'/';
+
 		$reports = glob($dir.'*',GLOB_NOSORT);
 		$return = array();
 		foreach($reports as $key=>$report) {
@@ -260,7 +309,7 @@ class PhpReports {
 				
 				$id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
 				
-				$children = self::getReports($report.'/', $base, $errors);
+				$children = self::getReports($report.'/', $errors);
 				
 				$count = 0;
 				foreach($children as $child) {
@@ -284,43 +333,19 @@ class PhpReports {
 				$ext = array_pop(explode('.',$report));
 				if(!isset(self::$config['default_file_extension_mapping'][$ext])) continue;
 
-				$cacheKey = FileSystemCache::generateCacheKey($report,'report_headers');
+				$name = substr($report,strlen($base));
 
-				//check if report data is cached and newer than when the report file was created
-				//the url parameter ?nocache will bypass this and not use cache
-				$data =false;
-				if(!isset($_REQUEST['nocache'])) {
-					$data = FileSystemCache::retrieve($cacheKey, filemtime($report));
+				try {
+					$data = self::getReportHeaders($name,$base);
+					$return[] = $data;
 				}
-				
-				//report data not cached, need to parse it
-				if($data === false) {
-					$name = substr($report,strlen($base));
-					try {
-						$temp = new Report($name);
-					}
-					catch(Exception $e) {
-						if(!$errors) $errors = array();
-						$errors[] = array(
-							'report'=>$name,
-							'exception'=>$e
-						);
-						continue;
-					}
-					
-					$data = $temp->options;
-					
-					$data['report'] = $name;
-					$data['url'] = self::$request->base.'/report/html/?report='.$name;
-					$data['is_dir'] = false;
-					$data['Id'] = str_replace(array('_','-','/',' ','.'),array('','','_','-','_'),trim(substr($report,strlen($base)),'/'));
-					if(!isset($data['Name'])) $data['Name'] = ucwords(str_replace(array('_','-'),' ',basename($report)));
-					
-					//store parsed report in cache
-					FileSystemCache::store($cacheKey, $data);
+				catch(Exception $e) {
+					if(!$errors) $errors = array();
+					$errors[] = array(
+						'report'=>$name,
+						'exception'=>$e
+					);
 				}
-				
-				$return[] = $data;
 			}
 		}
 		

@@ -42,12 +42,29 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="{{base}}">{% block brand %}PHP Reports{% endblock %}</a>
-          <div class='navbar-search'>
-            {% block searchbar %}
-              <input type='text' class='search-query' placeholder="Find Report..."/>
+            <a class="brand" href="{{base}}">{% block brand %}PHP Reports{% endblock %}</a>
+            <div class='navbar-search'>
+                {% block searchbar %}
+                    <input type='text' class='search-query' placeholder="Find Report..."/>
+                {% endblock %}
+            </div>
+            {% block navdropdown %}
+                {% if recent_reports %}
+                    <ul class="nav">
+                         <li class="dropdown">
+                             <a class="dropdown-toggle" id="navrecent_label" role="button" data-toggle="dropdown" href="#">
+                                 Recently Run
+                                 <b class="caret"></b>
+                             </a>
+                             <ul class="dropdown-menu" role="menu" aria-labelledby="navrecent_label">
+                                 {% for recent_report in recent_reports %}
+                                    <li><a href="{{ recent_report.url }}">{{ recent_report.Name }}</a></li>
+                                 {% endfor %}
+                             </ul>
+                         </li>
+                    </ul>
+                {% endif %}
             {% endblock %}
-          </div>
           <div>
 			{% block navbar %}{% endblock %}
           </div>
