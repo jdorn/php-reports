@@ -4,6 +4,21 @@ return array(
 	//reports can be organized in subdirectories
 	'reportDir' => 'sample_reports',
 	
+	//the directory where things will be cached
+	//this is relative to the project root by default, but can be set to an absolute path too
+	//the cache has some relatively long lived data so don't use /tmp if you can avoid it
+	//(for example historical report timing data is stored here)
+	'cacheDir' => 'cache',
+
+	//this maps file extensions to report types
+	//to override this for a specific report, simply add a TYPE header
+	//any file extension not in this array will be ignored when pulling the report list
+	'default_file_extension_mapping' => array(
+		'sql'=>'Mysql',
+		'php'=>'Php',
+		'js'=>'Mongo',
+	),
+	
 	//email settings
 	'mail_settings' => array(
 		//set 'enabled' to true to enable the 'email this report' functionality
@@ -29,21 +44,6 @@ return array(
 		'password'=>'yoursmtppassword', 	//optional
 		'encryption'=>'ssl' 				//optional (either 'ssl' or 'tls')
 		*/
-	),
-
-	//the directory where things will be cached
-	//this is relative to the project root by default, but can be set to an absolute path too
-	//the cache has some relatively long lived data so don't use /tmp if you can avoid it
-	//(for example historical report timing data is stored here)
-	'cacheDir' => 'cache',
-
-	//this maps file extensions to report types
-	//to override this for a specific report, simply add a TYPE header
-	//any file extension not in this array will be ignored when pulling the report list
-	'default_file_extension_mapping' => array(
-		'sql'=>'Mysql',
-		'php'=>'Php',
-		'js'=>'Mongo',
 	),
 
 	//this defines the database environments
