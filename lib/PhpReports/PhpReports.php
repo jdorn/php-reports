@@ -227,6 +227,9 @@ class PhpReports {
 			else {
 				//skip if report is marked as dangerous
 				if((isset($report['stop'])&&$report['stop']) || isset($report['Caution']) || isset($report['warning'])) continue;
+				
+				//skip if report is marked as ignore
+				if(isset($report['ignore']) && $report['ignore']) continue;
 
 				if(isset($popular[$report['report']])) {
 					$popularity = $popular[$report['report']];

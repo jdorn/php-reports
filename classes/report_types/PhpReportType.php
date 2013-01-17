@@ -13,6 +13,10 @@ class PhpReportType extends ReportTypeBase {
 			if($included_code) $included_code.= "\n";
 			
 			$report->raw_query = $included_code . $report->raw_query;
+			
+			//make sure the raw query has a closing PHP tag at the end
+			//this makes sure it will play nice as an included report
+			if(!preg_match('/\?>\s*$/',$report->raw_query)) $report->raw_query .= "\n?>";
 		}
 	}
 	
