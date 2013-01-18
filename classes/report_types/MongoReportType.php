@@ -57,7 +57,7 @@ class MongoReportType extends ReportTypeBase {
 		$report->options['Query_Formatted'] = '<div>
 			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.$command.'"..."</pre>'.
 			'Eval String:'.
-			'<pre class="prettyprint linenums languague-js">'.htmlentities($eval).'</pre>
+			'<pre class="prettyprint linenums lang-js">'.htmlentities($eval).'</pre>
 		</div>';
 
 		//escape the eval string and add it to the command

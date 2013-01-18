@@ -1,11 +1,14 @@
 <?php
 class MysqlReportType extends ReportTypeBase {
-	public static function init(&$report) {		
+	public static function init(&$report) {
 		$environments = PhpReports::$config['environments'];
 		
 		if(!isset($environments[$report->options['Environment']][$report->options['Database']])) {
 			throw new Exception("No ".$report->options['Database']." info defined for environment '".$report->options['Environment']."'");
 		}
+
+		//make sure the syntax highlighting is using the proper class
+		SqlFormatter::$pre_attributes = "class='prettyprint linenums lang-sql'";
 		
 		$mysql = $environments[$report->options['Environment']][$report->options['Database']];
 		
@@ -44,7 +47,7 @@ class MysqlReportType extends ReportTypeBase {
 		}
 		
 		//set a formatted query here for debugging.  It will be overwritten below after macros are substituted.
-		$report->options['Query_Formatted'] = SqlFormatter::highlight($report->raw_query);
+		$report->options['Query_Formatted'] = SqlFormatter::format($report->raw_query);
 	}
 	
 	public static function openConnection(&$report) {
@@ -134,8 +137,8 @@ class MysqlReportType extends ReportTypeBase {
 		$sql = PhpReports::render($report->raw_query,$macros);
 		
 		$report->options['Query'] = $sql;
-		
-		$report->options['Query_Formatted'] = SqlFormatter::highlight($sql);
+
+		$report->options['Query_Formatted'] = SqlFormatter::format($sql);
 		
 		//split into individual queries and run each one, saving the last result		
 		$queries = SqlFormatter::splitQuery($sql);

@@ -46,15 +46,29 @@ class PhpReportType extends ReportTypeBase {
 		$report->options['Query'] = $report->raw_query;
 		
 		$parts = preg_split('/<\?php \/\*(BEGIN|END) (INCLUDED REPORT|REPORT MACROS)\*\/ \?>/',$eval);
-		$formatted = '';
-		$code = '<div style="margin: 10px 0;">'.highlight_string(array_pop($parts),true).'</div>';
+		$report->options['Query_Formatted'] = '';
+		$code = htmlentities(trim(array_pop($parts)));
+		$linenum = 1;
 		foreach($parts as $part) {
 			if(!trim($part)) continue;
-			$formatted .= "<div class='included_report'>".highlight_string($part, true)."</div>";
+
+			//get name of report
+			$name = preg_match("|//REPORT: ([^\n]+)\n|",$part,$matches);
+
+			if(!$matches) {
+				$name = "Variables";
+			}
+			else {
+				$name = $matches[1];
+			}
+
+			$report->options['Query_Formatted'] .= '<div class="included_report" data-name="'.htmlentities($name).'">';
+			$report->options['Query_Formatted'] .= "<pre class='prettyprint lang-php linenums:".$linenum."'>".htmlentities(trim($part))."</pre>";
+			$report->options['Query_Formatted'] .= "</div>";
+			$linenum += count(explode("\n",trim($part)));
 		}
-		$formatted .= $code;
 		
-		$report->options['Query_Formatted'] = '<div><pre style="border-left: 1px solid black; padding-left: 20px;">'.$formatted.'</pre></div>';
+		$report->options['Query_Formatted'] .= '<pre class="prettyprint lang-php linenums:'.$linenum.'">'.$code.'</pre>';
 
 		ob_start();
 		eval('?>'.$eval);

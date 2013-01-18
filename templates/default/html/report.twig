@@ -41,6 +41,12 @@
     <script type="text/javascript" src="{{base}}/public/js/daterangepicker.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/bootstrap-datepicker.js"></script>
     <script type="text/javascript" src="{{ base }}/public/js/prettify.js"></script>
+    <script type="text/javascript" src="{{ base }}/public/js/lang-sql.js"></script>
+    <script type="text/javascript">
+        $("#content").on('click','a[data-role="button"]',function(e) {
+            e.preventDefault();
+        });
+    </script>
 {% endblock %}
 
 {% block header %}
@@ -160,8 +166,8 @@
     {% block time_estimate %}
         {% if time_estimate %}
             <div style='margin-top: 20px;'>
-                <button class='btn btn-link' data-toggle="collapse" data-target="#time_estimate_holder">show time estimate data</button>
-                <div style='font-size: .8em;' id='time_estimate_holder' class='collapse'>
+                <a data-role="button" data-toggle="collapse" data-target="#time_estimate_holder" href="#time_estimate_holder">show time estimate data</a>
+                <div style='font-size: .8em; padding-left: 20px;' id='time_estimate_holder' class='collapse'>
                     <div><strong>Number of Samples: </strong> {{time_estimate.count}}</div>
                     <div><strong>Minimum Time: </strong> {{time_estimate.min}}</div>
                     <div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>

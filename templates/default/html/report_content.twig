@@ -14,20 +14,29 @@
 
 {% block show_query %}
 	{% if Query_Formatted %}
-		<button type="button" class='show_query btn btn-link' data-toggle="collapse" data-target="#query_holder">show query</button>
-		<div id='query_holder' class='collapse'>
+		<a data-role="button" data-toggle="collapse" data-target="#query_holder" href="#query_holder">show query</a>
+		<div id='query_holder' class='collapse' style='padding-left: 20px;'>
 			{{Query_Formatted|raw}}
 		</div>
 		<script>
 		$(function() {
 			$('.included_report').each(function() {
 				var self = $(this);
-				self.css('display','none').css('background-color','#f4f4f4').css('padding-left','10px');
-				var link = $('<a>').attr('href','#').text('View Included Report').css('display','block').click(function() {
+				self.css('display','none');
+
+				var name = self.data('name');
+				if(name == "Variables") {
+					var linktext = "Included Variables";
+				}
+				else {
+					var linktext = "Included Report - "+name;
+				}
+
+				var link = $('<a>').attr('href','#').text(linktext).css('display','block').click(function() {
 					self.toggle(200);
 					return false;
 				});
-				
+
 				self.before(link);
 			});
 		});
