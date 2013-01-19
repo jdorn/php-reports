@@ -1,18 +1,24 @@
 {% if item.is_dir %}
+	{% if h is not defined %}
+		{% set h = 2 %}
+	{% endif %}
 	{% if item.children %}
 		<a name="report_{{item.Id}}" href='#'>.</a>
-		<h2 class="{% if not item.Title %}no_title{% endif %}">
+		<h{{h < 5 ? h : 5}} class="{% if not item.Title %}no_title{% endif %}">
 			{% if item.Title %}{{item.Title}}{% else %}{{item.Name}}{% endif %}
 			<button type='button' class='btn' data-toggle="collapse" data-target="#report_{{item.Id}}_children"><span class='caret'></span></button>
-		</h2>
+		</h{{h < 5 ? h : 5}}>
 		<div class='collapse {% if item.Title %}in{% endif %}' id='report_{{item.Id}}_children'>
             {% if item.Description %}
                 <p>{{ item.Description|raw }}</p>
             {% endif %}
+            
 			<ul class='nav nav-list well'>
 				{% for item in item.children %}
-					<li>
+					<li>		
+						{% set h = h + 1 %}
 						{% include "html/report_list_item.twig" %}
+						{% set h = h - 1 %}
 					</li>
 				{% endfor %}
 			</ul>
