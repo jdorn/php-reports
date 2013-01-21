@@ -23,6 +23,8 @@ class ReportValue {
 		
 		$this->is_html = false;
 		$this->class = '';
+		
+		$this->type = $this->_getType();
 	}
 	
 	public function addClass($class) {
@@ -41,6 +43,8 @@ class ReportValue {
 			$this->filtered_value = is_string($value)? htmlentities($value) : $value;
 			$this->html_value = $value;
 		}
+		
+		$this->type = $this->_getType();
 	}
 	
 	protected function _getType($value) {

@@ -3,6 +3,7 @@ class PhpReports {
 	public static $config;
 	public static $request;
 	public static $twig;
+	public static $twig_string;
 	
 	public static $vars;
 	
@@ -34,9 +35,10 @@ class PhpReports {
 			new Twig_Loader_Filesystem($template_dirs), 
 			new Twig_Loader_String()
 		));
-		self::$twig = new Twig_Environment($loader);
-		
+		self::$twig = new Twig_Environment($loader);		
 		self::$twig->addFunction('dbdate',new Twig_Function_Function('PhpReports::dbdate'));
+		
+		self::$twig_string = new Twig_Environment(new Twig_Loader_String());
 		
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 
@@ -116,6 +118,10 @@ class PhpReports {
 		//if a template path like 'html/report' is given, add the twig file extension
 		if(preg_match('/^[a-zA-Z_\-0-9\/]+$/',$template)) $template .= '.twig';
 		return self::$twig->render($template,$macros);
+	}
+	
+	public static function renderString($template, $macros) {
+			return self::$twig_string->render($template,$macros);
 	}
 	
 	public static function displayReport($report,$type) {		

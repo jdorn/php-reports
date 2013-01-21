@@ -24,6 +24,7 @@ foreach($timezone_abbreviations[$region] as $timezone) {
 
 // Add an AVERAGE Row at the bottom
 // The array_stats function is defined in the included report functions.php
+// This is just a demo.  Normally, you would just use the ROLLUP header for something like this
 $stats = array_stats($rows, 'Offset');
 $rows[] = array(
     'Timezone'=>'AVERAGE',
