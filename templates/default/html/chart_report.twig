@@ -59,6 +59,6 @@
 			chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
 		{% endfor %}
 	}
-	drawCharts();
+	google.setOnLoadCallback(drawCharts);
 	</script>
 {% endblock %}
