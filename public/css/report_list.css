@@ -13,3 +13,20 @@
 #report_list .nav-list .nav-list h2 {
 	font-size: 1.3em;
 }
+#table_of_contents {
+    bottom: 0;
+    top: 50px;
+    position: fixed;
+    overflow-y: auto;
+}
+@media (max-width: 979px) {
+    #table_of_contents {
+	position: absolute;
+	top: 60px;
+	bottom: auto;
+	height: auto;
+    }
+}
+#report_list {
+    padding-bottom: 400px;
+}

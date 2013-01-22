@@ -10,6 +10,17 @@
 				{% endfor %}
 			</tr>
 		</thead>
+		{% if FooterRows %}
+		<tfoot>
+			{% for row in FooterRows %}
+				<tr>
+					{% for value in row.values %}
+						<td>{{ value.getValue(true)|raw }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tfoot>
+		{% endif %}
 		<tbody>
 			{% for row in VerticalRows %}
 			<tr>
@@ -33,6 +44,17 @@
 			{% endfor %}
 			</tr>
 		</thead>
+		{% if FooterRows %}
+		<tfoot>
+			{% for row in FooterRows %}
+				<tr>
+					{% for value in row.values %}
+						<td>{{ value.getValue(true)|raw }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tfoot>
+		{% endif %}
 		<tbody>
 			{% for row in Rows %}
 			<tr>

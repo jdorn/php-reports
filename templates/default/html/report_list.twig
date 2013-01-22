@@ -14,17 +14,16 @@
 
 {% block content %}
 <div class='row'>
-	<div id='table_of_contents' class='span3'>
+	<div id='table_of_contents' class='span3 hidden-phone'>
 	{% block table_of_contents %}
 		<ul class='nav nav-list'>
-			<li class='nav-header'>Table of Contents</li>
 			{% for item in reports %}
 				{% include "html/report_list_table_of_contents_item.twig" %}
 			{% endfor %}
 		</ul>
 	{% endblock %}
 	</div>
-	<div id='report_list' class='span9'>
+	<div id='report_list' class='span9 offset3'>
         <h1 class="visible-phone">All Reports</h1>
 		{% block report_errors %}
 			{% if report_errors is not empty %}

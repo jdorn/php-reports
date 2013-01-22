@@ -455,12 +455,10 @@ class Report {
 			
 			$first = !$rows;
 			
-			$row = array(
+			$rows[] = array(
 				'values'=>$rowval,
 				'first'=>$first
 			);
-			
-			if($row) $rows[] = $row;
 		}
 		
 		$this->options['Rows'] = $rows;
