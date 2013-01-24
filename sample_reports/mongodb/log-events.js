@@ -1,5 +1,5 @@
 // Last 50 Log Events
-// MONGODATABASE: Logs
+// OPTIONS: { Mongodatabase: "Logs" }
 
 var result = db.logs.find({}).limit(50).sort({date: -1});
 

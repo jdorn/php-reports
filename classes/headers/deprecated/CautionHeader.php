@@ -8,6 +8,8 @@ class CautionHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
+		trigger_error("CAUTION header is deprecated.",E_USER_DEPRECATED);
+		
 		$report->options['Caution'] = $params['value'];
 			
 		$report->exportHeader('Caution',$params);

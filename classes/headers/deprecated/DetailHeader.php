@@ -15,6 +15,8 @@ class DetailHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
+		trigger_error("DETAIL header is deprecated.  Use the FILTER header with the 'drilldown' filter instead.",E_USER_DEPRECATED);
+		
 		$report->addFilter($params['column'],'drilldown',$params);
 	}
 	

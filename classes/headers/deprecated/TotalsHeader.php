@@ -8,7 +8,7 @@ class TotalsHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
-		$report->options['Totals'] = $params['value'];
+		trigger_error("TOTALS header is deprecated.  Use the ROLLUP header instead.",E_USER_DEPRECATED);
 	}
 	
 	public static function parseShortcut($value) {

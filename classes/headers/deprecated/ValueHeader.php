@@ -11,6 +11,8 @@ class ValueHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
+		trigger_error("VALUE header is deprecated.  Use the VARIABLE header with a 'default' parameter instead.",E_USER_DEPRECATED);
+		
 		if(isset($report->options['Variables'][$params['name']])) {
 			if($report->macros[$params['name']]) return;
 			

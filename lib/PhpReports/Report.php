@@ -145,70 +145,58 @@ class Report {
 		$this->headers = array();
 		
 		$lines = explode("\n",$this->raw_headers);
-		$lines[] = '#END:';
 		
-		$last_header = null;
-		$last_header_value = '';
-		$last_i = -1;
-		$i=0;
+		//remove empty headers and remove comment characters
+		$fixed_lines = array();
 		foreach($lines as $line) {
 			if(empty($line)) continue;
 			
 			//if the line doesn't start with a comment character, skip
-			if(!in_array(substr($line,0,2),array('--','/*','//')) && $line[0] !== '#') continue;
+			if(!in_array(substr($line,0,2),array('--','/*','//',' *')) && $line[0] !== '#') continue;
 			
 			//remove comment from start of line and skip if empty
-			$line = trim(ltrim($line,'-*/#'));
+			$line = trim(ltrim($line,"-*/# \t"));
 			if(!$line) continue;
 			
+			$fixed_lines[] = $line;
+		}
+		$lines = $fixed_lines;
+		
+		$name = null;
+		$value = '';
+		foreach($lines as $line) {
 			$has_name_value = preg_match('/^\s*[A-Z0-9_\-]+\s*\:/',$line);
-			
+		
 			//if this is the first header and not in the format name:value, assume it is the report name
-			if(!$last_header && !$has_name_value) {
-				$name = 'Name';
-				$value = trim($line);
+			if(!$has_name_value && $name === null && !$this->options['Name']) {
+				$this->parseHeader('Info',array('name'=>$line));
 			}
 			else {
-				if(!$has_name_value) {		
-					$value = trim($line);
-					
-					if($last_header !== 'Name') $name = $last_header;
-					else {
-						$name = 'Description';
-						$i++;
-					}
+				//if this is a continuation of another header
+				if(!$has_name_value) {
+					$value .= "\n".trim($line);
 				}
+				//if this is a new header
 				else {
-					$i++;
+					//if the previous header didn't have a name, assume it is the description
+					if($value && $name === null) {
+						$this->parseHeader('Info',array('description'=>$value));
+					}
+					//otherwise, parse the previous header
+					elseif($value) {
+						$this->parseHeader($name,$value);
+					}	
+					
 					list($name,$value) = explode(':',$line,2);
+					$name = trim($name);
+					$value = trim($value);
+				
+					if(strtoupper($name) === $name) $name = ucfirst(strtolower($name));
 				}
-				$name = trim($name);
-				$value = trim($value);
-				
-				if(strtoupper($name) === $name) $name = ucfirst(strtolower($name));
-			}			
-			
-			if($last_i === $i) {
-				$last_header_value .= "\n".$value;
-				$last_header = $name;
-				continue;
 			}
-			elseif($last_header) {
-				
-				$this->header_lines[] = array(
-					'name'=>$last_header,
-					'value'=>$last_header_value
-				);
-				
-				if(!in_array($last_header,$this->headers)) $this->headers[] = $last_header;
-				
-				$this->parseHeader($last_header,$last_header_value);
-			}
-				
-			$last_header = $name;
-			$last_header_value = $value;
-			$last_i = $i;
 		}
+		//parse the last header
+		$this->parseHeader($name,$value);
 		
 		//try to infer report type from file extension
 		if(!isset($this->options['Type'])) {

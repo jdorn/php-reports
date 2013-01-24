@@ -9,7 +9,7 @@
 -- }
 -- FILTER: { 
 --      column: "Customer Name", 
---      type: "drilldown",
+--      filter: "drilldown",
 --      params: {
 --          macros: { "id": { column: "Customer Id" } },
 --          report: "drilldown/customer-orders.sql"
