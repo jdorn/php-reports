@@ -51,6 +51,16 @@ class OptionsHeader extends HeaderBase {
 		),
 		'selectable'=>array(
 			'type'=>'string'
+		),
+		'Mongodatabase'=>array(
+			'type'=>'string'
+		),
+		'Database'=>array(
+			'type'=>'string'
+		),
+		'Cache'=>array(
+			'min'=>0,
+			'type'=>'number'
 		)
 	);
 	
@@ -58,11 +68,10 @@ class OptionsHeader extends HeaderBase {
 		foreach($params as $key=>$value) {
 			$report->options[$key] = $value;
 			
-			//if the value is different from the default, export it
+			//if the value is different from the default, it can be exported
 			if($value && $value !== self::$validation[$key]['default']) {
-				//export the acceess option if defined
-				//all other options should not be exported
-				if($key === 'access') {
+				//only export some of the options
+				if(in_array($key,array('access','Cache'),true)) {
 					$report->exportHeader('Options',array($key=>$value));
 				}
 			}
