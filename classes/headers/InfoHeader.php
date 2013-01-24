@@ -8,7 +8,8 @@ class InfoHeader extends HeaderBase {
 			'type'=>'string'
 		),
 		'created'=>array(
-			'type'=>'string'
+			'type'=>'string',
+			'pattern'=>'/^[0-9]{4}-[0-9]{2}-[0-9]{2}/'
 		),
 		'note'=>array(
 			'type'=>'string'

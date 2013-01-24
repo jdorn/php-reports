@@ -17,12 +17,7 @@ class Report {
 	protected $filemtime;
 	protected $has_run = false;
 	
-	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {	
-		//make sure the report path doesn't go up a level for security reasons
-		if(strpos($report,"..")!==false) {
-			throw new Exception('Invalid report - '.$report);
-		}
-					
+	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {			
 		$this->report = $report;
 		
 		if(!file_exists(self::getFileLocation($report))) {
@@ -59,6 +54,14 @@ class Report {
 	}
 	
 	public static function getFileLocation($report) {
+		//make sure the report path doesn't go up a level for security reasons
+		if(strpos($report,"..")!==false) {
+			$reportdir = realpath(PhpReports::$config['reportDir']).'/';
+			$reportpath = substr(realpath(PhpReports::$config['reportDir'].'/'.$report),0,strlen($reportdir));
+			
+			if($reportpath !== $reportdir) throw new Exception('Invalid report - '.$report);
+		}
+		
 		$reportDir = PhpReports::$config['reportDir'];
 		return $reportDir.'/'.$report;
 	}
@@ -185,7 +188,7 @@ class Report {
 					//otherwise, parse the previous header
 					elseif($value) {
 						$this->parseHeader($name,$value);
-					}	
+					}
 					
 					list($name,$value) = explode(':',$line,2);
 					$name = trim($name);
@@ -196,7 +199,9 @@ class Report {
 			}
 		}
 		//parse the last header
-		$this->parseHeader($name,$value);
+		if($value && $name) {
+			$this->parseHeader($name,$value);
+		}
 		
 		//try to infer report type from file extension
 		if(!isset($this->options['Type'])) {

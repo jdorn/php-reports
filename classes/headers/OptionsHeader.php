@@ -52,20 +52,33 @@ class OptionsHeader extends HeaderBase {
 		'selectable'=>array(
 			'type'=>'string'
 		),
-		'Mongodatabase'=>array(
+		'mongodatabase'=>array(
 			'type'=>'string'
 		),
-		'Database'=>array(
+		'database'=>array(
 			'type'=>'string'
 		),
-		'Cache'=>array(
+		'cache'=>array(
+			'min'=>0,
+			'type'=>'number'
+		),
+		'ttl'=>array(
 			'min'=>0,
 			'type'=>'number'
 		)
 	);
 	
 	public static function init($params, &$report) {
+		//legacy support for the 'ttl' cache parameter
+		if(isset($params['ttl'])) {
+			$params['cache'] = $params['ttl'];
+			unset($params['ttl']);
+		}
+		
 		foreach($params as $key=>$value) {
+			//some of the keys need to be uppercase (for legacy reasons)
+			if(in_array($key,array('database','mongodatabase','cache'))) $key = ucfirst($key);
+			
 			$report->options[$key] = $value;
 			
 			//if the value is different from the default, it can be exported

@@ -79,6 +79,8 @@ class HeaderBase {
 			//other validation rules
 			if(isset($rules['min']) && $params[$key] < $rules['min']) $errors[] = "$key must be at least $rules[min]";
 			if(isset($rules['max']) && $params[$key] > $rules['max']) $errors[] = "$key must be at most $rules[min]";
+			
+			if(isset($rules['pattern']) && !preg_match($rules['pattern'],$params[$key])) $errors[] = "$key does not match required pattern";
 		}
 		
 		//every possible param must be defined in the validation rules

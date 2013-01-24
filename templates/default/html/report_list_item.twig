@@ -46,8 +46,8 @@
 		{% if item.expensive %}
 			<img alt='Expensive to run' title='Expensive to run' src='{{base}}/public/images/money_dollar.png' />
 		{% endif %}
-		{% if item.Created and item.Created > date("-2 weeks")|date('U') %}
-			<img alt='Created on {{item.Created|date('Y-m-d')}}' title='Created on {{item.Created|date('Y-m-d')}}' src='{{base}}/public/images/new_icon.gif' />
+		{% if item.Created and item.Created|slice(0,10)|date('U') > date("-2 weeks")|date('U') %}
+			<img alt='Created on {{item.Created|slice(0,10)|date('Y-m-d')}}' title='Created on {{item.Created|slice(0,10)|date('Y-m-d')}}' src='{{base}}/public/images/new_icon.gif' />
 		{% endif %}
 	</a>
 {% endif %}
