@@ -237,13 +237,13 @@ class Report {
 		
 		$this->filters[$column][$type] = $options;
 	}
-	protected function applyFilters($column, $value) {
+	protected function applyFilters($column, $value, $row) {
 		//no filters to apply
 		if(!isset($this->filters[$column])) return $value;
 		
 		foreach($this->filters[$column] as $type=>$options) {
 			$classname = $type.'Filter';
-			$value = $classname::filter($value, $options, $this);
+			$value = $classname::filter($value, $options, $this, $row);
 			
 			//if the column should not be displayed
 			if($value === false) return false;
@@ -442,9 +442,9 @@ class Report {
 				$val = new ReportValue($i, $key, $value);
 				
 				//apply filters for the column key
-				$val = $this->applyFilters($key,$val);
+				$val = $this->applyFilters($key,$val,$row);
 				//apply filters for the column position
-				if($val) $val = $this->applyFilters($i,$val);
+				if($val) $val = $this->applyFilters($i,$val,$row);
 				
 				if($val) {
 					$rowval[] = $val;

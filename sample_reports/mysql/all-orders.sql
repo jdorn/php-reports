@@ -7,10 +7,13 @@
 --      type: "daterange", 
 --      default: { start: "yesterday", end: "yesterday" }
 -- }
--- DETAIL: { 
+-- FILTER: { 
 --      column: "Customer Name", 
---      macros: { "id": { column: "Customer Id" } } 
---      report: "detail/customer-orders.sql"
+--      type: "drilldown",
+--      params: {
+--          macros: { "id": { column: "Customer Id" } },
+--          report: "drilldown/customer-orders.sql"
+--      }
 -- }
 
 SELECT
