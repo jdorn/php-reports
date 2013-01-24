@@ -17,7 +17,12 @@ class Report {
 	protected $filemtime;
 	protected $has_run = false;
 	
-	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {				
+	public function __construct($report,$macros = array(), $environment = null, $use_cache = null) {	
+		//make sure the report path doesn't go up a level for security reasons
+		if(strpos($report,"..")!==false) {
+			throw new Exception('Invalid report - '.$report);
+		}
+					
 		$this->report = $report;
 		
 		if(!file_exists(self::getFileLocation($report))) {
