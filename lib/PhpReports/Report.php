@@ -224,6 +224,7 @@ class Report {
 		$classname = $name.'Header';
 		if(class_exists($classname)) {
 			$classname::parse($name,$value,$this);
+			if(!in_array($name,$this->headers)) $this->headers[] = $name;
 		}
 		else {
 			throw new Exception("Unknown header '$name' - ".$this->report);
