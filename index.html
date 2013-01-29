@@ -8,14 +8,11 @@
     <meta name="author" content="Jeremy Dorn">
 
     <!-- Le styles -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <style type="text/css">
       body {
         padding-top: 60px;
         padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
       }
       section:before {
 	display:block; 
@@ -30,6 +27,7 @@
       }
     </style>
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/jquery.tocify.css" rel="stylesheet" type="text/css"/>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -56,42 +54,7 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span3" data-spy="affix" id="sidenav">
-          <div class="well sidebar-nav">
-            <ul class="nav nav-list">
-              <li><a href="#about">About</a></li>
-	      <li><a href="#getting_started">Getting Started</a></li>
-              <li>
-                <a href="#configuration">Configuration</a>
-                <ul class="nav nav-list">
-		  <li><a href="#basic_settings">Basic Settings</a></li>
-		  <li><a href="#email_settings">Email Settings</a></li>
-		  <li><a href="#environments_and_databases">Environments and Databases</a></li>
-		</ul>
-	      </li>
-	      <li>
-		<a href="#report_types">Report Types</a>
-		  <ul class="nav nav-list">
-		    <li><a href="#mysql">MySQL</a></li>
-		    <li><a href="#mongodb">MongoDB</a></li>
-		    <li><a href="#php">PHP</a></li>
-		    <li><a href="#custom_types">Custom Types</a></li>
-		  </ul>
-	      </li>
-	      <li>
-		<a href="#report_headers">Report Headers</a>
-		  <ul class="nav nav-list">
-		    <li><a href="#variables">Variables</a></li>
-		    <!--
-		    <li><a href="#charts">Charts</a></li>
-		    <li><a href="#options">Options</a></li>
-		    <li><a href="#rollups">Rollups</a></li>
-		    -->
-		  </ul>
-	      </li>
-            </ul>
-          </div><!--/.well -->
-        </div><!--/span-->
+        <div class="span3" id="toc"></div>
         <div class="offset3">
 	  <h1>Php Reports</h1>
 	  
@@ -435,7 +398,7 @@ echo json_encode($rows);
 	    </p>
 	    
 	    <div class='alert alert-info'>
-	      There must be a blank line between the headers and the report.
+	      Note: There must be a blank line between the headers and the report.
 	    </div>
 	    
 	    <pre>
@@ -447,7 +410,7 @@ echo json_encode($rows);
 SELECT * FROM MyTable;</pre>
 	    
 	    <p>
-	      For full documentation, see the wiki at 
+	      This section of the documentation is not yet complete.  For full documentation, see the wiki at 
 	      <a href="https://github.com/jdorn/php-reports/wiki/Report-Headers">
 		https://github.com/jdorn/php-reports/wiki/Report-Headers
 	      </a>
@@ -456,8 +419,8 @@ SELECT * FROM MyTable;</pre>
 	    <section id="variables">
 	      <h3>Variable Header</h3>
 	      <p>
-		This header adds a "Configure Report" section to the top of the report with parameters you specify.  
-		These parameters are passed into the report as variables.
+		This header adds a "Configure Report" section to the top of the report where the user can set variables you specify.
+		The values of these variables are passed into the report and can be used in queries.
 	      </p>
 	      
 	      <table class='table table-bordered table-striped'>
@@ -566,8 +529,14 @@ SELECT * FROM MyTable;</pre>
 		  </tr>
 		</tbody>
 	      </table>
+	      
+	      <h4>Examples</h4>
 		      
+	      <p>A simple text variable: </p>
+	      
 	      <pre>VARIABLE: { name: "userid", display: "User Id" }</pre>
+	      
+	      <p>Select variables show a dropdown menu with the defined choices.</p>
 	      
 	      <pre>
 VARIABLE: { 
@@ -577,8 +546,12 @@ VARIABLE: {
   options: ["Reptile","Mammal","Dinosaur"] 
 }</pre>
 
+	      <p>Date variables are parsed with <code>strtotime</code> before being passed into the report.  This means it supports all common date formats as well as relative values like "-1 week" and "last tuesday".</p>
+	      
 	      <pre>VARIABLE: { name: "start", display: "Start Date", type: "date", format: "F j, Y" }</pre>
 
+	      <p>Daterange variables use a nice datepicker widget to select a date range (similar to airline or hotel sites. It has presets for things like "yesterday", "last week", "this month", etc.  The value of the variable is an object containing the properties "start" and "end".  Both of these dates are in the format "Y-m-d".</p>
+	      
 	      <pre>
 VARIABLE: {
     "name": "range",
@@ -587,9 +560,170 @@ VARIABLE: {
         "start": "-1 week",
         "end": "now"
     }
-}</pre>   
+}</pre>
 	    </section> <!--/variable header-->
 	    
+	    <section id="charts">
+	      <h3>Chart Header</h3>
+	      <p>
+		This header adds a graph or chart to the report.  Charts are drawn using the Google Data Visualization API and many different formats are available.
+	      </p>
+	      
+	      <table class='table table-bordered table-striped'>
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>buckets</td>
+		    <td>integer</td>
+		    <td>
+		      When drawing a histogram, this defines how many buckets to split the data into.  If xhistogram is false, this parameter is ignored.
+		    </td>
+		    <td><code>10</code></td>
+		  </tr>
+		  <tr>
+		    <td>colors</td>
+		    <td>array</td>
+		    <td>
+		      Colors for the different data series.  Supports hex colors and css color names.  If empty, the default Google colors will be used.
+		    </td>
+		    <td>
+		      <code>[]</code>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>columns</td>
+		    <td>array</td>
+		    <td>
+		      The columns to include in the chart.  You can specify columns by their number (starting with 1) or their name.  The column order is important and depends on the type of chart.  See examples below for details.
+		    </td>
+		    <td>All the columns in order</td>
+		  </tr>
+		  <tr>
+		    <td>height</td>
+		    <td>string</td>
+		    <td>
+		      The height of the chart.  Supports any css dimension (e.g. "200px", "25%", etc.).
+		    </td>
+		    <td><code>"400px"</code></td>
+		  </tr>
+		  <tr>
+		    <td>markers</td>
+		    <td>boolean</td>
+		    <td>
+		      The chart type "GeoChart" has two modes.  The region mode colorizes whole regions, such as countries, provinces, or states.  The marker mode marks designates regions using bubbles that are scaled according to a value that you specify.  If this property is true, the map will be in markers mode.  Otherwise, it will be in region mode.  If using another chart type, this option is ignored.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		    <td>title</td>
+		    <td>string</td>
+		    <td>
+		      An optional title for the chart.  Will appear at the top.
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>type</td>
+		    <td>string</td>
+		    <td>
+		      The type of chart.  Possible values are:
+		      <ul>
+			<li><strong>LineChart</strong></li>
+			<li><strong>GeoChart</strong></li>
+			<li><strong>AnnotatedTimeLine</strong> - Similar to Google Finance</li>
+			<li><strong>BarChart</strong></li>
+			<li><strong>ColumnChart</strong></li>
+		      </ul>
+		    </td>
+		    <td><code>"LineChart"</code></td>
+		  </tr>
+		  <tr>
+		    <td>width</td>
+		    <td>string</td>
+		    <td>
+		      The width of the chart.  Supports any css dimension (e.g. "200px", "25%", etc.).
+		    </td>
+		    <td><code>"100%"</code></td>
+		  </tr>
+		  <tr>
+		    <td>xhistogram</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, a histogram will be constructed using the first passed column as the x axis.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <p>
+		For charts of type "LineChart", "BarChart", and "ColumChart", the first column is the x axis.  Each following column is a data series on the y axis.
+	      </p>
+	      
+	      <pre>
+CHART: {
+	"columns": ["Product", "Started Purchase", "Completed Purchase"],
+	"type": "LineChart",
+	"title": "Shopping Cart Abandonment",
+	"width": "600px",
+	"height": "400px"
+}</pre>
+
+	      <p>
+		The chart type "GeoChart" supports many different formats.  Checkout <a href="https://developers.google.com/chart/interactive/docs/gallery/geochart">https://developers.google.com/chart/interactive/docs/gallery/geochart</a> for full documentation of the different column orders supported.
+	      </p>
+	      
+	      <pre>
+CHART: {
+  type: "GeoChart",
+  columns: ["State", "Number of Sales"]
+}</pre>
+	      
+	      <pre>
+CHART: {
+  type: "GeoChart",
+  columns: ["Lattitude", "Longitude", "Population"],
+  markers: true
+}</pre>
+
+	      <p>
+		"AnnotatedTimeLine" charts are used to show time series data with important events marked.  The first column is either a date or datetime.  Many different date formats are supported, but it's safest to use either "Y-m-d" or "m/d/Y".  The second column is the numeric value on the y axi
+	      </p>
+	      
+	      <p>
+		There are 2 more optional columns that add annotations for specific data points.  The third column contains an annotation title (e.g. "Hottest day on record").  The fourth column contains a more detailed description.  Check out <a href="https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline">https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline</a> for full documentation.
+	      </p>
+	      
+	      <pre>
+CHART: {
+  type: "AnnotatedTimeLine",
+  columns: ["Purchase Timestamp", "Order Total", "Order Notes"]
+}
+</pre>
+
+	      <p>
+		Histograms take a single numeric column, split the x-axis into ranges, and plot the distribution of data across these ranges.
+		Histograms work with the types "LineChart", "BarChart", and "ColumnChart".
+	      </p>
+	      
+	      <pre>
+CHART: {
+  type: "ColumnChart",
+  columns: ["Order Total"],
+  xhistogram: true,
+  buckets: 10
+}</pre>
+
+	    </section> <!--/chart header-->
 	  </section>
 	  
         </div><!--/span-->
@@ -608,9 +742,12 @@ VARIABLE: {
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.0.custom.min.js"></script>
+    <script src="js/jquery.tocify.min.js"></script>
     <script>
-      $(document).ready(function() {
-	  $('body').scrollspy('refresh');
+      $("#toc").tocify({
+        selectors: "h2,h3,h4",
+        scrollTo: 45
       });
     </script>
 
