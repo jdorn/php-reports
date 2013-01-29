@@ -80,6 +80,14 @@
 	      </li>
 	      <li>
 		<a href="#report_headers">Report Headers</a>
+		  <ul class="nav nav-list">
+		    <li><a href="#variables">Variables</a></li>
+		    <!--
+		    <li><a href="#charts">Charts</a></li>
+		    <li><a href="#options">Options</a></li>
+		    <li><a href="#rollups">Rollups</a></li>
+		    -->
+		  </ul>
 	      </li>
             </ul>
           </div><!--/.well -->
@@ -417,19 +425,170 @@ echo json_encode($rows);
 	  <section id="report_headers">
 	    <h2>Report Headers</h2>
 	    
-	    <div class='alert alert-info alert-block'>
-	      <p>A lot of changes with headers are happening in the upcoming 1.1 release.</p>
-	      Documentation is coming soon.  See <a href="https://github.com/jdorn/php-reports/issues/49">https://github.com/jdorn/php-reports/issues/49</a> for progress.
-	    </div>
-	    
 	    <p>
 	      At the top of every report in a block of comments containing name, description, 
 	      and various headers that alter the appearance or behavior in some way.
 	    </p>
 	    
-	    <p>Each header is in the form of <code>HEADERNAME: value</code>.</p>
+	    <p>
+	      The first header line is always the report name.  Then comes an optional description followed by any named headers.
+	    </p>
 	    
-	    <p>Full documentation is , see the wiki at <a href="https://github.com/jdorn/php-reports/wiki/Report-Headers">https://github.com/jdorn/php-reports/wiki/Report-Headers</a></p>
+	    <div class='alert alert-info'>
+	      There must be a blank line between the headers and the report.
+	    </div>
+	    
+	    <pre>
+-- This is the Report Name
+-- This is a report description
+-- that can be on multiple lines
+-- HEADERNAME: This is a named header
+
+SELECT * FROM MyTable;</pre>
+	    
+	    <p>
+	      For full documentation, see the wiki at 
+	      <a href="https://github.com/jdorn/php-reports/wiki/Report-Headers">
+		https://github.com/jdorn/php-reports/wiki/Report-Headers
+	      </a>
+	    </p>
+	    
+	    <section id="variables">
+	      <h3>Variable Header</h3>
+	      <p>
+		This header adds a "Configure Report" section to the top of the report with parameters you specify.  
+		These parameters are passed into the report as variables.
+	      </p>
+	      
+	      <table class='table table-bordered table-striped'>
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>database_options</td>
+		    <td>object</td>
+		    <td>
+		      If type is "select", this tells the framework to populate the drop down list from the database.  It has the following properties:
+		      <ul>
+			<li><strong>table</strong> - The database table to select from</li>
+			<li><strong>column</strong> - The column to select for the value</li>
+			<li><strong>where</strong> - An optional WHERE clause</li>
+			<li><strong>all</strong> - If set to true, an addional option named "ALL" will be added to the top of the list.</li>
+		      </ul>
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>default</td>
+		    <td>mixed</td>
+		    <td>
+		      The default value for the variable.  Will be pre-populated when the report is opened.
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>description</td>
+		    <td>string</td>
+		    <td>
+		      Add an optional description for this variable.  This shows up as help text in the "Configure Report" section.
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>display</td>
+		    <td>string</td>
+		    <td>The display name of the variable.  This is shown to the user in the Configure Report section.  If this isn't set, the variable name will be used.</td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>empty</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, the report will run even if the value is empty.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		    <td>format</td>
+		    <td>string</td>
+		    <td>
+		      If type is "date" or "daterange", this specifies the date format to convert to before passing into the report.  Format follows PHP's date methods.  This options will be ignored for all other types.
+		    </td>
+		    <td>
+		      <code>"Y-m-d H:i:s"</code>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>modifier_options</td>
+		    <td>array</td>
+		    <td>
+		      Adds a modifier dropdown before the input with the specified options.  Common values are ["=","!=","&gt;","&lt;"] or ["starts with","ends with","contains"].  Passed into the report as a variable named {{name}}_modifier.
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>multiple</td>
+		    <td>boolean</td>
+		    <td>
+		      If true and type is "select", the input will change to a multi-select box and the value will be an array.
+		      If true and type is "textarea", the input will be split by linebreaks and the value will be an array.
+		      This option is ignored for all other types.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		    <td>name</td>
+		    <td>string</td>
+		    <td>The name of the variable when it's passed into the report.  Must be a valid variable name (i.e. no spaces or weird punctuation)</td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>options</td>
+		    <td>array or object</td>
+		    <td>
+		      If type is "select", these are the options that populate the select box.
+		      Can be an array or object with key value pairs.
+		      If type is anything other than "select", this option is ignored.
+		    </td>
+		    <td><code>[]</code></td>
+		  </tr>
+		  <tr>
+		    <td>type</td>
+		    <td>string</td>
+		    <td>The type of variable.  Valid types are "text", "select", "textarea", "date", and "daterange".</td>
+		    <td><code>"text"</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+		      
+	      <pre>VARIABLE: { name: "userid", display: "User Id" }</pre>
+	      
+	      <pre>
+VARIABLE: { 
+  name: "category", 
+  display: "Category", 
+  type: "select", 
+  options: ["Reptile","Mammal","Dinosaur"] 
+}</pre>
+
+	      <pre>VARIABLE: { name: "start", display: "Start Date", type: "date", format: "F j, Y" }</pre>
+
+	      <pre>
+VARIABLE: {
+    "name": "range",
+    "type": "daterange",
+    "default": {
+        "start": "-1 week",
+        "end": "now"
+    }
+}</pre>   
+	    </section> <!--/variable header-->
 	    
 	  </section>
 	  
