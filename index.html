@@ -28,6 +28,7 @@
     </style>
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="css/jquery.tocify.css" rel="stylesheet" type="text/css"/>
+    <link href="css/prettify.css" rel="stylesheet" type="text/css"/>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -148,7 +149,7 @@
 	    
 	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
 	    
-	    <pre>git clone git://github.com/jdorn/php-reports.git</pre>
+	    <pre class="prettyprint linenums lang-sh">git clone git://github.com/jdorn/php-reports.git</pre>
 	    
 	    <p>
 	      You can also download a pre-packaged 
@@ -158,7 +159,7 @@
 	    
 	    <p>A sample configuration is included in <code>config/config.php.sample</code>.  It's easiest to just use this as a base.</p>
 	    
-	    <pre>
+	    <pre class="prettyprint linenums lang-sh">
 cd php-reports
 cp config/config.php.sample config/config.php</pre>
 
@@ -189,7 +190,7 @@ cp config/config.php.sample config/config.php</pre>
 	      <p>
 		<strong>default_file_extension_mapping</strong> defines the default file extensions for different report types.  Here is an example:
 	      </p>
-	      <pre>array(
+	      <pre class='prettyprint linenums'>array(
 	'sql'=>'Mysql',
 	'php'=>'Php',
 	'js'=>'Mongo'
@@ -205,21 +206,21 @@ cp config/config.php.sample config/config.php</pre>
 		Here are the basic mail settings:
 	      </p>
 	      
-	      <pre>'email_settings'=>array(
+	      <pre class='prettyprint linenums'>'email_settings'=>array(
   'enabled'=>true,
   'from'=>'reports@yourdomain.com'
 )</pre>
 	      <p>There are 3 different methods you can use to send email.</p>
 	      
 	      <p><strong>mail</strong> - use PHP's <code>mail</code> function.  This is the simplest method if your server is configured for it.</p>
-	      <pre>'email_settings'=>array(
+	      <pre class='prettyprint linenums'>'email_settings'=>array(
   'enabled'=>true,
   'from'=>'reports@yourdomain.com',
   'method'=>'mail'
 )</pre>
 
 	      <p><strong>sendmail</strong> - use your system's <code>sendmail</code> command.</p>
-	      <pre>'email_settings'=>array(
+	      <pre class='prettyprint linenums'>'email_settings'=>array(
   'enabled'=>true,
   'from'=>'reports@yourdomain.com',
   'method'=>'sendmail',
@@ -227,7 +228,7 @@ cp config/config.php.sample config/config.php</pre>
 )</pre>
 	      
 	      <p><strong>smtp</strong> - use an SMTP server.  This is the most complex and flexible method.  Here is a simple example:</p>
-	      <pre>'email_settings'=>array(
+	      <pre class='prettyprint linenums'>'email_settings'=>array(
   'enabled'=>true,
   'from'=>'reports@yourdomain.com',
   'method'=>'smtp',
@@ -236,7 +237,7 @@ cp config/config.php.sample config/config.php</pre>
 )</pre>
 
 	    <p>You can also specify encryption and a username and password if needed.  Here is an example for using Gmail:</p>
-	      <pre>'email_settings'=>array(
+	      <pre class='prettyprint linenums'>'email_settings'=>array(
   'enabled'=>true,
   'from'=>'youremail@gmail.com',
   'method'=>'smtp',
@@ -260,7 +261,7 @@ cp config/config.php.sample config/config.php</pre>
 		Here is an example:
 	      </p>
 	      
-	      <pre>'environments'=>array(
+	      <pre class='prettyprint linenums'>'environments'=>array(
   'production'=>array(
     'mysql'=>array(
       'host'=>'mysql.yourdomain.com',
@@ -298,7 +299,7 @@ cp config/config.php.sample config/config.php</pre>
 		All MySQL reports are parsed with the Twig templating language before running.
 	      </p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums lang-sql'>
 -- My Report
 -- This lists all the products that cost
 -- more than a given price.
@@ -314,7 +315,7 @@ SELECT Name, Price FROM Products WHERE Price > "{{ min_price }}"</pre>
 	      
 	      <p>MongoDB reports consist of a javascript file that is run in the MongoDB Shell and outputs an array of JSON objects.  Here is an example:</p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 // My Other Report
 // Lists all food products in a MongoDB collection
 // MONGODATABASE: MyDatabase
@@ -345,7 +346,7 @@ printjson(result);</pre>
 		Here is an example:
 	      </p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 &lt;?php
 //My Third Report
 //This connects to the Stripe Payments api and shows a list of charges
@@ -401,7 +402,7 @@ echo json_encode($rows);
 	      Note: There must be a blank line between the headers and the report.
 	    </div>
 	    
-	    <pre>
+	    <pre class='prettyprint linenums lang-sql'>
 -- This is the Report Name
 -- This is a report description
 -- that can be on multiple lines
@@ -534,11 +535,11 @@ SELECT * FROM MyTable;</pre>
 		      
 	      <p>A simple text variable: </p>
 	      
-	      <pre>VARIABLE: { name: "userid", display: "User Id" }</pre>
+	      <pre class='prettyprint linenums'>VARIABLE: { name: "userid", display: "User Id" }</pre>
 	      
 	      <p>Select variables show a dropdown menu with the defined choices.</p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 VARIABLE: { 
   name: "category", 
   display: "Category", 
@@ -548,11 +549,11 @@ VARIABLE: {
 
 	      <p>Date variables are parsed with <code>strtotime</code> before being passed into the report.  This means it supports all common date formats as well as relative values like "-1 week" and "last tuesday".</p>
 	      
-	      <pre>VARIABLE: { name: "start", display: "Start Date", type: "date", format: "F j, Y" }</pre>
+	      <pre class='prettyprint linenums'>VARIABLE: { name: "start", display: "Start Date", type: "date", format: "F j, Y" }</pre>
 
 	      <p>Daterange variables use a nice datepicker widget to select a date range (similar to airline or hotel sites. It has presets for things like "yesterday", "last week", "this month", etc.  The value of the variable is an object containing the properties "start" and "end".  Both of these dates are in the format "Y-m-d".</p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 VARIABLE: {
     "name": "range",
     "type": "daterange",
@@ -669,7 +670,7 @@ VARIABLE: {
 		For charts of type "LineChart", "BarChart", and "ColumChart", the first column is the x axis.  Each following column is a data series on the y axis.
 	      </p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 CHART: {
 	"columns": ["Product", "Started Purchase", "Completed Purchase"],
 	"type": "LineChart",
@@ -682,13 +683,13 @@ CHART: {
 		The chart type "GeoChart" supports many different formats.  Checkout <a href="https://developers.google.com/chart/interactive/docs/gallery/geochart">https://developers.google.com/chart/interactive/docs/gallery/geochart</a> for full documentation of the different column orders supported.
 	      </p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 CHART: {
   type: "GeoChart",
   columns: ["State", "Number of Sales"]
 }</pre>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 CHART: {
   type: "GeoChart",
   columns: ["Lattitude", "Longitude", "Population"],
@@ -703,7 +704,7 @@ CHART: {
 		There are 2 more optional columns that add annotations for specific data points.  The third column contains an annotation title (e.g. "Hottest day on record").  The fourth column contains a more detailed description.  Check out <a href="https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline">https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline</a> for full documentation.
 	      </p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 CHART: {
   type: "AnnotatedTimeLine",
   columns: ["Purchase Timestamp", "Order Total", "Order Notes"]
@@ -715,7 +716,7 @@ CHART: {
 		Histograms work with the types "LineChart", "BarChart", and "ColumnChart".
 	      </p>
 	      
-	      <pre>
+	      <pre class='prettyprint linenums'>
 CHART: {
   type: "ColumnChart",
   columns: ["Order Total"],
@@ -724,6 +725,194 @@ CHART: {
 }</pre>
 
 	    </section> <!--/chart header-->
+	    
+	    <section id="include">
+	      <h3>Include Header</h3>
+	      
+	      <p>Includes another report in the currently running one.</p>
+
+	      <p>The included report's headers are parsed and the report contents are prepended to the current report before running.</p>
+
+	      <p>Possible uses include:</p>
+	      
+	      <ul>
+		<li>Creating a temp table for a set of MySQL reports</li>
+		<li>Defining helper functions for MongoDB or PHP reports</li>
+		<li>Setting up an API connection for a PHP report</li>
+	      </ul>
+	      	      
+	      <table class='table table-bordered table-striped'>
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>report</td>
+		    <td>string</td>
+		    <td>The path to a report to include. If it starts with "/", it will be relative to the root report directory. Otherwise, it will be relative to the currently running report.</td>
+		    <td><code>null</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class='prettyprint linenums'>INCLUDE: {"report": "relative/to/current/report.sql"}</pre>
+	      
+	      <pre class='prettyprint linenums'>INCLUDE: {"report": "/relative/to/reportdir/report.sql"}</pre>
+	    </section><!--/include-->
+	    <section id="filters">
+	      <h3>Filter Header</h3>
+	      
+	      <p>The Filter header modifies all the values in a column.</p>
+	      
+	      <p>Some possible uses include:</p>
+	      
+	      <ul>
+		<li>Replace an ip address with the city, state where it is located</li>
+		<li>Star Rating filter that replaces a numberic column (1-5) with images of stars</li>
+		<li>Right align values</li>
+		<li>Link a user id in one report to a differnt report with that user's full account history</li>
+	      </ul>
+	      
+	      <div class='alert alert-info'>
+		Specific filters have their own documentation. This just explains the FILTER header itself.
+	      </div>
+	      
+	      <table class='table table-bordered table-striped'>
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>column</td>
+		    <td>string</td>
+		    <td>The column to apply the filter to.  Can be either the column number (starting at 1) or the column name.</td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>filter</td>
+		    <td>string</td>
+		    <td>The filter to apply to the column.</td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>params</td>
+		    <td>object</td>
+		    <td>The params to pass into the filter.  The allowed params differe depending on the filter used.</td>
+		    <td><code>{}</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class='prettyprint linenums'>FILTER: {"column": "Ip Address", "filter": "geoip"}</pre>
+	      
+	      <pre class='prettyprint linenums'>
+FILTER: {
+    "column": "Article", 
+    "filter": "link",
+    "params": {
+        "_blank": true,
+        "display": "View Article"
+    }
+}</pre>
+	      
+	    </section><!--/include header-->
+	    
+	    <section id="rollups">
+	      <h3>Rollup Header</h3>
+	      
+	      <p>The Rollup header adds a footer row to the bottom of the report containing summary information that you specify.</p>
+	      
+	      <p>This header is most useful for showing sums and averages for numeric columns, but it is flexible enough to allow any kind of summary data.</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>columns</td>
+		    <td>object</td>
+		    <td>
+		      An object where the keys are column names and the values are Twig templates that output the desired value. The following variables are available in the Twig template:
+		      
+		      <ul>
+			<li>values - an array of all the non-empty values in the column</li>
+			<li>sum</li>
+			<li>count</li>
+			<li>mean</li>
+			<li>median</li>
+			<li>min</li>
+			<li>max</li>
+			<li>stdev</li>
+		      </ul>
+		    </td>
+		    <td><code>{}</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint linenums">
+ROLLUP: {
+  columns: {
+    "Product": "Total:",
+    "Number Sold": "{{sum}}"
+  }
+}</pre>
+	      
+	      <pre class="prettyprint linenums">
+ROLLUP: {
+  columns: {
+    "Name": "First alphabetical name - {{min}}.  Last alphabetical name - {{max}}."
+  }
+}</pre>
+	      
+	      <pre class="prettyprint linenums">
+ROLLUP: {
+  columns: {
+    "Quantity": "
+      Every Third Value: 
+      {% for value in values if value is disibleby 3 %}
+	{% if not loop.first %}, {% endif %}
+	{{ value }}
+      {% endfor %}
+    "
+  }
+}</pre>
+	    </section><!--/rollup header-->
+	    
+	    <section id="options">
+	      <h3>Options Header</h3>
+	      
+	      <div class='alert alert-info'>Documentation coming soon</div>
+	    </section><!--/options header-->
+	    
+	    <section id="options">
+	      <h3>Info Header</h3>
+	      
+	      <div class='alert alert-info'>Documentation coming soon</div>
+	    </section><!--/info header-->
+	      
 	  </section>
 	  
         </div><!--/span-->
@@ -744,11 +933,16 @@ CHART: {
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-ui-1.10.0.custom.min.js"></script>
     <script src="js/jquery.tocify.min.js"></script>
+    <script src="js/prettify.js"></script>
+    <script src="js/lang-sql.js"></script>
     <script>
       $("#toc").tocify({
         selectors: "h2,h3,h4",
         scrollTo: 45
       });
+      
+      
+      window.prettyPrint && prettyPrint()
     </script>
 
   </body>
