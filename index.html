@@ -21,9 +21,9 @@
 	margin:-50px 0 0; 
       }
       #screenshots {
-	-moz-box-shadow: 0 0 5px 5px #aaa;
-	-webkit-box-shadow: 0 0 5px 5px #aaa;
-	box-shadow: 0 0 5px 5px #aaa;
+	-moz-box-shadow: 0 0 10px 2px #ddd;
+	-webkit-box-shadow: 0 0 10px 2px #ddd;
+	box-shadow: 0 0 10px 2px #ddd;
       }
     </style>
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -409,13 +409,6 @@ echo json_encode($rows);
 -- HEADERNAME: This is a named header
 
 SELECT * FROM MyTable;</pre>
-	    
-	    <p>
-	      This section of the documentation is not yet complete.  For full documentation, see the wiki at 
-	      <a href="https://github.com/jdorn/php-reports/wiki/Report-Headers">
-		https://github.com/jdorn/php-reports/wiki/Report-Headers
-	      </a>
-	    </p>
 	    
 	    <section id="variables">
 	      <h3>Variable Header</h3>
@@ -904,13 +897,143 @@ ROLLUP: {
 	    <section id="options">
 	      <h3>Options Header</h3>
 	      
-	      <div class='alert alert-info'>Documentation coming soon</div>
+	      <p>
+		The Options header lets you change miscellaneous report options that change the behavior in some way.
+		The various options do everything from changing the database to changing the layout to setting the cache ttl.
+	      </p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>cache</td>
+		    <td>integer</td>
+		    <td>
+		      The number of seconds to cache the report results for.  If set to 0, the results will not be cached.
+		    </td>
+		    <td><code>0</code></td>
+		  </tr>
+		  <tr>
+		    <td>database</td>
+		    <td>string</td>
+		    <td>
+		      The database connection info to use in the current environment.  By default, this is the same as the report type.  For example, if this is a Mysql report type, the database named "mysql" will be used.  Mongo reports will use the database "mongo" by default.
+		    </td>
+		    <td>varies</td>
+		  </tr>
+		  <tr>
+		    <td>ignore</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, the report won't show up in the report list or report search.  You can still link to the report directly or include it from within other reports.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		    <td>mongodatabase</td>
+		    <td>string</td>
+		    <td>
+		      If the report is a MongoDB report, you can specify a database to connect to in the shell.  Doing this will make the <code>db</code> variable available in your report.  If you omit this option, you need to add <code>use MyDatabase</code> or something similar at the top of your report.
+		    </td>
+		    <td><code>"test"</code></td>
+		  </tr>
+		  <tr>
+		    <td>nodata</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, the report table will be hidden.  This is useful if you only want to show a chart.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		    <td>selectable</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, a column will be added to the beginning of the report table containing checkboxes for every row.  If a user checks one or more rows, any export links (e.g. "Download CSV") will only include the checked rows.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		    <td>vertical</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, the rows and columns will be flipped.  For example, a report to list all the properties of a user might look something like this after the "vertical" option is set:
+		      <table class='table table-bordered'>
+			<tr>
+			  <th>Name</th>
+			  <td>John Smith</td>
+			  <td>Jane Doe</td>
+			</tr>
+			<tr>
+			  <th>Email</th>
+			  <td>john@test.com</td>
+			  <td>jane@test.com</td>
+			</tr>
+		      </table>
+		      <p>This works best when there would be many columns and only a couple rows.</p>
+		      <div class='alert alert-info'>Note: this option will disable sorting the report by column since that no longer makes sense.</div>
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
 	    </section><!--/options header-->
 	    
-	    <section id="options">
+	    <section id="infos">
 	      <h3>Info Header</h3>
 	      
-	      <div class='alert alert-info'>Documentation coming soon</div>
+	      <p>This Info header is used to set meta data about the report.  This includes name, description, type, and timestamp.</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>created</td>
+		    <td>string</td>
+		    <td>
+		      The date the report was created.  If this date is within 2 weeks, a "new" icon will be shown next to the report on the report list.  Must be in the format <code>YYYY-MM-DD</code>.
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>description</td>
+		    <td>string</td>
+		    <td>
+		      The report description.  Shows up underneath the title when running a report.
+		    </td>
+		    <td><code>""</code></td>
+		  </tr>
+		  <tr>
+		    <td>name</td>
+		    <td>string</td>
+		    <td>The name of the report.  Shows up on the report list, in report search, and as the title when running the report.</td>
+		    <td><code>""</code></td>
+		  </tr>
+		  <tr>
+		    <td>type</td>
+		    <td>string</td>
+		    <td>
+		      The type of report (e.g. "Mongo", "Mysql", or "Php").  This is set automatically based on the file extension of the report, but can be overridden here.  For example, you can force a .js file to run as a PHP report (not sure why you would want to do this though).
+		    </td>
+		    <td>varies by file extension</td>
+		  </tr>
+		</tbody>
+	      </table>
 	    </section><!--/info header-->
 	      
 	  </section>
