@@ -39,9 +39,11 @@
 
 			var options_{{chart.num}} = {
 				title: '{{chart.title}}',
-				displayMode: 'markers',
-				colorAxis: {colors: ['blue', 'red']},
-				sizeAxis: {minValue: 1,  maxSize:  10},
+				{% if chart.markers %}
+					displayMode: 'markers',
+					colorAxis: {colors: ['blue', 'red']},
+					sizeAxis: {minValue: 1,  maxSize:  10},
+				{% endif %}
 				displayAnnotations: true,
 				colors: []
 			};

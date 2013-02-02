@@ -66,6 +66,10 @@ class ChartHeader extends HeaderBase {
 			'type'=>'array',
 			'default'=>array()
 		),
+		'markers'=>array(
+			'type'=>'boolean',
+			'default'=>false
+		)
 	);
 	
 	public static function init($params, &$report) {
