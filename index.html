@@ -817,7 +817,7 @@ FILTER: {
     "column": "Article", 
     "filter": "link",
     "params": {
-        "_blank": true,
+        "blank": true,
         "display": "View Article"
     }
 }</pre>
@@ -1036,7 +1036,352 @@ ROLLUP: {
 	      </table>
 	    </section><!--/info header-->
 	      
-	  </section>
+	  </section><!-- /headers -->
+	  <section>
+	    <h2>Report Filters</h2>
+	    
+	    <p>Report filters are used to modify columns in a report before outputting to a browser.  An example might be making a url column into a clickable link or making an ip address column into a city, state location.</p>
+	    
+	    <p>Filters are added to a report using the FILTER header.</p>
+	    
+	    <section>
+	      <h3>Class Filter</h3>
+	      
+	      <p>The Class filter is used to add a CSS class to all table cells in a column.  This is useful for things like right aligning numeric columns or changing the color or font.</p>
+	      
+	      <p>The classes <code>left</code>, <code>right</code>, and <code>center</code> can be used to align text.  In addition, any of the Twitter Bootstrap classes can be used as well (e.g. <code>muted</code> to make the text light gray).</p>
+	      
+	      <p>You can define your own CSS classes in <code>public/css/report.css</code>.</p>
+	      
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>class</td>
+		    <td>string</td>
+		    <td>
+		      The class to apply to the table cells in the column.
+		    </td>
+		    <td><code>""</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class='prettyprint'>
+FILTER: {
+  filter: "class",
+  column: "Number Correct",
+  params: {
+    class: "right"
+  }
+}</pre>
+
+	      <pre class='prettyprint'>
+FILTER: {
+  filter: "class",
+  column: "Errors",
+  params: {
+    class: "text-error"
+  }
+}</pre>
+	      
+	    </section><!--/class filter-->
+	    <section>
+	      <h3>Date Filter</h3>
+	      
+	      <p>The Date filter is used to mark a column as a date.</p>
+	      
+	      <p>Date columns will do timezone adjustments automatically.  This is useful if your database server is in a different timezone than your users. For this to work, you need to specify a time offset for each database server in your config.</p>
+	      
+	      <p>You can also set the global date format for all date columns in your config.  The default is "Y-m-d H:i:s".</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>format</td>
+		    <td>string</td>
+		    <td>
+		      The date format to use.  If not defined, it will use the default format defined in your config.  If there is not default format, it will use "Y-m-d H:i:s".
+		    </td>
+		    <td>varies</td>
+		  </tr>
+		  <tr>
+		    <td>database</td>
+		    <td>string</td>
+		    <td>
+		      The database this column is coming from.  This is used to determine the timezone offset.  It defaults to the database the report is running on.  This is really only needed if you're joining across multiple databases, each with different timezone offsets.
+		    </td>
+		    <td>database of current report</td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "date",
+  column: "Start Date"
+}</pre>
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "date",
+  column: "End Date",
+  params: {
+    "format": "F j, i"
+  }
+}</pre>
+	    </section><!--/date filter-->
+	    
+	    <section>
+	      <h3>Hide Filter</h3>
+	      
+	      <p>The Hide filter removes a column from a report.  This is useful if you want to use a column in a chart, but don't want it actually appearing in the report.</p>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "hide",
+  column: "Some Column"
+}</pre>
+	    </section><!--/hide filter-->
+	    
+	    <section>
+	      <h3>HTML Filter</h3>
+	      
+	      <p>The HTML filter renders the cells as HTML.  The default action is to escape all values in a report.</p>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "html",
+  column: "HTML Preview"
+}</pre>
+	    </section><!--/html filter-->
+	    
+	    <section>
+	      <h3>GeoIP Filter</h3>
+	      
+	      <p>The GeoIP filter replaces an ip address with either "City, State" or "City, Country".</p>
+	      
+	      <p>In addition, it allows an ip address column to be used in a GeoChart.</p>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "geoip",
+  column: "Ip Address"
+}</pre>
+
+	      <p>The following example shows the GeoIP filter being used with a GeoChart.  The GeoChart will show a map with markers located at the latitude and longitude of the ip addresses.  The size and color of the marker will indicate the revenue.</p>
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "geoip",
+  column: "Ip Address"
+}
+CHART: {
+  columns: ["Ip Address", "Revenue"],
+  type: "GeoChart",
+  markers: true
+}</pre>
+	    </section><!--/geoip filter-->
+	    
+	    
+	    <section>
+	      <h3>Link Filter</h3>
+	      
+	      <p>The Link filter can be used to turn the contents of the cell into a clickable link.</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>url</td>
+		    <td>string</td>
+		    <td>
+		      The url to link to.  Defaults to the contents of the report cell.
+		    </td>
+		    <td>current value</td>
+		  </tr>
+		  <tr>
+		    <td>display</td>
+		    <td>string</td>
+		    <td>
+		      What to use as the link text.  Defaults to the contents of the report cell.
+		    </td>
+		    <td>current value</td>
+		  </tr>
+		  <tr>
+		    <td>blank</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, the link will open in a new window (i.e. <code>target="_blank"</code> will be added to the link).
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "link",
+  column: "Article Url"
+}</pre>
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "link",
+  column: "Admin Link",
+  params: {
+    "display": "view admin",
+    "blank": true
+  }
+}</pre>
+	    </section><!--/link filter-->
+	    
+	    
+	    <section>
+	      <h3>Drilldown Filter</h3>
+	      
+	      <p>The Drilldown filter is used to link a column to another report.  An example is linking the "Customer Id" field in a report to an "Account Overview" report for that customer.</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>report</td>
+		    <td>string</td>
+		    <td>
+		      The report to link to.  This is relative to the currently running report.  To make it relative to the report directory instead, add a <code>/</code> to the front.
+		    </td>
+		    <td><code>null</code></td>
+		  </tr>
+		  <tr>
+		    <td>macros</td>
+		    <td>object</td>
+		    <td>
+		      Defines the macros to pass into the report you're linking to.  In the format: <code>{ "macroname": "macrovalue" }</code> for hard-coded values or <code>{ "macroname": {"column": "column name"} }</code> for referencing another column in the row.
+		    </td>
+		    <td><code>{}</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <p>In the following example, the "Customer Name" column wil be linked to the <code>account-history.sql</code> report and will pass in the macros in the format <code>Id=1543&amp;Type=customer</code>.</p>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "drilldown",
+  column: "Customer Name",
+  params: {
+    report: "account-history.sql",
+    macros: {
+      "Type": "customer",
+      "Id": {
+	"column": "Customer Id"
+      }
+    }
+  }
+}</pre>
+	    </section><!--/drilldown filter-->
+	    
+	    <section>
+	      <h3>Pre Filter</h3>
+	      
+	      <p>The Pre Filter is for preformatted text and renders the value inside of <code>&lt;pre&gt;&lt;/pre&gt;</code> tags.</p>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "pre",
+  column: "Customer Address"
+}</pre>  
+	    
+	    
+	    <section>
+	      <h3>Bar Filter</h3>
+	      
+	      <p>The Bar filter turns a numeric column into a bar chart.  The width of the bars are scaled relative to the other values in the column.</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>width</td>
+		    <td>number</td>
+		    <td>
+		      The max width of the bar in pixels.
+		    </td>
+		    <td><code>200</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "bar",
+  column: "Number of Orders"
+}</pre>
+
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "bar",
+  column: "Customer Rating",
+  params: {
+    "width": 50
+  }
+}</pre>
+	    </section><!--/bar filter-->
+	    
+	  </section><!--/filters-->
 	  
         </div><!--/span-->
       </div><!--/row-->
@@ -1060,7 +1405,7 @@ ROLLUP: {
     <script src="js/lang-sql.js"></script>
     <script>
       $("#toc").tocify({
-        selectors: "h2,h3,h4",
+        selectors: "h2,h3",
         scrollTo: 45
       });
       
