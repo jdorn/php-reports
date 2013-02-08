@@ -409,9 +409,16 @@ class PhpReports {
 		  //html body
 		  ->addPart("<p>$body</p><p>There is a CSV file attached to this email.</p>
 					<p>You can also view the report online at <a href=\"$link\">$link</a></p>", 'text/html')
-		  //attach CSV file
-		  ->attach(Swift_Attachment::fromPath($csv_link,'text/csv')->setFilename('report.csv'))
 		;
+
+		try {
+			//attach CSV file
+			$message->attach(Swift_Attachment::fromPath($csv_link,'text/csv')->setFilename('report.csv'));
+		}
+		catch(Exception $e) {
+			echo json_encode(array('error'=>'Unable to attach CSV file.  Is allow_fopen_url on for this server?'));
+			return;
+		}
 		
 		// Create the Transport
 		$transport = self::getMailTransport();
