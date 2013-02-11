@@ -396,8 +396,18 @@ class PhpReports {
 		$email = $_REQUEST['email'];
 		$link = $_REQUEST['url'];
 		$csv_link = str_replace('report/html/?','report/csv/?',$link);
+		$table_link = str_replace('report/html/?','report/table/?',$link);
+		$text_link = str_replace('report/html/?','report/text/?',$link);
+		
+		// Get the CSV file attachment and the inline HTML table
+		$csv = self::urlDownload($csv_link);
+		$table = self::urlDownload($table_link);
+		$text = self::urlDownload($text_link);
 		
 		require_once 'lib/Swift/swift_required.php';
+		
+		$email_text = $body."\n\n".$text."\n\nView the report online at $link";
+		$email_html = "<p>$body</p>$table<p>View the report online at <a href=\"".htmlentities($link)."\">".htmlentities($link)."</a></p>";
 
 		// Create the message
 		$message = Swift_Message::newInstance()
@@ -405,27 +415,33 @@ class PhpReports {
 		  ->setFrom($from)
 		  ->setTo($email)
 		  //text body
-		  ->setBody($body."\n\nThere is a CSV file attached to this email.\n\nYou can also view the report online at $link")
+		  ->setBody($email_text)
 		  //html body
-		  ->addPart("<p>$body</p><p>There is a CSV file attached to this email.</p>
-					<p>You can also view the report online at <a href=\"$link\">$link</a></p>", 'text/html')
+		  ->addPart($email_html, 'text/html')
 		;
-
-		try {
-			//attach CSV file
-			$message->attach(Swift_Attachment::fromPath($csv_link,'text/csv')->setFilename('report.csv'));
-		}
-		catch(Exception $e) {
-			echo json_encode(array('error'=>'Unable to attach CSV file.  Is allow_fopen_url on for this server?'));
-			return;
-		}
+		
+		$attachment = Swift_Attachment::newInstance()
+			->setFilename('report.csv')
+			->setContentType('text/csv')
+			->setBody($csv)
+		;
+		
+		$message->attach($attachment);
 		
 		// Create the Transport
 		$transport = self::getMailTransport();
 		$mailer = Swift_Mailer::newInstance($transport);
 
-		// Send the message
-		$result = $mailer->send($message);
+		try {
+			// Send the message
+			$result = $mailer->send($message);
+		}
+		catch(Exception $e) {
+			echo json_encode(array(
+				'error'=>$e->getMessage()
+			));
+			return;
+		}
 		
 		if($result) {
 			echo json_encode(array(
@@ -548,6 +564,18 @@ class PhpReports {
 		$json = preg_replace('/,\s*\}/','}',$json);
 		
 		return json_decode($json, $assoc);
+	}
+	
+	protected static function urlDownload($url) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		
+		$output = curl_exec($ch);
+		curl_close($ch);
+
+		return $output;
 	}
 }
 PhpReports::init();

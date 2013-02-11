@@ -1,5 +1,5 @@
 {% if not nodata %}
-	<table id='result_table' class='table table-bordered table-striped'>
+	<table{% if not inline_email %} id='result_table' class='table table-bordered table-striped'{% else %} border="1" cellspacing="0"{% endif %}>
 		{% if vertical %}
 		<thead>
 			<tr class='header'>
@@ -36,7 +36,7 @@
 		{% else %}
 		<thead>
 			<tr class='header'>
-			{% if selectable %}
+			{% if selectable and not inline_email %}
 				<th> </th>
 			{% endif %}
 			{% for value in Rows[0].values %}
@@ -58,7 +58,7 @@
 		<tbody>
 			{% for row in Rows %}
 			<tr>
-				{% if selectable %}
+				{% if selectable and not inline_email %}
 					<td style='padding: 0;'>
 						<div style='width:40px;'>
 							<input type='checkbox' class='selectable' style=' vertical-align:middle;' />
@@ -78,55 +78,4 @@
 		</tbody>
 		{% endif %}
 	</table>
-
-	{% if not nodata %}
-	<script type='text/javascript'>
-	$(function() {
-		$('#result_table').dataTable({
-			bPaginate: false,
-			aaSorting: [],
-			"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
-		});
-		
-		{% if selectable %}
-		$('#result_table').on('change','input.selectable',function() {
-			//determine selected inputs
-			var selected_inputs = $("input.selectable:checked");
-			
-			var selected = [];
-			
-			selected_inputs.each(function() {
-				var id = $.trim($(this).closest('tr').find('td.selectable').text());
-			
-				selected.push(id);
-			});
-			
-			$(".report_link").each(function() {
-				var url = $(this).attr('href');
-				var query_string = {};
-				
-				if(url.indexOf('?') != -1) {
-					query_string = decodeURIComponent($(this).attr('href').split('?')[1]).QueryStringToJSON()
-					url = url.split('?')[0];
-				}
-				
-				if(selected.length)
-					query_string.selected = selected;
-				else
-					delete query_string.selected;
-				
-				$(this).attr('href',url+'?'+$.param(query_string));
-			});
-		})
-		.on('click','.filldown',function() {
-			var input = $(this).closest('td').find('input.selectable');
-		
-			$(this).closest('tr').nextAll('tr').find('input.selectable').prop('checked',input.prop('checked'));
-			input.trigger('change');
-			return false;
-		});
-		{% endif %}
-	});
-	</script>
-	{% endif %}
 {% endif %}

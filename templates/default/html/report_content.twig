@@ -1,4 +1,56 @@
 {% include "html/table.twig" %}
+
+{% if not nodata %}
+<script type='text/javascript'>
+$(function() {
+	$('#result_table').dataTable({
+		bPaginate: false,
+		aaSorting: [],
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+	});
+	
+	{% if selectable %}
+	$('#result_table').on('change','input.selectable',function() {
+		//determine selected inputs
+		var selected_inputs = $("input.selectable:checked");
+		
+		var selected = [];
+		
+		selected_inputs.each(function() {
+			var id = $.trim($(this).closest('tr').find('td.selectable').text());
+		
+			selected.push(id);
+		});
+		
+		$(".report_link").each(function() {
+			var url = $(this).attr('href');
+			var query_string = {};
+			
+			if(url.indexOf('?') != -1) {
+				query_string = decodeURIComponent($(this).attr('href').split('?')[1]).QueryStringToJSON()
+				url = url.split('?')[0];
+			}
+			
+			if(selected.length)
+				query_string.selected = selected;
+			else
+				delete query_string.selected;
+			
+			$(this).attr('href',url+'?'+$.param(query_string));
+		});
+	})
+	.on('click','.filldown',function() {
+		var input = $(this).closest('td').find('input.selectable');
+	
+		$(this).closest('tr').nextAll('tr').find('input.selectable').prop('checked',input.prop('checked'));
+		input.trigger('change');
+		return false;
+	});
+	{% endif %}
+});
+</script>
+{% endif %}
+
 <p>Query took {{Time}} seconds</p>
 
 {% block chart_area %}

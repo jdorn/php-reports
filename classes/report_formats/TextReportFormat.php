@@ -5,6 +5,8 @@ class TextReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
+		$report->use_cache = true;
+		
 		//run the report
 		$report->run();
 		
