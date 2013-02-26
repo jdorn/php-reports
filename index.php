@@ -4,6 +4,9 @@ session_start();
 //set php ini so the page doesn't time out for long requests
 ini_set('max_execution_time', 300);
 
+//sets up autoloading of composer dependencies
+include 'vendor/autoload.php';
+
 //sets up autoload (looks in classes/local/, classes/, and lib/ in that order)
 require 'lib/PhpReports/PhpReports.php';
 

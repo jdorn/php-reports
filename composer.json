@@ -1,0 +1,52 @@
+{
+    "name": "jdorn/php-reports",
+    "description": "A PHP framework for displaying reports from any data source, including SQL and MongoDB",
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "mikecao/flight",
+                "version": "dev-master",
+                "source": {
+                    "url": "git://github.com/mikecao/flight.git",
+                    "type": "git",
+                    "reference": "d0818793794a36a55741771675ad573fa59cd568"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "jdorn/file-system-cache",
+                "version": "dev-master",
+                "source": {
+                    "url": "git://github.com/jdorn/FileSystemCache.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
+    "authors": [
+        {
+            "name": "Jeremy Dorn",
+            "email": "jeremy@jeremydorn.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "v1.12.2",
+        "swiftmailer/swiftmailer": "v4.3.0",
+        "mikecao/flight": "dev-master",
+        "jdorn/sql-formatter": "dev-master",
+        "jdorn/file-system-cache": "dev-master"
+    },
+    "autoload": {
+        "files": [
+            "vendor/mikecao/flight/flight/Flight.php"
+        ],
+        "classmap": [
+            "vendor/jdorn/file-system-cache/"
+        ]
+    },
+    "minimum-stability": "dev"
+}
