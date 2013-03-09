@@ -1,6 +1,9 @@
 {
     "name": "jdorn/php-reports",
     "description": "A PHP framework for displaying reports from any data source, including SQL and MongoDB",
+    "homepage": "http://jdorn.github.com/php-reports/",
+    "keywords": ["reports", "mongodb", "sql", "reporting", "csv", "database"],
+    "license": "LGPL",
     "repositories": [
         {
             "type": "package",
