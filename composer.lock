@@ -1,16 +1,52 @@
 {
-    "hash": "2223c023a8942c9351965d971879443e",
+    "hash": "53d67a80247ebd4591e0d7f54980e941",
     "packages": [
         {
             "name": "jdorn/file-system-cache",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git://github.com/jdorn/FileSystemCache.git",
-                "reference": "master"
+                "url": "https://github.com/jdorn/FileSystemCache.git",
+                "reference": "3d51ea04fc8a212ac1ba35f0208e1630266e7032"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdorn/FileSystemCache/zipball/3d51ea04fc8a212ac1ba35f0208e1630266e7032",
+                "reference": "3d51ea04fc8a212ac1ba35f0208e1630266e7032",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
             },
             "type": "library",
-            "time": "2012-10-18 17:41:01"
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "lib"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Dorn",
+                    "email": "jeremy@jeremydorn.com",
+                    "homepage": "http://jeremydorn.com/"
+                }
+            ],
+            "description": "an easy way to cache data in the file system",
+            "homepage": "https://github.com/jdorn/FileSystemCache/",
+            "keywords": [
+                "cache",
+                "file system"
+            ],
+            "time": "2013-03-03 07:36:40"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -18,16 +54,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdorn/sql-formatter.git",
-                "reference": "3d8a97325e5894c72dd5c4d4f83dd3722d414d99"
+                "reference": "2724ddb7fb79851a557d868a688fc269960bff87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/3d8a97325e5894c72dd5c4d4f83dd3722d414d99",
-                "reference": "3d8a97325e5894c72dd5c4d4f83dd3722d414d99",
+                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/2724ddb7fb79851a557d868a688fc269960bff87",
+                "reference": "2724ddb7fb79851a557d868a688fc269960bff87",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
             },
             "type": "library",
             "extra": {
@@ -40,7 +79,7 @@
                     "lib"
                 ]
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL"
             ],
@@ -57,7 +96,7 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2013-02-22 05:16:19"
+            "time": "2013-03-08 02:26:59"
         },
         {
             "name": "mikecao/flight",
@@ -98,7 +137,7 @@
                     "lib/swift_required.php"
                 ]
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL"
             ],
@@ -147,7 +186,7 @@
                     "Twig_": "lib/"
                 }
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3"
             ],
