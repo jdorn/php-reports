@@ -27,7 +27,7 @@ $(function() {
 			var query_string = {};
 			
 			if(url.indexOf('?') != -1) {
-				query_string = decodeURIComponent($(this).attr('href').split('?')[1]).QueryStringToJSON()
+				query_string = $.queryStringToJSON(decodeURIComponent($(this).attr('href').split('?')[1]).replace(/\+/g,' '));
 				url = url.split('?')[0];
 			}
 			
