@@ -9,8 +9,17 @@
     {% block stylesheets %}
     <style>
       body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+      table {
+        max-width: none !important;
+      }
+        #content {
+            width: 98%;
+        }
+        form input, form textarea, form select {
+            max-width: 100%;
+        }
     </style>
     <link href="{{base}}/public/css/bootstrap.min.css" rel="stylesheet">
 	{% endblock %}
@@ -41,7 +50,7 @@
   <body>	
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container">
+        <div class="container-fluid">
             <a class="brand" href="{{base}}">{% block brand %}PHP Reports{% endblock %}</a>
             <div class='navbar-search'>
                 {% block searchbar %}
@@ -106,7 +115,7 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
 		<div class='header'>
 		{% block header %}
 			{{ header|raw }}
