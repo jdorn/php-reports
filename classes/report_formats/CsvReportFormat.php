@@ -11,6 +11,8 @@ class CsvReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
-		echo $report->renderReportPage('csv/report');
+		$data = $report->renderReportPage('csv/report');
+		
+		if(trim($data)) echo $data;
 	}
 }

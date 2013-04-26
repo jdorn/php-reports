@@ -10,6 +10,9 @@ class TextReportFormat extends ReportFormatBase {
 		//run the report
 		$report->run();
 		
+        if(!$report->options['Rows']) return;
+
+		
 		/**
 		 * This code taken from Stack Overflow answer by ehudokai
 		 * http://stackoverflow.com/a/4597190
