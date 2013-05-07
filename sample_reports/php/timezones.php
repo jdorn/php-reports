@@ -5,7 +5,8 @@
 //      name: "region",
 //      display: "Region Code",
 //      type: "select",
-//      options: ["cdt","acst","pdt"]
+//      options: ["cdt","acst","pdt"],
+//      default: "acst"
 // }
 
 $timezone_abbreviations = DateTimeZone::listAbbreviations();

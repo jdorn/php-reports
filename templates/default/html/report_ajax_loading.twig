@@ -1,4 +1,4 @@
-<div class='waiting alert alert-block alert-info' id='async_notice'>
+<div class='alert alert-block alert-info' id='async_notice' style='text-align: center;'>
 	<div>
 		Your report is running.
 		{% if time_estimate %}
@@ -6,6 +6,9 @@
 				This report usually takes {{time_estimate.median}} seconds.
 			{% endif %}
 		{% endif %}
+	</div>
+	<div class='progress progress-info progress-striped active' style='width: 300px; margin: 20px auto 0;'>
+		<div class='bar' style='width: 100%;'></div>
 	</div>
 </div>
 <script>

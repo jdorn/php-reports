@@ -56,3 +56,21 @@ pre {
 #variable_form label {
 	vertical-align:top;
 }
+
+@media print {
+	body {
+		padding-top: 0 !important;
+	}
+	.navbar-fixed-top {
+		display: none !important;
+	}
+	#variable_form .btn-primary {
+		display: none !important;
+	}
+	#content .export_links {
+		display: none !important;
+	}
+	#report_content a[data-role="button"] {
+		display: none !important;
+	}
+}
