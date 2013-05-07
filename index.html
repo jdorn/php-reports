@@ -143,13 +143,13 @@
 	    <h2>Getting Started</h2>
 	    
 	    <p>
-	      Php Reports requires PHP 5.3, Apache or nginx, and a modern browser.  
+	      Php Reports requires PHP 5.3, Composer, Apache or nginx, and a modern browser.  
 	      You'll also need MySQL and/or MongoDB plus their respective PHP extensions if you want to use those report types.
 	    </p>
 	    
 	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
 	    
-	    <pre class="prettyprint linenums lang-sh">git clone git://github.com/jdorn/php-reports.git</pre>
+	    <pre class="prettyprint lang-sh">git clone git://github.com/jdorn/php-reports.git</pre>
 	    
 	    <p>
 	      You can also download a pre-packaged 
@@ -157,10 +157,20 @@
 	      <a href="https://github.com/jdorn/php-reports/tarball/master">tar</a> archive
 	    </p>
 	    
-	    <p>A sample configuration is included in <code>config/config.php.sample</code>.  It's easiest to just use this as a base.</p>
+	    <p>The next step is to install dependencies with Composer.  If you don't already have composer installed, run the following:</p>
 	    
-	    <pre class="prettyprint linenums lang-sh">
-cd php-reports
+	    <pre class="prettyprint lang-sh">
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer</pre>
+
+	    <p>Once Composer is installed, run the following from within the php-reports folder</p>
+	    
+	    <pre class="prettyprint lang-sh">
+composer install</pre>
+	    
+	    <p>Finally, you need to create a configuration file.  A sample one is included in <code>config/config.php.sample</code>.  It's easiest to just use this as a base.</p>
+	    
+	    <pre class="prettyprint lang-sh">
 cp config/config.php.sample config/config.php</pre>
 
 	    <p>You should now be able to view the report list in your browser</p>
