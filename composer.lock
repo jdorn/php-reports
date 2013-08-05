@@ -1,5 +1,9 @@
 {
-    "hash": "9c43e665b9315c2c17d7ce70988d2678",
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "a45f1eeb0b292443d2a1e940777c4a8b",
     "packages": [
         {
             "name": "jdorn/file-system-cache",
@@ -7,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdorn/FileSystemCache.git",
-                "reference": "3d51ea04fc8a212ac1ba35f0208e1630266e7032"
+                "reference": "08f33ff840ec4728a0bd28e4d68d97635584952e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdorn/FileSystemCache/zipball/3d51ea04fc8a212ac1ba35f0208e1630266e7032",
-                "reference": "3d51ea04fc8a212ac1ba35f0208e1630266e7032",
+                "url": "https://api.github.com/repos/jdorn/FileSystemCache/zipball/08f33ff840ec4728a0bd28e4d68d97635584952e",
+                "reference": "08f33ff840ec4728a0bd28e4d68d97635584952e",
                 "shasum": ""
             },
             "require": {
@@ -46,7 +50,7 @@
                 "cache",
                 "file system"
             ],
-            "time": "2013-03-03 07:36:40"
+            "time": "2013-07-05 13:28:27"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -54,12 +58,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdorn/sql-formatter.git",
-                "reference": "e38ea8a0cbd943ac78014d07f42441cd51d537db"
+                "reference": "bccca26bfe75b30aba71c2f734e9f9dd854a85f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/e38ea8a0cbd943ac78014d07f42441cd51d537db",
-                "reference": "e38ea8a0cbd943ac78014d07f42441cd51d537db",
+                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/bccca26bfe75b30aba71c2f734e9f9dd854a85f6",
+                "reference": "bccca26bfe75b30aba71c2f734e9f9dd854a85f6",
                 "shasum": ""
             },
             "require": {
@@ -81,7 +85,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL"
+                "MIT"
             ],
             "authors": [
                 {
@@ -96,7 +100,7 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2013-03-31 22:29:24"
+            "time": "2013-07-11 13:51:14"
         },
         {
             "name": "mikecao/flight",
@@ -111,16 +115,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v4.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git://github.com/swiftmailer/swiftmailer.git",
-                "reference": "v4.3.0"
+                "url": "https://github.com/swiftmailer/swiftmailer.git",
+                "reference": "391268c7489fb0f771689c0085ca13db3f105042"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/swiftmailer/swiftmailer/archive/v4.3.0.zip",
-                "reference": "v4.3.0",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/391268c7489fb0f771689c0085ca13db3f105042",
+                "reference": "391268c7489fb0f771689c0085ca13db3f105042",
                 "shasum": ""
             },
             "require": {
@@ -129,7 +133,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "5.1-dev"
                 }
             },
             "autoload": {
@@ -139,7 +143,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL"
+                "MIT"
             ],
             "authors": [
                 {
@@ -156,20 +160,20 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2013-01-08 15:50:34"
+            "time": "2013-07-25 16:57:42"
         },
         {
             "name": "twig/twig",
-            "version": "v1.12.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git://github.com/fabpot/Twig.git",
-                "reference": "v1.12.2"
+                "url": "https://github.com/fabpot/Twig.git",
+                "reference": "3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.12.2",
-                "reference": "v1.12.2",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb",
+                "reference": "3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb",
                 "shasum": ""
             },
             "require": {
@@ -178,7 +182,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.12-dev"
+                    "dev-master": "1.14-dev"
                 }
             },
             "autoload": {
@@ -188,7 +192,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-3"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -205,7 +209,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-02-09 18:21:53"
+            "time": "2013-08-05 16:50:34"
         }
     ],
     "packages-dev": [
