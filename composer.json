@@ -25,8 +25,8 @@
         }
     ],
     "require": {
-        "twig/twig": "v1.12.2",
-        "swiftmailer/swiftmailer": "v4.3.0",
+        "twig/twig": "1.*",
+        "swiftmailer/swiftmailer": "5.*",
         "mikecao/flight": "dev-master",
         "jdorn/sql-formatter": "dev-master",
         "jdorn/file-system-cache": "dev-master"
