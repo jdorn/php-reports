@@ -3,8 +3,44 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a45f1eeb0b292443d2a1e940777c4a8b",
+    "hash": "2b88e7fb2178ad7cbd86f155a8dfd610",
     "packages": [
+        {
+            "name": "adodb/adodb-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cvele/adodb.git",
+                "reference": "66f3740cf7718a4cd88bb1a2a05cceaccc98b882"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cvele/adodb/zipball/66f3740cf7718a4cd88bb1a2a05cceaccc98b882",
+                "reference": "66f3740cf7718a4cd88bb1a2a05cceaccc98b882",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "adodb.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1",
+                " BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "John Lim",
+                    "homepage": "http://adodb.sourceforge.net/#docs"
+                }
+            ],
+            "time": "2013-01-04 11:54:13"
+        },
         {
             "name": "jdorn/file-system-cache",
             "version": "dev-master",
@@ -222,7 +258,8 @@
     "stability-flags": {
         "mikecao/flight": 20,
         "jdorn/sql-formatter": 20,
-        "jdorn/file-system-cache": 20
+        "jdorn/file-system-cache": 20,
+        "adodb/adodb-php": 20
     },
     "platform": [
 
