@@ -410,8 +410,6 @@ class PhpReports {
 		$table = self::urlDownload($table_link);
 		$text = self::urlDownload($text_link);
 		
-		require_once 'lib/Swift/swift_required.php';
-		
 		$email_text = $body."\n\n".$text."\n\nView the report online at $link";
 		$email_html = "<p>$body</p>$table<p>View the report online at <a href=\"".htmlentities($link)."\">".htmlentities($link)."</a></p>";
 
