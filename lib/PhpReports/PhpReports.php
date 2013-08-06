@@ -23,7 +23,13 @@ class PhpReports {
 		self::$config = array_merge($default_config, $config);
 		
 		self::$request = Flight::request();
-		self::$request->base = 'http://'.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
+		
+		if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+			$protocol = 'https://';
+		} else {
+			$protocol = 'http://';
+		}
+		self::$request->base = $protocol.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
 		
 		//the load order for templates is: "templates/local", "templates/default", "templates"
 		//this means loading the template "html/report.twig" will load the local first and then the default
@@ -403,8 +409,6 @@ class PhpReports {
 		$csv = self::urlDownload($csv_link);
 		$table = self::urlDownload($table_link);
 		$text = self::urlDownload($text_link);
-		
-		require_once 'lib/Swift/swift_required.php';
 		
 		$email_text = $body."\n\n".$text."\n\nView the report online at $link";
 		$email_html = "<p>$body</p>$table<p>View the report online at <a href=\"".htmlentities($link)."\">".htmlentities($link)."</a></p>";
