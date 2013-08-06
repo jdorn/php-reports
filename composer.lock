@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a45f1eeb0b292443d2a1e940777c4a8b",
+    "hash": "e1b89ce2a7fb8884fe03199a1d0dc9ef",
     "packages": [
         {
             "name": "jdorn/file-system-cache",
@@ -114,6 +114,62 @@
             "time": "2012-12-13 18:22:51"
         },
         {
+            "name": "phpoffice/phpexcel",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PHPExcel.git",
+                "reference": "e2f8441da2235b98fee8db82289dd713ca314410"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e2f8441da2235b98fee8db82289dd713ca314410",
+                "reference": "e2f8441da2235b98fee8db82289dd713ca314410",
+                "shasum": ""
+            },
+            "require": {
+                "ext-xml": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExcel": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Maarten Balliauw",
+                    "homepage": "http://blog.maartenballiauw.be"
+                },
+                {
+                    "name": "Mark Baker"
+                },
+                {
+                    "name": "Franck Lefevre",
+                    "homepage": "http://blog.rootslabs.net"
+                },
+                {
+                    "name": "Erik Tilt"
+                }
+            ],
+            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
+            "homepage": "http://phpexcel.codeplex.com",
+            "keywords": [
+                "OpenXML",
+                "excel",
+                "php",
+                "spreadsheet",
+                "xls",
+                "xlsx"
+            ],
+            "time": "2013-08-05 14:36:30"
+        },
+        {
             "name": "swiftmailer/swiftmailer",
             "version": "dev-master",
             "source": {
@@ -168,12 +224,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb"
+                "reference": "e0fbce2fc0e7289a0c47c5fe4dbf2b9ea6c212d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb",
-                "reference": "3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/e0fbce2fc0e7289a0c47c5fe4dbf2b9ea6c212d2",
+                "reference": "e0fbce2fc0e7289a0c47c5fe4dbf2b9ea6c212d2",
                 "shasum": ""
             },
             "require": {
@@ -209,7 +265,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-08-05 16:50:34"
+            "time": "2013-08-06 05:46:34"
         }
     ],
     "packages-dev": [
@@ -222,7 +278,8 @@
     "stability-flags": {
         "mikecao/flight": 20,
         "jdorn/sql-formatter": 20,
-        "jdorn/file-system-cache": 20
+        "jdorn/file-system-cache": 20,
+        "phpoffice/phpexcel": 20
     },
     "platform": [
 
