@@ -17,6 +17,7 @@ return array(
 		'sql'=>'Mysql',
 		'php'=>'Php',
 		'js'=>'Mongo',
+		'ado'=>'Ado',
 	),
 	
 	//email settings
@@ -53,6 +54,10 @@ return array(
 		'main'=>array(
 			//this is what is used as the "host" macro within reports
 			'host'=>'localhost',
+
+			'ado'=>array(
+				'uri'=>'mysql://username:password@localhost/database'
+			),
 
 			'mysql'=>array(
 				'host'=>'localhost',
