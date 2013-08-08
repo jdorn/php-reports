@@ -72,13 +72,13 @@
         {% block xlsx_export_link %}
             <a href='{{base}}/report/xlsx/?{{report_querystring}}' class='report_link btn'>
                 <i class='icon-download'></i>
-                Download Excel 2007+
+                Download Excel 2007
             </a>
         {% endblock %}
         {% block xls_export_link %}
             <a href='{{base}}/report/xls/?{{report_querystring}}' class='report_link btn'>
                 <i class='icon-download'></i>
-                Download Excel pre 2007
+                Download Excel 97-2003
             </a>
         {% endblock %}
         {% if config.mail_settings.enabled %}
