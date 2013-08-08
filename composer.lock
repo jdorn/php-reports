@@ -119,12 +119,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "e2f8441da2235b98fee8db82289dd713ca314410"
+                "reference": "2dcff606f74333920c68475850c3c1f6095165ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e2f8441da2235b98fee8db82289dd713ca314410",
-                "reference": "e2f8441da2235b98fee8db82289dd713ca314410",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/2dcff606f74333920c68475850c3c1f6095165ae",
+                "reference": "2dcff606f74333920c68475850c3c1f6095165ae",
                 "shasum": ""
             },
             "require": {
@@ -167,7 +167,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2013-08-05 14:36:30"
+            "time": "2013-08-07 16:06:05"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -224,12 +224,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "e0fbce2fc0e7289a0c47c5fe4dbf2b9ea6c212d2"
+                "reference": "fcf007e9a2e6c65594360ae7fa3c410ae8d56a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/e0fbce2fc0e7289a0c47c5fe4dbf2b9ea6c212d2",
-                "reference": "e0fbce2fc0e7289a0c47c5fe4dbf2b9ea6c212d2",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/fcf007e9a2e6c65594360ae7fa3c410ae8d56a11",
+                "reference": "fcf007e9a2e6c65594360ae7fa3c410ae8d56a11",
                 "shasum": ""
             },
             "require": {
@@ -265,7 +265,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-08-06 05:46:34"
+            "time": "2013-08-07 12:53:34"
         }
     ],
     "packages-dev": [
