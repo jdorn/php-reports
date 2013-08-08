@@ -56,18 +56,6 @@ class AdoReportType extends ReportTypeBase {
 		$environments = PhpReports::$config['environments'];
 		$config = $environments[$report->options['Environment']][$report->options['Database']];
 		
-		//the default is to use a user with read only privileges
-		$username = $config['user'];
-		$password = $config['pass'];
-		$host = $config['host'];
-		
-		//if the report requires read/write privileges
-		if(isset($report->options['access']) && $report->options['access']==='rw') {
-			if(isset($config['user_rw'])) $username = $config['user_rw'];
-			if(isset($config['pass_rw'])) $password = $config['pass_rw'];
-			if(isset($config['host_rw'])) $host = $config['host_rw'];
-		}
-		
 		if(!($report->conn = ADONewConnection($config['uri']))) {
 			throw new Exception('Could not connect to the database!');
 		}
@@ -82,6 +70,8 @@ class AdoReportType extends ReportTypeBase {
 	}
 	
 	public static function getVariableOptions($params, &$report) {
+		error_log("Get variable options for the report: " .var_export(&$params, true). "\n", 3, 'msg.log');
+		
 		$query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
 		
 		if(isset($params['where'])) {
