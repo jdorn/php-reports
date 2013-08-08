@@ -204,12 +204,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb"
+                "reference": "fcf007e9a2e6c65594360ae7fa3c410ae8d56a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb",
-                "reference": "3bcf32208ac0e55f3cf66a628e1dfbd2afc03dfb",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/fcf007e9a2e6c65594360ae7fa3c410ae8d56a11",
+                "reference": "fcf007e9a2e6c65594360ae7fa3c410ae8d56a11",
                 "shasum": ""
             },
             "require": {
@@ -245,7 +245,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-08-05 16:50:34"
+            "time": "2013-08-07 12:53:34"
         }
     ],
     "packages-dev": [
