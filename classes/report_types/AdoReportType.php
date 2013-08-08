@@ -10,8 +10,6 @@ class AdoReportType extends ReportTypeBase {
 		//make sure the syntax highlighting is using the proper class
 		SqlFormatter::$pre_attributes = "class='prettyprint linenums lang-sql'";
 		
-		$mysql = $environments[$report->options['Environment']][$report->options['Database']];
-		
 		//default host macro to mysql's host if it isn't defined elsewhere
 		if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
 		
@@ -57,21 +55,21 @@ class AdoReportType extends ReportTypeBase {
 		$config = $environments[$report->options['Environment']][$report->options['Database']];
 		
 		if(!($report->conn = ADONewConnection($config['uri']))) {
-			throw new Exception('Could not connect to the database!');
+			throw new Exception('Could not connect to the database: '.$report->conn->ErrorMsg());
 		}
 		
 		$report->conn->SetFetchMode(ADODB_FETCH_ASSOC); 
 	}
 	
 	public static function closeConnection(&$report) {
-		if(!isset($report->conn)) return;
-		$report->conn->Close();
+		if (!isset($report->conn)) return;
+		if ($report->conn->IsConnected()) {
+			$report->conn->Close();
+		}
 		unset($report->conn);
 	}
 	
 	public static function getVariableOptions($params, &$report) {
-		error_log("Get variable options for the report: " .var_export(&$params, true). "\n", 3, 'msg.log');
-		
 		$query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
 		
 		if(isset($params['where'])) {
