@@ -63,24 +63,26 @@
 {% block content %}
     <div class='export_links' style='margin: 10px 0;'>
     {% block export_links %}
-        {% block csv_export_link %}
-            <a href='{{base}}/report/csv/?{{report_querystring}}' class='report_link btn'>
-                <i class='icon-download'></i>
-                Download CSV
-            </a>
-        {% endblock %}
-        {% block xlsx_export_link %}
-            <a href='{{base}}/report/xlsx/?{{report_querystring}}' class='report_link btn'>
-                <i class='icon-download'></i>
-                Download Excel 2007
-            </a>
-        {% endblock %}
-        {% block xls_export_link %}
-            <a href='{{base}}/report/xls/?{{report_querystring}}' class='report_link btn'>
-                <i class='icon-download'></i>
-                Download Excel 97-2003
-            </a>
-        {% endblock %}
+		{% block download_link %}
+			{% if config.report_formats|length > 1 %}
+			<div class="btn-group">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class='icon-download'></i> Download/show as <span class="caret"></span></a>
+				<ul class="dropdown-menu">
+				{% for format in config.report_formats|keys %}
+					{% if config.report_formats[format] == 'divider' %}
+					<li class="divider"></li>
+					{% else %}
+					<li><a href='{{base}}/report/{{format}}/?{{report_querystring}}'>{{config.report_formats[format]}}</a></li>
+					{% endif %}
+				{% endfor %}
+				</ul>
+			</div>
+			{% else %}
+				<a href='{{base}}/report/{{config.report_formats|keys[0]}}/?{{report_querystring}}' class='report_link btn'>
+					<i class='icon-download'></i> Download {{config.report_formats[config.report_formats|keys[0]]}}
+				</a>
+			{% endif %}
+		{% endblock %}
         {% if config.mail_settings.enabled %}
 			{% block email_report_button %}
 				<a href='#' id='email-report-link' class='btn'>
