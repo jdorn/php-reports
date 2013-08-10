@@ -25,6 +25,8 @@ return array(
 	//a value of 'divider'
 	'report_formats' => array(
 		'csv'=>'CSV',
+		'xlsx'=>'Download Excel 2007',
+		'xls'=>'Download Excel 97-2003',
 		'text'=>'Text',
 		'table'=>'Simple table',
 		'raw data'=>'divider',
