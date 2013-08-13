@@ -30,7 +30,8 @@
         "mikecao/flight": "dev-master",
         "jdorn/sql-formatter": "dev-master",
         "jdorn/file-system-cache": "dev-master",
-        "adodb/adodb-php": "dev-master"
+        "adodb/adodb-php": "dev-master",
+        "phpoffice/phpexcel": "dev-develop"
     },
     "autoload": {
         "files": [

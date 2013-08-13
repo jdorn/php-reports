@@ -20,6 +20,25 @@ return array(
 		'ado'=>'Ado',
 	),
 	
+	//this enables listing different types of download formats on the report page
+	//to change that one can add or remove any format from the list below
+	//in order to create a divider a list entry have to be added with any key name and 
+	//a value of 'divider'
+	'report_formats' => array(
+		'csv'=>'CSV',
+		'xlsx'=>'Download Excel 2007',
+		'xls'=>'Download Excel 97-2003',
+		'text'=>'Text',
+		'table'=>'Simple table',
+		'raw data'=>'divider',
+		'json'=>'JSON',
+		'xml'=>'XML',
+		'sql'=>'SQL INSERT command',
+		'technical'=>'divider',
+		'debug'=>'Debug information',
+		'raw'=>'Raw report dump',
+	),
+	
 	//email settings
 	'mail_settings' => array(
 		//set 'enabled' to true to enable the 'email this report' functionality
