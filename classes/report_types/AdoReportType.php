@@ -11,7 +11,7 @@ class AdoReportType extends ReportTypeBase {
 		SqlFormatter::$pre_attributes = "class='prettyprint linenums lang-sql'";
 		
 		//default host macro to mysql's host if it isn't defined elsewhere
-		if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
+		//if(!isset($report->macros['host'])) $report->macros['host'] = $mysql['host'];
 		
 		//replace legacy shorthand macro format
 		foreach($report->macros as $key=>$value) {
@@ -57,8 +57,6 @@ class AdoReportType extends ReportTypeBase {
 		if(!($report->conn = ADONewConnection($config['uri']))) {
 			throw new Exception('Could not connect to the database: '.$report->conn->ErrorMsg());
 		}
-		
-		$report->conn->SetFetchMode(ADODB_FETCH_ASSOC); 
 	}
 	
 	public static function closeConnection(&$report) {
@@ -70,7 +68,8 @@ class AdoReportType extends ReportTypeBase {
 	}
 	
 	public static function getVariableOptions($params, &$report) {
-		$query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
+        $report->conn->SetFetchMode(ADODB_FETCH_NUM);
+        $query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
 		
 		if(isset($params['where'])) {
 			$query .= ' WHERE '.$params['where'];
@@ -79,22 +78,27 @@ class AdoReportType extends ReportTypeBase {
 		$result = $report->conn->Execute($query);
 		
 		if (!$result) {
-			throw new Exception("Unable to get variable options: ".$report->conn->ErrorMsg()); 
-		} 
-		
+			throw new Exception("Unable to get variable options: ".$report->conn->ErrorMsg());
+		}
+
 		$options = array();
 		
-		if(isset($params['all'])) $options[] = 'ALL';
-		
-		while($row = $result->GetAssoc()) {
-			$options[] = $row[$params['column']];
-		}
-		
-		return $options;
+		if(isset($params['all']) && $params == true) $options[] = 'ALL';
+
+        while ($row = $result->FetchRow()) {
+            if ($result->FieldCount() > 1) {
+                $options[] = array('display'=>$row[0], 'value'=>$row[1]);
+            } else {
+                $options[] = $row[0];
+            }
+        }
+
+        return $options;
 	}
 	
 	public static function run(&$report) {
-		$rows = array();
+        $report->conn->SetFetchMode(ADODB_FETCH_ASSOC);
+        $rows = array();
 		
 		$macros = $report->macros;
 		foreach($macros as $key=>$value) {
