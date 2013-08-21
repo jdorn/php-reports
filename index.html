@@ -144,7 +144,7 @@
 	    
 	    <p>
 	      Php Reports requires PHP 5.3, Composer, Apache or nginx, and a modern browser.  
-	      You'll also need MySQL and/or MongoDB plus their respective PHP extensions if you want to use those report types.
+	      You'll also need a SQL database and/or MongoDB plus their respective PHP extensions if you want to use those report types.
 	    </p>
 	    
 	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
@@ -180,6 +180,7 @@ cp config/config.php.sample config/config.php</pre>
 	    </div>
 	    
 	  </section>
+
 	  <section id="configuration">
 	    <h2>Configuration</h2>
 	    
@@ -319,6 +320,128 @@ SELECT Name, Price FROM Products WHERE Price > "{{ min_price }}"</pre>
 
 	      <p>Variables and all the other headers you can use are covered in detail in the <a href="#report_headers">Report Headers</a> section.</p>
 	    </section>
+
+        <section id="adodb">
+            <h2>AdoDB reports</h2>
+            <p>
+                There are two types of AdoDB reports - a simple, query based report type (similar to MySQL report type) and more complex, pivot table generator.
+            </p>
+
+            <p>
+                In the first case the report will contain one or more SQL queries with the last used for the report.
+                At the top of the report is a comment block with name, description, and any other report headers you need.
+            </p>
+            <p>
+                All AdoDB reports are parsed with the Twig templating language before running.
+            </p>
+
+	      <pre class='prettyprint linenums lang-sql'>
+-- My Report
+-- This lists all the products that cost
+-- more than a given price.
+-- VARIABLE: { name: "min_price", display: "Minimum Price" }
+
+SELECT Name, Price FROM Products WHERE Price > "{{ min_price }}"</pre>
+
+            <p>Variables and all the other headers you can use are covered in detail in the <a href="#report_headers">Report Headers</a> section.</p>
+
+            <p>In order to use different database systems different connection string have to be provided in the configuration file:</p>
+
+	      <pre class='prettyprint linenums'>'environments'=>array(
+  'main'=>array(
+    'ado'=>array(
+      'uri'=>'$driver://$username:$password@hostname/$database?options[=value]'
+    )
+  )
+)</pre>
+
+            <p>A list of supported databases can be found on <a href="http://phplens.com/adodb/supported.databases.html">AdoDB documention website</a>
+                followed by the <a href="http://phplens.com/adodb/code.initialization.html#dsnsupport">explaination on DSN URI format</a>.
+            </p>
+
+            <p>
+                A specific variation of this report type is a PivotTable report type, sometimes reffered to as Cross-Tabulations.
+                AdoDB documentation provide a <a href="http://phplens.com/adodb/pivot.tables.html">good explaination</a> on how this type of query will be created and executed.
+                php-reports include a specific extension to AdoDB report type and in order to simplify the use of this report without a need to create complex SQLs or logic.
+                Still, because it is a specific type of AdoDB report, there are couple of ways to handle them in php-reports right now. The easiest would be to register this type
+                of report in the configuration (this is currently not a default action) and the either to create a new DB configuration entry or to use a specific header for AdoDB
+                database configuration reuse. The examples below assume the latter scenario:
+            </p>
+
+	      <pre class='prettyprint linenums'>'environments'=>array(
+'default_file_extension_mapping' => array(
+    'sql'=>'Mysql',
+    'php'=>'Php',
+    'js'=>'Mongo',
+    'ado'=>'Ado',
+    'pivot'=>'AdoPivot',
+)</pre>
+            <pre class='prettyprint linenums lang-sql'>-- Operations per day
+-- Operations per day grouped by operation type
+-- OPTIONS: {
+--      database: "ado"
+-- }
+-- VARIABLE: {
+--      name: "range",
+--      display: "Report Range",
+--      type: "daterange",
+--      default: { start: "-120 day", end: "yesterday" }
+-- }
+
+tables: blocked_accounts
+rows: DATE_FORMAT(operation_date, '%Y-%m-%d') AS "Date values"
+columns: operation_type
+where: operation_date BETWEEN "{{ range.start }}" AND "{{ range.end }}"
+#agg_field: id
+#agg_label: Number of
+agg_fun: SUM
+show_count: true
+</pre>
+            <p>
+                In the example above OPTIONS header was added to point to AdoDB report type database configuration.
+            </p>
+            <p>
+                The report body consist of a list of parameters required to generate a cross-column query:
+            </p>
+            <table class='table table-bordered table-striped'>
+                <thead>
+                <tr>
+                    <th>Parameter Name</th>
+                    <th>Description</th>
+                    <th>Default Value</th>
+                    <th>Required</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>tables</td>
+                    <td>
+                        A table name or list of tables that the query will use in <code>FROM</code> section of the SQL.
+                        One should follow the format of given DB system, but there is no limitation on the string itself,
+                        i.e.: <code>'products p ,categories c ,suppliers s'</code> will create a query that will check 3 different tables aliased by a single letter.
+                    </td>
+                    <td><code>null</code></td>
+                    <td>YES</td>
+                </tr>
+                <tr>
+                    <td>rows</td>
+                    <td>
+                        A list of columns with to group the data by.
+                    </td>
+                    <td><code>null</code></td>
+                    <td>YES</td>
+                </tr>
+                <tr>
+                    <td>columns</td>
+                    <td>
+                        Columns to pivot on.
+                    </td>
+                    <td><code>null</code></td>
+                    <td>YES</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
 	    
 	    <section id="mongodb">
 	      <h3>MongoDB Reports</h3>
