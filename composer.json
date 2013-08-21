@@ -30,12 +30,14 @@
         "mikecao/flight": "dev-master",
         "jdorn/sql-formatter": "dev-master",
         "jdorn/file-system-cache": "dev-master",
+        "phpoffice/phpexcel": "dev-develop",
         "adodb/adodb-php": "dev-master",
-        "phpoffice/phpexcel": "dev-develop"
+        "lespoilus/spyc": "dev-master"
     },
     "autoload": {
         "files": [
-            "vendor/mikecao/flight/flight/Flight.php"
+            "vendor/mikecao/flight/flight/Flight.php",
+            "lib/adodb/pivottable.inc.php"
         ],
         "classmap": [
             "vendor/jdorn/file-system-cache/"
