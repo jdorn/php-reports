@@ -3,8 +3,44 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e1b89ce2a7fb8884fe03199a1d0dc9ef",
+    "hash": "c9584a859c5b20c3ebffc98ce19cfd30",
     "packages": [
+        {
+            "name": "adodb/adodb-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cvele/adodb.git",
+                "reference": "66f3740cf7718a4cd88bb1a2a05cceaccc98b882"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cvele/adodb/zipball/66f3740cf7718a4cd88bb1a2a05cceaccc98b882",
+                "reference": "66f3740cf7718a4cd88bb1a2a05cceaccc98b882",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "adodb.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1",
+                " BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "John Lim",
+                    "homepage": "http://adodb.sourceforge.net/#docs"
+                }
+            ],
+            "time": "2013-01-04 11:54:13"
+        },
         {
             "name": "jdorn/file-system-cache",
             "version": "dev-master",
@@ -103,6 +139,49 @@
             "time": "2013-07-11 13:51:14"
         },
         {
+            "name": "lespoilus/spyc",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lespoilus/spyc.git",
+                "reference": "5a5bacdef1e514bdbb30701f13d9867140a6a21b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lespoilus/spyc/zipball/5a5bacdef1e514bdbb30701f13d9867140a6a21b",
+                "reference": "5a5bacdef1e514bdbb30701f13d9867140a6a21b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.1"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "spyc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT License"
+            ],
+            "authors": [
+                {
+                    "name": "mustangostang",
+                    "email": "vlad.andersen@gmail.com"
+                }
+            ],
+            "description": "A simple YAML loader/dumper class for PHP",
+            "homepage": "https://github.com/lespoius/spyc/",
+            "keywords": [
+                "spyc",
+                "yaml",
+                "yml",
+                "zf2"
+            ],
+            "time": "2012-10-15 11:52:47"
+        },
+        {
             "name": "mikecao/flight",
             "version": "dev-master",
             "source": {
@@ -119,12 +198,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "2dcff606f74333920c68475850c3c1f6095165ae"
+                "reference": "29746bb995c85b4fadd1c9346bfdff150e03390d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/2dcff606f74333920c68475850c3c1f6095165ae",
-                "reference": "2dcff606f74333920c68475850c3c1f6095165ae",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/29746bb995c85b4fadd1c9346bfdff150e03390d",
+                "reference": "29746bb995c85b4fadd1c9346bfdff150e03390d",
                 "shasum": ""
             },
             "require": {
@@ -167,7 +246,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2013-08-07 16:06:05"
+            "time": "2013-08-18 11:32:40"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -279,7 +358,9 @@
         "mikecao/flight": 20,
         "jdorn/sql-formatter": 20,
         "jdorn/file-system-cache": 20,
-        "phpoffice/phpexcel": 20
+        "phpoffice/phpexcel": 20,
+        "adodb/adodb-php": 20,
+        "lespoilus/spyc": 20
     },
     "platform": [
 
