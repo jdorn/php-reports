@@ -409,7 +409,6 @@ show_count: true
                     <th>Parameter Name</th>
                     <th>Description</th>
                     <th>Default Value</th>
-                    <th>Required</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -421,7 +420,6 @@ show_count: true
                         i.e.: <code>'products p ,categories c ,suppliers s'</code> will create a query that will check 3 different tables aliased by a single letter.
                     </td>
                     <td><code>null</code></td>
-                    <td>YES</td>
                 </tr>
                 <tr>
                     <td>rows</td>
@@ -429,7 +427,6 @@ show_count: true
                         A list of columns with to group the data by.
                     </td>
                     <td><code>null</code></td>
-                    <td>YES</td>
                 </tr>
                 <tr>
                     <td>columns</td>
@@ -437,10 +434,47 @@ show_count: true
                         Columns to pivot on.
                     </td>
                     <td><code>null</code></td>
-                    <td>YES</td>
+                </tr>
+                <tr>
+                    <td>where</td>
+                    <td>
+                        Well, it's a WHERE clause. It should consist of both joins of tables if necessary and of the regular filtering of the data.
+                        Obviously variables can and should be used here to build complex queries.
+                    </td>
+                    <td><code>null</code></td>
+                </tr>
+                <tr>
+                    <td>agg_field</td>
+                    <td>
+                        Field to aggregate aside from the groups.
+                    </td>
+                    <td><code>null</code></td>
+                </tr>
+                <tr>
+                    <td>agg_label</td>
+                    <td>
+                        The label for the aggregated field, i.e.: "Number of"
+                    </td>
+                    <td><code>Sum</code></td>
+                </tr>
+                <tr>
+                    <td>agg_fun</td>
+                    <td>
+                        Aggregate function to use (could be <code>AVG</code>, <code>SUM</code>, <code>COUNT</code>).
+                    </td>
+                    <td><code>SUM</code></td>
+                </tr>
+                <tr>
+                    <td>show_count</td>
+                    <td>
+                        Show count of records.
+                    </td>
+                    <td><code>null</code></td>
                 </tr>
                 </tbody>
             </table>
+
+            <p>In <strong>all</strong> of the above parameters variables are allowed and can be used to make the report more dynamic.</p>
         </section>
 	    
 	    <section id="mongodb">
