@@ -1,0 +1,23 @@
+-- Registration types per day
+--
+-- INFO: {
+--      created: "2013-08-14"
+-- }
+-- OPTIONS: {
+--      database: "ado"
+-- }
+-- VARIABLE: { 
+--      name: "range", 
+--      display: "Report Range",
+--      type: "daterange", 
+--      default: { start: "-120 day", end: "yesterday" }
+-- }
+
+tables: blocked_accounts
+rows: DATE_FORMAT(registration_date, '%Y-%m-%d') AS "Registration date"
+columns: batch
+where: registration_date BETWEEN "{{ range.start }}" AND "{{ range.end }}"
+#agg_field: uid
+#agg_label: Number of
+agg_fun: SUM
+show_count: true
