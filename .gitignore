@@ -1,6 +1,7 @@
+.idea/
 config/config.php
 reports/
 cache/
 classes/local/*.php
 templates/local
-/vendor/
+vendor/
