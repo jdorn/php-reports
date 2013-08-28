@@ -15,12 +15,9 @@
  * @param db		Adodb database connection
  * @param tables	List of tables to join
  * @rowfields		List of fields to display on each row
- * @colfield		Pivot field to slice and display in columns, if we want to calculate
- *						ranges, we pass in an array (see example2)
+ * @colfield		Pivot field to slice and display in columns, if we want to calculate ranges, we pass in an array
  * @where			Where clause. Optional.
  * @aggfield		This is the field to sum. Optional. 
- *						Since 2.3.1, if you can use your own aggregate function 
- *						instead of SUM, eg. $aggfield = 'fieldname'; $aggfn = 'AVG';
  * @sumlabel		Prefix to display in sum columns. Optional.
  * @aggfn			Aggregate function to use (could be AVG, SUM, COUNT)
  * @showcount		Show count of records
@@ -28,16 +25,20 @@
  * @returns			Sql generated
  */
  
- function PivotTableSQL(&$db,$tables,$rowfields,$colfield, $where=false,
- 	$aggfield = false,$sumlabel='Sum ',$aggfn ='SUM', $showcount = true)
+ function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false,
+                        $aggfield = false, $sumlabel = "Sum {}", $aggfn = "SUM", $includeaggfield = true, $showcount = true)
  {
-	if ($aggfield) $hidecnt = true;
-	else $hidecnt = false;
+	if ($aggfield) {
+        $hidecnt = true;
+    } else {
+        $hidecnt = false;
+    }
+
+    $sumlabel = is_null($sumlabel) ? "Sum {}" : $sumlabel;
+    $aggfn = is_null($aggfn) ? "SUM" : $aggfn;
 	
 	$iif = strpos($db->databaseType,'access') !== false; 
-		// note - vfp 6 still doesn' work even with IIF enabled || $db->databaseType == 'vfp';
-	
-	//$hidecnt = false;
+	// note - vfp 6 still doesn' work even with IIF enabled || $db->databaseType == 'vfp';
 	
  	if ($where) $where = "\nWHERE $where";
 	if (!is_array($colfield)) $colarr = $db->GetCol("select distinct $colfield from $tables $where order by 1");
@@ -82,17 +83,20 @@
 			}
 		}
 	}
-	if ($aggfield && $aggfield != '1'){
+	if ($includeaggfield && ($aggfield && $aggfield != '1')) {
 		$agg = "$aggfn($aggfield)";
-		$sel .= "\n\t$agg as \"$sumlabel$aggfield\", ";		
+        if (strstr($sumlabel, '{}')) {
+            $sumlabel = trim(strstr($sumlabel, '{}', true)).' '.trim($aggfield).'", ';
+        }
+        $sel .= "\n\t$agg AS \"$sumlabel\", ";
 	}
 	
-	if ($showcount)
+	if ($showcount) {
 		$sel .= "\n\tSUM(1) as Total";
-	else
+    } else {
 		$sel = substr($sel,0,strlen($sel)-2);
-	
-	
+    }
+
 	// Strip aliases
 	$rowfields = preg_replace('/\s+AS\s+[\'\"]?[\w\s]+[\'\"]?/i', '', $rowfields);
 	
@@ -100,88 +104,3 @@
 	
 	return $sql;
  }
-
-/* EXAMPLES USING MS NORTHWIND DATABASE */
-if (0) {
-
-# example1
-#
-# Query the main "product" table
-# Set the rows to CompanyName and QuantityPerUnit
-# and the columns to the Categories
-# and define the joins to link to lookup tables 
-# "categories" and "suppliers"
-#
-
- $sql = PivotTableSQL(
- 	$gDB,  											# adodb connection
- 	'products p ,categories c ,suppliers s',  		# tables
-	'CompanyName,QuantityPerUnit',					# row fields
-	'CategoryName',									# column fields 
-	'p.CategoryID = c.CategoryID and s.SupplierID= p.SupplierID' # joins/where
-);
- print "<pre>$sql";
- $rs = $gDB->Execute($sql);
- rs2html($rs);
- 
-/*
-Generated SQL:
-
-SELECT CompanyName,QuantityPerUnit, 
-	SUM(CASE WHEN CategoryName='Beverages' THEN 1 ELSE 0 END) AS "Beverages", 
-	SUM(CASE WHEN CategoryName='Condiments' THEN 1 ELSE 0 END) AS "Condiments", 
-	SUM(CASE WHEN CategoryName='Confections' THEN 1 ELSE 0 END) AS "Confections", 
-	SUM(CASE WHEN CategoryName='Dairy Products' THEN 1 ELSE 0 END) AS "Dairy Products", 
-	SUM(CASE WHEN CategoryName='Grains/Cereals' THEN 1 ELSE 0 END) AS "Grains/Cereals", 
-	SUM(CASE WHEN CategoryName='Meat/Poultry' THEN 1 ELSE 0 END) AS "Meat/Poultry", 
-	SUM(CASE WHEN CategoryName='Produce' THEN 1 ELSE 0 END) AS "Produce", 
-	SUM(CASE WHEN CategoryName='Seafood' THEN 1 ELSE 0 END) AS "Seafood", 
-	SUM(1) as Total 
-FROM products p ,categories c ,suppliers s  WHERE p.CategoryID = c.CategoryID and s.SupplierID= p.SupplierID 
-GROUP BY CompanyName,QuantityPerUnit
-*/
-//=====================================================================
-
-# example2
-#
-# Query the main "product" table
-# Set the rows to CompanyName and QuantityPerUnit
-# and the columns to the UnitsInStock for diiferent ranges
-# and define the joins to link to lookup tables 
-# "categories" and "suppliers"
-#
- $sql = PivotTableSQL(
- 	$gDB,										# adodb connection
- 	'products p ,categories c ,suppliers s',	# tables
-	'CompanyName,QuantityPerUnit',				# row fields
-												# column ranges
-array(										
-' 0 ' => 'UnitsInStock <= 0',
-"1 to 5" => '0 < UnitsInStock and UnitsInStock <= 5',
-"6 to 10" => '5 < UnitsInStock and UnitsInStock <= 10',
-"11 to 15"  => '10 < UnitsInStock and UnitsInStock <= 15',
-"16+" =>'15 < UnitsInStock'
-),
-	' p.CategoryID = c.CategoryID and s.SupplierID= p.SupplierID', # joins/where
-	'UnitsInStock', 							# sum this field
-	'Sum'										# sum label prefix
-);
- print "<pre>$sql";
- $rs = $gDB->Execute($sql);
- rs2html($rs);
- /*
- Generated SQL:
- 
-SELECT CompanyName,QuantityPerUnit, 
-	SUM(CASE WHEN UnitsInStock <= 0 THEN UnitsInStock ELSE 0 END) AS "Sum  0 ", 
-	SUM(CASE WHEN 0 < UnitsInStock and UnitsInStock <= 5 THEN UnitsInStock ELSE 0 END) AS "Sum 1 to 5", 
-	SUM(CASE WHEN 5 < UnitsInStock and UnitsInStock <= 10 THEN UnitsInStock ELSE 0 END) AS "Sum 6 to 10", 
-	SUM(CASE WHEN 10 < UnitsInStock and UnitsInStock <= 15 THEN UnitsInStock ELSE 0 END) AS "Sum 11 to 15", 
-	SUM(CASE WHEN 15 < UnitsInStock THEN UnitsInStock ELSE 0 END) AS "Sum 16+",
-	SUM(UnitsInStock) AS "Sum UnitsInStock", 
-	SUM(1) as Total 
-FROM products p ,categories c ,suppliers s  WHERE  p.CategoryID = c.CategoryID and s.SupplierID= p.SupplierID 
-GROUP BY CompanyName,QuantityPerUnit
- */
-}
-?>
