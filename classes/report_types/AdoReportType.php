@@ -83,7 +83,9 @@ class AdoReportType extends ReportTypeBase {
 
 		$options = array();
 		
-		if(isset($params['all']) && $params == true) $options[] = 'ALL';
+		if(isset($params['all']) && $params['all']) {
+            $options[] = 'ALL';
+        }
 
         while ($row = $result->FetchRow()) {
             if ($result->FieldCount() > 1) {
