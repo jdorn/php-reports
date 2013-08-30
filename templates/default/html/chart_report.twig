@@ -37,7 +37,17 @@
 		
 			data_{{chart.num}}.addRows(rows);
 
-			var options_{{chart.num}} = {
+            // create columns array
+            var columns_{{chart.num}} = [];
+            var series_{{chart.num}} = {};
+            for (var i = 0; i < data_{{chart.num}}.getNumberOfColumns(); i++) {
+                columns_{{chart.num}}.push(i);
+                if (i > 0) {
+                    series_{{chart.num}}[i - 1] = {};
+                }
+            }
+
+            var options_{{chart.num}} = {
 				title: '{{chart.title}}',
 				{% if chart.markers %}
 					displayMode: 'markers',
@@ -45,6 +55,7 @@
 					sizeAxis: {minValue: 1,  maxSize:  10},
 				{% endif %}
 				displayAnnotations: true,
+                series: series_{{chart.num}},
 				colors: []
 			};
 			
@@ -58,9 +69,45 @@
 			}
 
 			var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
-			chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
+
+            google.visualization.events.addListener(chart_{{chart.num}}, 'select', function () {
+                select2hide(chart_{{chart.num}}, data_{{chart.num}}, options_{{chart.num}}, columns_{{chart.num}}, series_{{chart.num}});
+            });
+            chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
 		{% endfor %}
 	}
+
+    function select2hide (chart, data, options, columns, series) {
+        var sel = chart.getSelection();
+        // if selection length is 0, we deselected an element
+        if (sel.length > 0) {
+            // if row is undefined, we clicked on the legend
+            if (typeof sel[0].row === 'undefined') {
+                var col = sel[0].column;
+                if (columns[col] == col) {
+                    // hide the data series
+                    columns[col] = {
+                        label: data.getColumnLabel(col),
+                        type: data.getColumnType(col),
+                        calc: function () {
+                            return null;
+                        }
+                    };
+
+                    // grey out the legend entry
+                    series[col - 1].color = '#CCCCCC';
+                } else {
+                    // show the data series
+                    columns[col] = col;
+                    series[col - 1].color = null;
+                }
+                var view = new google.visualization.DataView(data);
+                view.setColumns(columns);
+                chart.draw(view, options);
+            }
+        }
+    }
+
 	google.setOnLoadCallback(drawCharts);
 	</script>
 {% endblock %}
