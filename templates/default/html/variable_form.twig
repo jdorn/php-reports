@@ -93,5 +93,25 @@ $(function() {
 	$('.datepicker_holder',$('#variable_form')).each(function() {
 		$(this).datepicker();
 	});
+
+    $('#variable_form select').multiselect({
+        buttonClass: 'btn',
+        buttonWidth: 'auto',
+        includeSelectAllOption: true,
+        maxHeight: '300px',
+        buttonText: function(options, select) {
+            if (options.length == 0) {
+                return 'None selected <b class="caret"></b>';
+            } else if (options.length > 8) {
+                return options.length + ' selected  <b class="caret"></b>';
+            } else {
+                var selected = '';
+                options.each(function() {
+                    selected += $(this).text() + ', ';
+                });
+                return selected.substr(0, selected.length -2) + ' <b class="caret"></b>';
+            }
+        }
+    });
 });
 </script>
