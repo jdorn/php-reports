@@ -69,7 +69,11 @@ class ChartHeader extends HeaderBase {
 		'markers'=>array(
 			'type'=>'boolean',
 			'default'=>false
-		)
+		),
+        'omit-columns'=>array(
+            'type'=>'array',
+            'default'=>array()
+        )
 	);
 	
 	public static function init($params, &$report) {
@@ -146,10 +150,9 @@ class ChartHeader extends HeaderBase {
 				$i=1;
 				$unsorted = 1000;
 				foreach($row['values'] as $key=>$value) {
-					if(($temp = array_search($row['values'][$key]->i, $report->options['Charts'][$num]['columns']))!==false) {
+					if (($temp = array_search($row['values'][$key]->i, $report->options['Charts'][$num]['columns']))!==false) {
 						$cols[$temp] = $key;
-					}
-					elseif(($temp = array_search($row['values'][$key]->key, $report->options['Charts'][$num]['columns']))!==false) {
+					} elseif (($temp = array_search($row['values'][$key]->key, $report->options['Charts'][$num]['columns']))!==false) {
 						$cols[$temp] = $key;
 					}
 					//if all columns are included, add after any specifically defined ones
@@ -169,8 +172,7 @@ class ChartHeader extends HeaderBase {
 						$temp->setValue($cval);
 						$vals[] = $temp;
 					}
-				}
-				else {
+				} else {
 					$temp = new ReportValue($row['values'][$key]->i, $row['values'][$key]->key, $row['values'][$key]->original_value);
 					$temp->setValue(trim($row['values'][$key]->getValue(),'%$ '));
 					$vals[] = $temp;

@@ -57,8 +57,27 @@ class AdoPivotReportType extends ReportTypeBase {
 		if(isset($params['where'])) {
 			$query .= ' WHERE '.$params['where'];
 		}
-		
-		$result = $report->conn->Execute($query);
+
+        $macros = $report->macros;
+        foreach($macros as $key=>$value) {
+            if(is_array($value)) {
+                foreach($value as $key2=>$value2) {
+                    $value[$key2] = mysql_real_escape_string(trim($value2));
+                }
+                $macros[$key] = $value;
+            }
+            else {
+                $macros[$key] = mysql_real_escape_string($value);
+            }
+
+            if($value === 'ALL') $macros[$key.'_all'] = true;
+        }
+
+        //add the config and environment settings as macros
+        $macros['config'] = PhpReports::$config;
+        $macros['environment'] = PhpReports::$config['environments'][$report->options['Environment']];
+
+		$result = $report->conn->Execute(PhpReports::renderString($query, $macros));
 		
 		if (!$result) {
 			throw new Exception("Unable to get variable options: ".$report->conn->ErrorMsg());
@@ -66,7 +85,9 @@ class AdoPivotReportType extends ReportTypeBase {
 
 		$options = array();
 		
-		if(isset($params['all']) && $params == true) $options[] = 'ALL';
+		if(isset($params['all']) && $params['all']) {
+            $options[] = 'ALL';
+        }
 
         while ($row = $result->FetchRow()) {
             if ($result->FieldCount() > 1) {
@@ -108,9 +129,11 @@ class AdoPivotReportType extends ReportTypeBase {
         foreach ($report->raw_query as $qry) {
             if (is_array($qry)) {
                 foreach ($qry as $key=>$value) {
-                    $qry[$key] = PhpReports::renderString($value, $macros);
+                    if (!is_bool($value)) {
+                        $qry[$key] = PhpReports::renderString($value, $macros);
+                    }
                 }
-                $raw_sql .= PivotTableSQL($report->conn, $qry['tables'], $qry['rows'], $qry['columns'], $qry['where'], $qry['agg_field'], isset($qry['agg_label']) ? $qry['agg_label']." " : null, $qry['agg_fun'], $qry['show_count']);
+                $raw_sql .= PivotTableSQL($report->conn, $qry['tables'], $qry['rows'], $qry['columns'], $qry['where'], $qry['agg_field'], $qry['agg_label'], $qry['agg_fun'], $qry['include_agg_field'], $qry['show_count']);
             } else {
                 $raw_sql .= $qry;
             }

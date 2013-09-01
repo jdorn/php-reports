@@ -8,8 +8,9 @@
     {% if not nodata %}
         <link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
     {% endif %}
-    <link rel='stylesheet' href='{{base}}/public/css/daterangepicker.css' />
+    <link rel='stylesheet' type="text/css" href='{{base}}/public/css/daterangepicker.css' />
     <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/public/css/datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="{{base}}/public/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" type="text/css" href="{{base}}/public/css/prettify.css" />
     <style>
     .daterangepicker_holder {
@@ -40,8 +41,9 @@
     <script type="text/javascript" src="{{base}}/public/js/date.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/daterangepicker.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/bootstrap-datepicker.js"></script>
-    <script type="text/javascript" src="{{ base }}/public/js/prettify.js"></script>
-    <script type="text/javascript" src="{{ base }}/public/js/lang-sql.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/prettify.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/lang-sql.js"></script>
     <script type="text/javascript">
         $("#content").on('click','a[data-role="button"]',function(e) {
             e.preventDefault();
