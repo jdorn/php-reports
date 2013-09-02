@@ -7,21 +7,24 @@
 
     <!-- Le styles -->
     {% block stylesheets %}
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
       body {
         padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+      .container {
+          max-width: 100%;
+      }
       table {
         max-width: none !important;
       }
-        #content {
-            width: 98%;
-        }
-        form input, form textarea, form select {
-            max-width: 100%;
-        }
+      #content {
+        width: 98%;
+      }
+      form input, form textarea, form select {
+        max-width: 100%;
+      }
     </style>
-    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.0/cerulean/bootstrap.min.css" rel="stylesheet">
 	{% endblock %}
 
 	<script>
@@ -48,8 +51,8 @@
   </head>
 
   <body>	
-    <div class="navbar navbar-fixed-top">
-        <div class="container-fluid">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
@@ -124,7 +127,7 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container">
 		<div class="header">
 		{% block header %}
 			{{ header|raw }}
