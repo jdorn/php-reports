@@ -1,3 +1,14 @@
+{% block chart_area %}
+    {% if has_charts %}
+        <iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
+        <script>
+            $(function() {
+                $('#chart_container').iframeAutoHeight();
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
 {% include "html/table.twig" %}
 
 {% if not nodata %}
@@ -52,17 +63,6 @@ $(function() {
 {% endif %}
 
 <p>Query took {{Time}} seconds</p>
-
-{% block chart_area %}
-	{% if has_charts %}
-		<iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
-		<script>
-		$(function() {
-		  $('#chart_container').iframeAutoHeight();
-		});
-		</script>
-	{% endif %}
-{% endblock %}
 
 {% block show_query %}
 	{% if Query_Formatted %}
