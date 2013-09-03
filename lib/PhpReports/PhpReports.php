@@ -562,7 +562,7 @@ class PhpReports {
 		$json = str_replace(array("\n","\r"),"",$json);
 		
 		//replace non-quoted keys with double quoted keys
-		$json = preg_replace('/([{,])(\s*)([^"]+?)\s*:/','$1"$3":',$json);
+		$json = preg_replace('#(?<pre>\{|\[|,)\s*(?<key>(?:\w|_)+)\s*:#im', '$1"$2":', $json);
 		
 		//remove trailing comma
 		$json = preg_replace('/,\s*\}/','}',$json);
