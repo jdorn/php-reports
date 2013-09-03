@@ -1,4 +1,4 @@
-<form class="form-horizontal well" method="get" id="variable_form">
+<form class="form-horizontal well" role="form" method="get" id="variable_form">
 	<input type='hidden' name='report' value='{{report}}' />
 
 	<fieldset>
@@ -6,11 +6,11 @@
 		
 		{% for var in vars %}
 			{% block variable_form_row %}
-				<div class='control-group'>
+				<div class='form-group'>
 					{% block variable_form_row_label %}
-					<label for='var_{{var.key}}' class='control-label'>{{var.display}}</label>
+					<label for='var_{{var.key}}' class='col-lg-2 control-label'>{{var.display}}</label>
 					{% endblock %}
-					<div class='controls'>
+					<div class='col-lg-10 controls'>
 						{% block variable_form_row_modifier_input %}
 							{% if var.modifier_options %}
 								<select name='macros[{{var.key}}_modifier]' id='var_{{var.key}}_modifier' class='input'>
@@ -95,7 +95,7 @@ $(function() {
 	});
 
     $('#variable_form select').multiselect({
-        buttonClass: 'btn',
+        buttonClass: 'btn btn-default',
         buttonWidth: 'auto',
         includeSelectAllOption: true,
         maxHeight: '300px',
