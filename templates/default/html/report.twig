@@ -68,8 +68,10 @@
 		{% block download_link %}
 			{% if config.report_formats|length > 1 %}
 			<div class="btn-group">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class='icon-download'></i> Download/show as <span class="caret"></span></a>
-				<ul class="dropdown-menu">
+				<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <i class='icon-download'></i> Download/show as <span class="caret"></span>
+                </button>
+				<ul class="dropdown-menu" role="menu">
 				{% for format in config.report_formats|keys %}
 					{% if config.report_formats[format] == 'divider' %}
 					<li class="divider"></li>
