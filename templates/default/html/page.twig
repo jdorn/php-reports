@@ -7,7 +7,7 @@
 
     <!-- Le styles -->
     {% block stylesheets %}
-    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.0/cerulean/bootstrap.min.css" rel="stylesheet">
+    <link href="{{base}}/public/css/bootstrap.defualt.min.css" rel="stylesheet">
     <style>
       body {
         padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -166,7 +166,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     {% block javascripts %}
     <script src="{{base}}/public/js/jquery-2.0.3.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="{{base}}/public/js/bootstrap-3.0.min.js"></script>
 	<script src="{{base}}/public/js/scripts.js"></script>
     <script>
 		//typeahead report search

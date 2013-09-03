@@ -3,7 +3,7 @@
         <iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
         <script>
             $(function() {
-                $('#chart_container').iframeAutoHeight();
+                $('iframe#chart_container').iframeAutoHeight();
             });
         </script>
     {% endif %}
