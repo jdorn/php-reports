@@ -305,9 +305,10 @@ class Report {
 					
 					foreach($params['options'] as $key=>$option) {
 						if(!is_array($option)) {
+							is_numeric($key) ? $val = $option : $val = $key;
 							$params['options'][$key] = array(
 								'display'=>$option,
-								'value'=>$option
+								'value'=>$val
 							);
 						}
 						if($params['options'][$key]['value'] == $params['value']) $params['options'][$key]['selected'] = true;
