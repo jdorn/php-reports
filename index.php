@@ -37,7 +37,10 @@ Flight::route('/edit',function() {
 });
 
 Flight::route('/set-environment',function() {
+    header("Content-Type: application/json");
 	$_SESSION['environment'] = $_REQUEST['environment'];
+
+    echo '{ "status": "OK" }';
 });
 
 //email report

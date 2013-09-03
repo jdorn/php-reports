@@ -8,12 +8,12 @@
     {% if not nodata %}
         <link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
     {% endif %}
-    <link rel='stylesheet' type="text/css" href='{{base}}/public/css/daterangepicker.css' />
+    <link rel="stylesheet" type="text/css" href="{{base}}/public/css/daterangepicker-bs3.css" />
     <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/public/css/datepicker.css" />
     <link rel="stylesheet" type="text/css" href="{{base}}/public/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" type="text/css" href="{{base}}/public/css/prettify.css" />
     <style>
-    .daterangepicker_holder {
+    /*.daterangepicker_holder {
         background: white;
         -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1);
         -moz-box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
@@ -26,20 +26,21 @@
     .daterangepicker_holder .caret {
         margin-top: 8px;
         margin-left: 2px;
-    }
+    }*/
     </style>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     {% if has_charts %}
-        <script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.js"></script>
+        <script type="text/javascript" src="{{base}}/public/js/jquery.browser.js"></script>
+        <script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.plugin.1.9.3.js"></script>
     {% endif %}
     {% if not nodata %}
         <script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
     {% endif %}
-    <script type="text/javascript" src="{{base}}/public/js/date.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/daterangepicker.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/moment-2.0.min.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/daterangepicker-1.2.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/bootstrap-datepicker.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/bootstrap-multiselect.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/prettify.js"></script>
@@ -63,13 +64,15 @@
 {% endblock %}
 
 {% block content %}
-    <div class='export_links' style='margin: 10px 0;'>
+    <div class='row export_links' style='margin: 10px 0;'>
     {% block export_links %}
 		{% block download_link %}
 			{% if config.report_formats|length > 1 %}
 			<div class="btn-group">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class='icon-download'></i> Download/show as <span class="caret"></span></a>
-				<ul class="dropdown-menu">
+				<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <i class='icon-download'></i> Download/show as <span class="caret"></span>
+                </button>
+				<ul class="dropdown-menu" role="menu">
 				{% for format in config.report_formats|keys %}
 					{% if config.report_formats[format] == 'divider' %}
 					<li class="divider"></li>

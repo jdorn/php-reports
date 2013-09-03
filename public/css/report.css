@@ -4,10 +4,6 @@ body {
 .database_message {
 	color: #999;
 }
-h1 {
-	margin: 10px 0;
-	padding: 0;
-}
 #result_table td .bar{
 	height: 18px; 
 	display:inline-block; 
@@ -35,10 +31,7 @@ h1 {
 .center {
 	text-align:center;
 }
-.show_query, #show_time_estimate {
-	font-size: .8em;
-}
-#query_holder {
+.show_query, #show_time_estimate, #query_holder {
 	font-size: .8em;
 }
 .waiting div {
@@ -61,16 +54,12 @@ pre {
 	body {
 		padding-top: 0 !important;
 	}
-	.navbar-fixed-top {
-		display: none !important;
-	}
-	#variable_form .btn-primary {
-		display: none !important;
-	}
-	#content .export_links {
-		display: none !important;
-	}
-	#report_content a[data-role="button"] {
+	.navbar-fixed-top ,
+    #variable_form .btn-primary,
+    #content .export_links,
+    #report_content a[data-role="button"],
+    a[data-role="button"][data-target="#time_estimate_holder"],
+    #report_content .dataTables_filter {
 		display: none !important;
 	}
 }
