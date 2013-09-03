@@ -41,7 +41,7 @@ class VariableHeader extends HeaderBase {
 		'modifier_options'=>array(
 			'type'=>'array'
 		),
-		'time_offset'=>array(
+		'offset'=>array(
 			'type'=>'number'
 		),
 	);
@@ -191,15 +191,19 @@ class VariableHeader extends HeaderBase {
 			
 			//if the type is daterange, parse start and end with strtotime
 			if($params['type'] === 'daterange' && $report->macros[$params['name']]['start'] && $report->macros[$params['name']]['end']) {
+				if (isset($params['offset'])) $offset = $params['offset'] * -1 . ' hours';
 				$start = date_create($report->macros[$params['name']]['start']);
 				if(!$start) throw new Exception($params['display']." must have a valid start date.");
 				date_time_set($start,0,0,0);
+				if (isset($offset)) $start->modify($offset);
 				$report->macros[$params['name']]['start'] = date_format($start,$params['format']);
-				
+
 				$end = date_create($report->macros[$params['name']]['end']);
 				if(!$end) throw new Exception($params['display']." must have a valid end date.");
 				date_time_set($end,23,59,59);
+				if (isset($offset)) $end->modify($offset);
 				$report->macros[$params['name']]['end'] = date_format($end,$params['format']);
+				file_put_contents('/var/www/php-reports/debug.out', var_export($params, true));
 			}
 		}
 	}
