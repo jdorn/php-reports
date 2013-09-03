@@ -3,7 +3,7 @@
         <iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
         <script>
             $(function() {
-                $('#chart_container').iframeAutoHeight();
+                $('iframe#chart_container').iframeAutoHeight();
             });
         </script>
     {% endif %}
@@ -17,7 +17,7 @@ $(function() {
 	$('#result_table').dataTable({
 		bPaginate: false,
 		aaSorting: [],
-		"sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>"
+		"sDom": "<'row'<'col-md-6'i><'col-md-6'f>r>t"
 	});
 	
 	{% if selectable %}
@@ -62,7 +62,9 @@ $(function() {
 </script>
 {% endif %}
 
-<p>Query took {{Time}} seconds</p>
+<div class="row">
+    <div class="col-md-12">Query took {{Time}} seconds</div>
+</div>
 
 {% block show_query %}
 	{% if Query_Formatted %}
