@@ -23,13 +23,13 @@ body {
 }
 
 .right {
-	text-align:right;
+	text-align:right !important;
 }
 .left {
-	text-align:left;
+	text-align:left !important;
 }
 .center {
-	text-align:center;
+	text-align:center !important;
 }
 .show_query, #show_time_estimate, #query_holder {
 	font-size: .8em;
