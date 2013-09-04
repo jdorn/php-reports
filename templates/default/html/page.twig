@@ -8,6 +8,7 @@
     <!-- Le styles -->
     {% block stylesheets %}
     <link href="{{base}}/public/css/bootstrap.defualt.min.css" rel="stylesheet">
+    <link href="{{ base }}/public/css/typeahead.js-bootstrap.css" rel="stylesheet">
     <style>
       body {
         padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -78,13 +79,11 @@
                 {% endblock %}
                 </ul>
                 {% block searchbar %}
-                <!-- Temporarily removed due to Bootstrap 3.0 upgrade
                 <form class="navbar-form navbar-left" role="search">
                     <div class="form-group">
                         <input type="text" class="form-control search-query" placeholder="Find Report...">
                     </div>
                 </form>
-                -->
                 {% endblock %}
 
                 {% block navbar %}{% endblock %}
@@ -167,74 +166,59 @@
     {% block javascripts %}
     <script src="{{base}}/public/js/jquery-2.0.3.min.js"></script>
     <script src="{{base}}/public/js/bootstrap-3.0.min.js"></script>
+    <script src="{{base}}/public/js/typeahead.min.js"></script>
 	<script src="{{base}}/public/js/scripts.js"></script>
     <script>
 		//typeahead report search
-        /* Temporarily removed due to Bootstrap 3.0 upgrade
 		(function() {
-			var mapping = null, source = null;
-			$('form[role="search"] input.search-query').typeahead({
-                remote: '{{base}}/report-list-json',
+            var data = new Dataset({
+                prefetch: {
+                    url: '{{ base }}/report-list-json',
+                    ttl: 0
+                },
+                valueKey: 'name',
+                sorter: function(a,b) {
+                    var val = $('form[role="search"] input.search-query').typeahead('val')[0];
 
-				source: function(q,callback) {
-					//if we've already loaded the source
-					if(source) {
-                        callback(source);
-                        return;
-                    }
-
-					mapping = {};
-					source = [];
-
-					//load via ajax
-					$.getJSON('{{base}}/report-list-json',function(reports) {
-						for(var i in reports) {
-							mapping[reports[i].name] = reports[i];
-							source.push(reports[i].name);
-						}
-
-						callback(source);
-					});
-				},
-                sorter: function(items) {
                     //beginning of title match
-                    var beg = new RegExp('^'+this.query,'i');
+                    var beg = new RegExp('^'+val,'i');
                     //word boundary match
-                    var word = new RegExp('\b'+this.query,'i');
+                    var word = new RegExp('\b'+val,'i');
 
                     //weights for components of the sort algorithm
                     var popweight = 2;
                     var wordweight = 10;
                     var begweight = 15;
 
-                    return items.sort(function(a,b) {
-                        //popularity
-                        var popa = mapping[a].popularity;
-                        var popb = mapping[b].popularity;
+                    //popularity
+                    var popa = a.popularity;
+                    var popb = b.popularity;
 
-                        //beginning of string match
-                        var bega = beg.test(a);
-                        var begb = beg.test(b);
+                    //beginning of string match
+                    var bega = beg.test(a.name);
+                    var begb = beg.test(b.name);
 
-                        //beginning of word match
-                        var worda = !bega && word.test(a);
-                        var wordb = !begb && word.test(b);
+                    //beginning of word match
+                    var worda = !bega && word.test(a.name);
+                    var wordb = !begb && word.test(b.name);
 
-                        //determine score
-                        var scorea = popa*popweight + bega*begweight + worda*wordweight;
-                        var scoreb = popb*popweight + begb*begweight + wordb*wordweight;
+                    //determine score
+                    var scorea = popa*popweight + bega*begweight + worda*wordweight;
+                    var scoreb = popb*popweight + begb*begweight + wordb*wordweight;
 
-                        return scoreb - scorea;
-                    });
-                },
-				items: 20,
-				updater: function(item) {
-					window.location.href = mapping[item].url;
-					return '';
-				}
-			});
+                    return scoreb - scorea;
+                }
+            });
+
+            $('form[role="search"] input.search-query').typeahead({
+                sections: [{
+                    source: data,
+                    highlight: true
+                }]
+            }).on('typeahead:selected',function(e,obj) {
+                window.location.href = obj.url;
+            });
 		})();
-		*/
     </script>
 	{% endblock %}
 	<script>
