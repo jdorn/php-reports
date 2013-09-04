@@ -129,7 +129,8 @@ class AdoPivotReportType extends ReportTypeBase {
         foreach ($report->raw_query as $qry) {
             if (is_array($qry)) {
                 foreach ($qry as $key=>$value) {
-                    if (!is_bool($value)) {
+                    // TODO handle arrays better
+                    if (!is_bool($value) && !is_array($value)) {
                         $qry[$key] = PhpReports::renderString($value, $macros);
                     }
                 }
