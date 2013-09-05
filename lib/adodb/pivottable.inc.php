@@ -24,10 +24,8 @@
  *
  * @returns			Sql generated
  */
- 
- function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false,
-                        $aggfield = false, $sumlabel = "Sum {}", $aggfn = "SUM", $includeaggfield = true, $showcount = true)
- {
+function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false,
+                        $aggfield = false, $sumlabel = "Sum {}", $aggfn = "SUM", $includeaggfield = true, $showcount = true) {
 	if ($aggfield) {
         $hidecnt = true;
     } else {
@@ -42,7 +40,7 @@
 	
  	if ($where) $where = "\nWHERE $where";
 	if (!is_array($colfield)) $colarr = $db->GetCol("select distinct $colfield from $tables $where order by 1");
-	if (!$aggfield) $hidecnt = false;
+	$hidecnt = $aggfield ? true : false;
 	
 	$sel = "$rowfields, ";
 	if (is_array($colfield)) {
@@ -86,7 +84,7 @@
 	if ($includeaggfield && ($aggfield && $aggfield != '1')) {
 		$agg = "$aggfn($aggfield)";
         if (strstr($sumlabel, '{}')) {
-            $sumlabel = trim(strstr($sumlabel, '{}', true)).' '.trim($aggfield).'", ';
+            $sumlabel = trim($sumlabel, ' \t\n\r\0\x0B{}').' '.trim($aggfield);
         }
         $sel .= "\n\t$agg AS \"$sumlabel\", ";
 	}
@@ -103,4 +101,4 @@
 	$sql = "SELECT $sel \nFROM $tables $where \nGROUP BY $rowfields";
 	
 	return $sql;
- }
+}
