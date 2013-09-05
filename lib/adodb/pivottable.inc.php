@@ -24,6 +24,7 @@
  *
  * @returns			Sql generated
  */
+
 function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false,
                         $aggfield = false, $sumlabel = "Sum {}", $aggfn = "SUM", $includeaggfield = true, $showcount = true) {
 	if ($aggfield) {
