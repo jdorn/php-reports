@@ -42,11 +42,15 @@ class PhpReports {
 			new Twig_Loader_String()
 		));
 		self::$twig = new Twig_Environment($loader);		
-		self::$twig->addFunction('dbdate',new Twig_Function_Function('PhpReports::dbdate'));
-		
+		self::$twig->addFunction(new Twig_SimpleFunction('dbdate', 'PhpReports::dbdate'));
+        self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+
+        self::$twig->getFunctions();
+
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String());
-		
-		FileSystemCache::$cacheDir = self::$config['cacheDir'];
+        self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+
+        FileSystemCache::$cacheDir = self::$config['cacheDir'];
 
 		if(!isset($_SESSION['environment']) || !isset(self::$config['environments'][$_SESSION['environment']])) {
 			$_SESSION['environment'] = array_shift(array_keys(self::$config['environments']));
@@ -108,8 +112,23 @@ class PhpReports {
 		
 		return $time;
 	}
-	
-	public static function render($template, $macros) {		
+
+    public static function generateSqlIN($column, $values, $or_null = false) {
+        $sql = "$column IN (";
+        foreach ($values as $value) {
+            $sql .= is_numeric($value) ? $value : "'".$value."'";
+            if ($value !== end($values)) {
+                $sql .= ', ';
+            }
+        }
+        $sql .= ")";
+        if ($or_null) {
+            $sql.= " OR $column IS NULL";
+        }
+        return $sql;
+    }
+
+	public static function render($template, $macros) {
 		$default = array(
 			'base'=>self::$request->base,
 			'report_list_url'=>self::$request->base.'/',
