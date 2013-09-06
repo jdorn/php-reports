@@ -25,7 +25,7 @@
  * @returns			Sql generated
  */
 
-function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false,
+function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false, $orderBy = false, $limit = false,
                         $aggfield = false, $sumlabel = "Sum {}", $aggfn = "SUM", $includeaggfield = true, $showcount = true) {
 	if ($aggfield) {
         $hidecnt = true;
@@ -96,10 +96,21 @@ function PivotTableSQL(&$db, $tables, $rowfields, $colfield, $where = false,
 		$sel = substr($sel,0,strlen($sel)-2);
     }
 
+    if ($orderBy) {
+        $orderSql = "\nORDER BY $orderBy";
+    }
+    if ($limit) {
+        if (is_numeric($limit)) {
+            $limitSql = "\nLIMIT $limit";
+        } else {
+            $limitSql = "\n-- LIMIT was declared as non-numeric value\n";
+        }
+    }
+
 	// Strip aliases
 	$rowfields = preg_replace('/\s+AS\s+[\'\"]?[\w\s]+[\'\"]?/i', '', $rowfields);
 	
-	$sql = "SELECT $sel \nFROM $tables $where \nGROUP BY $rowfields";
+	$sql = "SELECT $sel \nFROM $tables $where \nGROUP BY $rowfields $orderSql $limitSql";
 	
 	return $sql;
 }

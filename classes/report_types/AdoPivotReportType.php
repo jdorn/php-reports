@@ -134,7 +134,8 @@ class AdoPivotReportType extends ReportTypeBase {
                         $qry[$key] = PhpReports::renderString($value, $macros);
                     }
                 }
-                $raw_sql .= PivotTableSQL($report->conn, $qry['tables'], $qry['rows'], $qry['columns'], $qry['where'], $qry['agg_field'], $qry['agg_label'], $qry['agg_fun'], $qry['include_agg_field'], $qry['show_count']);
+                //TODO This sux - need a class or something :-)
+                $raw_sql .= PivotTableSQL($report->conn, $qry['tables'], $qry['rows'], $qry['columns'], $qry['where'], $qry['orderBy'], $qry['limit'], $qry['agg_field'], $qry['agg_label'], $qry['agg_fun'], $qry['include_agg_field'], $qry['show_count']);
             } else {
                 $raw_sql .= $qry;
             }
