@@ -1,3 +1,7 @@
+.navbar-form[role="search"] > .form-group {
+	width: 240px;
+}
+
 .twitter-typeahead {
     width: 100%;
     position: relative;

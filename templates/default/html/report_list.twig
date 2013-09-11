@@ -6,7 +6,7 @@
 
 {% block stylesheets %}
 	{{ parent() }}
-	<!-- <link rel="stylesheet" href="{{base}}/public/css/report_list.css" /> -->
+	<link rel="stylesheet" href="{{base}}/public/css/report_list.css" />
 {% endblock %}
 
 {% block header %}
@@ -24,7 +24,7 @@
 	{% endblock %}
 	</div>
 
-	<div id="report_list" class="col-lg-10 col-md-9 col-xs-12">
+	<div id="report_list" class="col-lg-10 col-md-9 col-xs-12 col-lg-offset-2 col-md-offset-3">
         <h1 class="visible-phone">All Reports</h1>
 		{% block report_errors %}
 			{% if report_errors is not empty %}
