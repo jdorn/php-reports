@@ -19,14 +19,6 @@
     position: fixed;
     overflow-y: auto;
 }
-@media (max-width: 979px) {
-    #table_of_contents {
-	position: absolute;
-	top: 60px;
-	bottom: auto;
-	height: auto;
-    }
-}
 #report_list {
     padding-bottom: 400px;
 }
