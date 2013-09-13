@@ -7,7 +7,7 @@ class ChartHeader extends HeaderBase {
 		),
 		'type'=>array(
 			'type'=>'enum',
-			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart'),
+			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart','Timeline'),
 			'default'=>'LineChart'
 		),
 		'title'=>array(
@@ -73,7 +73,11 @@ class ChartHeader extends HeaderBase {
         'omit-columns'=>array(
             'type'=>'array',
             'default'=>array()
-        )
+        ),
+		'options'=>array(
+			'type'=>'object',
+			'default'=>array()
+		)
 	);
 	
 	public static function init($params, &$report) {

@@ -34,6 +34,7 @@
 				]{% if not loop.last %},{% endif %}
 
 				{% endfor %}];
+
 		
 			data_{{chart.num}}.addRows(rows);
 
@@ -59,6 +60,12 @@
 				colors: [],
 				wmode: 'transparent'
 			};
+
+        {% if chart.options %}
+        {% for k,v in chart.options %}
+            options_{{ chart.num}}["{{ k }}"] = {{ v|json_encode|raw }};
+        {% endfor %}
+        {% endif %}
 			
 			{% for color in chart.colors %}
 				options_{{chart.num}}.colors.push('{{color}}');
@@ -69,11 +76,24 @@
 				delete options_{{chart.num}}.colors;
 			}
 
+        {% if chart.type == "Timeline" %}
+            var chart_{{chart.num}} = new links.Timeline(document.getElementById('chart_div_{{chart.num}}'));
+        {% else %}
 			var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
+        {% endif %}
 
             google.visualization.events.addListener(chart_{{chart.num}}, 'select', function () {
                 select2hide(chart_{{chart.num}}, data_{{chart.num}}, options_{{chart.num}}, columns_{{chart.num}}, series_{{chart.num}});
             });
+
+        {% if chart.type == "BarChart" %}
+            google.visualization.events.addListener(chart_{{chart.num}}, 'ready', function () {
+                    $('#chart_div_{{chart.num}}').find('text[text-anchor=end]').each(function () {
+                        $(this).attr('x', 25);
+                        $(this).attr('text-anchor', 'front');
+                    });
+            });
+        {% endif %}
             chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
 		{% endfor %}
 	}
