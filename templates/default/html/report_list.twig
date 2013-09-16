@@ -14,9 +14,9 @@
 
 {% block content %}
 <div class="row">
-	<div id="table_of_contents" class="col-lg-2 col-md-3 hidden-xs hidden-sm">
+	<div id="table_of_contents" class="col-lg-2 col-md-3 hidden-xs hidden-sm bs-sidebar">
 	{% block table_of_contents %}
-		<ul class="nav nav-list">
+		<ul class="nav bs-sidenav">
 			{% for item in reports %}
 				{% include "html/report_list_table_of_contents_item.twig" %}
 			{% endfor %}
