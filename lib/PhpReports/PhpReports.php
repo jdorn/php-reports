@@ -225,6 +225,7 @@ class PhpReports {
 
 		$template_vars['reports'] = $reports;
 		$template_vars['report_errors'] = $errors;
+        $template_vars['theme'] = $_COOKIE['reports-theme'] != '' ? $_COOKIE['reports-theme'] : self::$config['bootstrap_theme'];
 
 		$start = microtime(true);
 		echo self::render('html/report_list',$template_vars);
