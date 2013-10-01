@@ -38,6 +38,17 @@ return array(
 		'debug'=>'Debug information',
 		'raw'=>'Raw report dump',
 	),
+
+	//this enebales one to change the default bootstrap theme
+	'bootstrap_theme' => 'default',
+
+	//this list all the available themes for a user to switch and use the one he or she likes
+	//once removed the theme will not appear in the dropdown
+	//if all to be removed - no dropdown will be visible for the user and the default (above) will be used
+	'bootstrap_themelist' => array(
+	    'default',
+	    'amelia', 'cerulean', 'cosmo', 'cyborg', 'flatly', 'journal', 'readable', 'simplex', 'slate', 'spacelab', 'united'
+	),
 	
 	//email settings
 	'mail_settings' => array(
