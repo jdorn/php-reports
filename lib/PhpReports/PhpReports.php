@@ -45,7 +45,8 @@ class PhpReports {
 		self::$twig->addFunction(new Twig_SimpleFunction('dbdate', 'PhpReports::dbdate'));
         self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
-        self::$twig->getFunctions();
+        self::$twig->addGlobal('theme', $_COOKIE['reports-theme'] != '' ? $_COOKIE['reports-theme'] : self::$config['bootstrap_theme']);
+
 
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String(), array('autoescape'=>false));
         self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
@@ -225,7 +226,6 @@ class PhpReports {
 
 		$template_vars['reports'] = $reports;
 		$template_vars['report_errors'] = $errors;
-        $template_vars['theme'] = $_COOKIE['reports-theme'] != '' ? $_COOKIE['reports-theme'] : self::$config['bootstrap_theme'];
 
 		$start = microtime(true);
 		echo self::render('html/report_list',$template_vars);
