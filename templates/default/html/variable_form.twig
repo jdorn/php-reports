@@ -1,78 +1,105 @@
-<form class="form-horizontal well" role="form" method="get" id="variable_form">
+<form class="form-horizontal" role="form" method="get" id="variable_form">
 	<input type='hidden' name='report' value='{{report}}' />
 
-	<fieldset>
-		<legend>{% block variable_form_title %}Configure Report{% endblock %}</legend>
-
-		{% for var in vars %}
-			{% block variable_form_row %}
-				<div class='form-group'>
-					{% block variable_form_row_label %}
-					<label for='var_{{var.key}}' class='col-lg-2 control-label'>{{var.display}}</label>
-					{% endblock %}
-					<div class='col-lg-10 controls'>
-						{% block variable_form_row_modifier_input %}
-							{% if var.modifier_options %}
-								<select name='macros[{{var.key}}_modifier]' id='var_{{var.key}}_modifier' class='input'>
-								{% for option in var.modifier_options %}
-									<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
-								{% endfor %}
-								</select>
-							{% endif %}
-						{% endblock %}
-						{% block variable_form_row_input %}
-							{% if var.is_select %}
-								<select
-									name='macros[{{var.key}}]{% if var.is_multiselect %}[]{% endif %}'
-									id='var_{{var.key}}'
-									{% if var.is_multiselect %}multiple=true size={{var.choices}}{% endif %}
-								>
-								{% for option in var.options %}
-									<option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
-								{% endfor %}
-								</select>
-							{% elseif var.is_textarea %}
-                                <textarea name='macros[{{var.key}}]' id='var_{{var.key}}' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
-                            {% elseif var.type == "daterange" %}
-                                <input type='hidden' name='macros[{{var.key}}][start]' id='var_{{var.key}}_start' value='{{var.value.start|date('Y-m-d H:i:s')}}' />
-                                <input type='hidden' name='macros[{{var.key}}][end]' id='var_{{var.key}}_end' value='{{var.value.end|date('Y-m-d H:i:s')}}' />
-                                <div class="daterangepicker_holder btn btn-default pull-left" data-var="{{var.key}}">
-                                        <i class="icon-calendar icon-large"></i>
-                                        <span>
-                                            {% if var.value.start and var.value.end %}
-                                                {{ var.value.start|date('F j, Y') }} - {{ var.value.end|date('F j, Y') }}
-                                            {% else %}
-                                                <em>no date range selected</em>
-                                            {% endif %}
-                                        </span> <b class="caret"></b>
-                                </div>
-                            {% elseif var.type == "date" %}
-                                <div class="input-append date datepicker_holder" data-date="{{var.value|date('Y-m-d')}}" data-date-format="yyyy-mm-dd">
-                                    <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value|date('Y-m-d H:i:s')}}' />
-                                    <span class="add-on"><i class="icon-calendar"></i></span>
-                                </div>
-                            {% else %}
-                                <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value}}' />
-                            {% endif %}
-						{% endblock %}
-						{% block variable_form_row_description %}
-							{% if var.description %}
-								<span class='help-inline'>{{ var.description|raw }}</span>
-							{% endif %}
-						{% endblock %}
-					</div>
-				</div>
-			{% endblock %}
-		{% endfor %}
-	</fieldset>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-	        <button type="submit" class="btn btn-primary">Run Report</button>
+    <div class="row">
+        <div class="col-sm-12" id="variables-header">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#variable_form" href="#variables-fieldset">
+            <span class="glyphicon glyphicon-chevron-down"></span> <strong>{% block variable_form_title %}Report configuration{% endblock %}</strong></a>
+            <span id="variables-holder"></span>
         </div>
+    </div>
+    <div class="row">
+        <fieldset id="variables-fieldset" class="collapse in">
+            {% for var in vars %}
+                {% block variable_form_row %}
+                    <div class='form-group variable'>
+                        {% block variable_form_row_label %}
+                        <label for='var_{{var.key}}' class='col-sm-2 control-label'>{{var.display}}</label>
+                        {% endblock %}
+                        <div class='col-sm-10 controls'>
+                            {% block variable_form_row_modifier_input %}
+                                {% if var.modifier_options %}
+                                    <select name='macros[{{var.key}}_modifier]' id='var_{{var.key}}_modifier' class='input'>
+                                    {% for option in var.modifier_options %}
+                                        <option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
+                                    {% endfor %}
+                                    </select>
+                                {% endif %}
+                            {% endblock %}
+                            {% block variable_form_row_input %}
+                                {% if var.is_select %}
+                                    <select
+                                        name='macros[{{var.key}}]{% if var.is_multiselect %}[]{% endif %}'
+                                        id='var_{{var.key}}'
+                                        {% if var.is_multiselect %}multiple=true size={{var.choices}}{% endif %}
+                                    >
+                                    {% for option in var.options %}
+                                        <option value="{{option.value}}" {% if option.selected %}selected="selected"{% endif %}>{{option.display}}</option>
+                                    {% endfor %}
+                                    </select>
+                                {% elseif var.is_textarea %}
+                                    <textarea name='macros[{{var.key}}]' id='var_{{var.key}}' style='vertical-align:top; width: 500px; height: 80px;'>{{var.value|join("\n")}}</textarea>
+                                {% elseif var.type == "daterange" %}
+                                    <input type='hidden' name='macros[{{var.key}}][start]' id='var_{{var.key}}_start' value='{{var.value.start|date('Y-m-d H:i:s')}}' />
+                                    <input type='hidden' name='macros[{{var.key}}][end]' id='var_{{var.key}}_end' value='{{var.value.end|date('Y-m-d H:i:s')}}' />
+                                    <div class="daterangepicker_holder btn btn-default pull-left" data-var="{{var.key}}">
+                                            <i class="icon-calendar icon-large"></i>
+                                            <span>
+                                                {% if var.value.start and var.value.end %}
+                                                    {{ var.value.start|date('F j, Y') }} - {{ var.value.end|date('F j, Y') }}
+                                                {% else %}
+                                                    <em>no date range selected</em>
+                                                {% endif %}
+                                            </span> <b class="caret"></b>
+                                    </div>
+                                {% elseif var.type == "date" %}
+                                    <div class="input-append date datepicker_holder" data-date="{{var.value|date('Y-m-d')}}" data-date-format="yyyy-mm-dd">
+                                        <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value|date('Y-m-d H:i:s')}}' />
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                {% else %}
+                                    <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value}}' />
+                                {% endif %}
+                            {% endblock %}
+                            {% block variable_form_row_description %}
+                                {% if var.description %}
+                                    <span class='help-inline'>{{ var.description|raw }}</span>
+                                {% endif %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                {% endblock %}
+            {% endfor %}
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Run Report</button>
+                </div>
+            </div>
+        </fieldset>
     </div>
 </form>
 <script>
 $(function() {
+    $('#variables-fieldset').on('hide.bs.collapse', function () {
+        var t = new Array();
+        $('#variables-fieldset .variable').each(function() {
+            t.push($(this).find('label.control-label').text() + ': <em>' + $(this).find('.btn').text().trim() + '</em>');
+        });
+        var text = ' : ';
+        $.each(t, function(index, value) {
+            text += value;
+            if (index < t.length-1) {
+                text += ', ';
+            }
+        });
+        $('#variables-holder').html(text);
+        $('#variables-header span.glyphicon').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-right');
+    }).on('show.bs.collapse', function() {
+        $('#variables-selected').collapse('hide');
+        $('#variables-holder').text('');
+        $('#variables-header span.glyphicon').removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
+    });
+
 	$('.daterangepicker_holder',$('#variable_form')).each(function() {
 		var range_holder = $(this);
 		range_holder.daterangepicker(
