@@ -23,6 +23,8 @@ class PhpReports {
 		self::$config = array_merge($default_config, $config);
 		
 		self::$request = Flight::request();
+
+        $path = self::$request->base;
 		
 		if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
 			$protocol = 'https://';
@@ -46,7 +48,7 @@ class PhpReports {
         self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
         self::$twig->addGlobal('theme', $_COOKIE['reports-theme'] != '' ? $_COOKIE['reports-theme'] : self::$config['bootstrap_theme']);
-
+        self::$twig->addGlobal('path', $path);
 
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String(), array('autoescape'=>false));
         self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));

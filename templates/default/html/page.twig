@@ -128,7 +128,7 @@
                     <script type="text/javascript">
                         function changeTheme(theme) {
                             $('#bootstrap').attr('href', '{{ base }}/public/css/bootstrap.' + theme + '.min.css');
-                            $.cookie('reports-theme', theme);
+                            $.cookie('reports-theme', theme, {path: '{{path}}', expires: 365});
                             $('#theme-swtich > strong').text(theme);
                             $('ul#themes-list li').each(function(){
                                 if ($(this).hasClass('active') && $(this).children().text() != theme) {
