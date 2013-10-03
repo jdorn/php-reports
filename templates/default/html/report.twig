@@ -143,7 +143,6 @@
 								url: window.location.href
 							};
 
-                            console.log("Sending a query to the server: " + '{{base}}/email');
 							$.getJSON('{{base}}/email',data,function(response) {
 								if(response && response.success) {
 									$('#email-modal').modal('hide');
