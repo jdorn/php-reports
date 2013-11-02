@@ -2,7 +2,7 @@
 
 {% block content %}
 <Results>
-{% for row in Rows %}
+{% for row in DataSets[0].rows %}
 	<Row>
 	{% for value in row.values %}
 		<{{value.keyCollapsed}}>{{ value.getValue()|raw }}</{{value.keyCollapsed}}>

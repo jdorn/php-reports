@@ -23,12 +23,22 @@ abstract class XlsReportBase extends ReportFormatBase {
 									 ->setTitle("")
 									 ->setSubject("")
 									 ->setDescription("");
-
-
+		
+		foreach($report->options['DataSets'] as $i=>$dataset) {
+			if(!$i) $objPHPExcel->createSheet($i);
+			self::addSheet($objPHPExcel,$dataset,$i);
+		}
+		
+		// Set the active sheet to the first one
+		$objPHPExcel->setActiveSheetIndex(0);
+		
+		return $objPHPExcel;
+	}
+	public static function addSheet($objPHPExcel,$dataset, $i) {
 		$rows = array();
 		$row = array();
 		$cols = 0;
-		$first_row = $report->options['Rows'][0];
+		$first_row = $dataset['rows'][0];
 		foreach($first_row['values'] as $key=>$value){
 			array_push($row, $value->key);
 			$cols++;
@@ -36,7 +46,7 @@ abstract class XlsReportBase extends ReportFormatBase {
 		array_push($rows, $row);
 		$row = array();
 
-		foreach($report->options['Rows'] as $r) {
+		foreach($dataset['rows'] as $r) {
 			foreach($r['values'] as $key=>$value){
 				array_push($row, $value->getValue());
 			}
@@ -44,12 +54,13 @@ abstract class XlsReportBase extends ReportFormatBase {
 			$row = array();
 		}
 
-		$objPHPExcel->setActiveSheetIndex(0);
-		$objPHPExcel->setActiveSheetIndex(0)->fromArray($rows, NULL, 'A1');
+		$objPHPExcel->setActiveSheetIndex($i)->fromArray($rows, NULL, 'A1');
 		$objPHPExcel->getActiveSheet()->setAutoFilter('A1:'.self::columnLetter($cols).count($rows));
 		for ($a = 1; $a <= $cols; $a++) {
 			$objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($a))->setAutoSize(true);
 		}
+		
+		if(isset($dataset['title'])) $objPHPExcel->getActiveSheet()->setTitle($dataset['title']);
 		
 		return $objPHPExcel;
 	}

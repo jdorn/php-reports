@@ -373,11 +373,19 @@ class Report {
 		}
 		
 		$classname::openConnection($this);
-		$rows = $classname::run($this);
+		$datasets = $classname::run($this);		
 		$classname::closeConnection($this);
 		
-		$this->options['Count'] = count($rows);
-		$this->options['Rows'] = $rows;
+		// Convert old single dataset format to multi-dataset format
+		if(!isset($datasets[0]['rows']) || !is_array($datasets[0]['rows'])) {
+			$datasets = array(
+				array(
+					'rows'=>$datasets
+				)
+			);
+		}
+		
+		$this->options['DataSets'] = $datasets;
 	}
 	
 	protected function getTimeEstimate() {
@@ -417,23 +425,29 @@ class Report {
 			'stdev'=>round($standard_deviation,2)
 		);
 	}
-	
-	protected function prepareRows() {
+	protected function prepareDataSets() {
+		foreach($this->options['DataSets'] as $i=>$dataset) {
+			$this->prepareRows($i);
+		}
+		$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
+		$this->options['Count'] = $this->options['DataSets'][0]['count'];
+	}
+	protected function prepareRows($dataset) {
 		$rows = array();
 		
 		//generate list of all values for each numeric column
 		//this is used to calculate percentiles/averages/etc.
 		$vals = array();
-		foreach($this->options['Rows'] as $row) {
+		foreach($this->options['DataSets'][$dataset]['rows'] as $row) {
 			foreach($row as $key=>$value) {
 				if(!isset($vals[$key])) $vals[$key] = array();
 				
 				if(is_numeric($value)) $vals[$key][] = $value;
 			}
 		}
-		$this->options['Values'] = $vals;
+		$this->options['DataSets'][$dataset]['values'] = $vals;
 		
-		foreach($this->options['Rows'] as $row) {
+		foreach($this->options['DataSets'][$dataset]['rows'] as $row) {
 			$rowval = array();
 			
 			$i=1;
@@ -460,7 +474,8 @@ class Report {
 			);
 		}
 		
-		$this->options['Rows'] = $rows;
+		$this->options['DataSets'][$dataset]['rows'] = $rows;
+		$this->options['DataSets'][$dataset]['count'] = count($rows);
 	}
 	
 	public function run() {
@@ -483,7 +498,7 @@ class Report {
 			}
 			else {
 				$this->_runReport();
-				$this->prepareRows();
+				$this->prepareDataSets();
 				$this->storeInCache();
 			}
 
@@ -522,7 +537,7 @@ class Report {
 		$this->has_run = true;
 	}
 	
-	public function renderReportPage($template='html/report') {
+	public function renderReportPage($template='html/report', $additional_vars = array()) {
 		$this->run();
 		
 		$template_vars = array(
@@ -535,6 +550,8 @@ class Report {
 			'vars'=>$this->prepareVariableForm(),
 			'macros'=>$this->macros,
 		);
+		
+		$template_vars = array_merge($template_vars,$additional_vars);
 		
 		$template_vars = array_merge($template_vars,$this->options);
 		

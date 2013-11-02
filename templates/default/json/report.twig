@@ -1,4 +1,4 @@
-[{% for row in Rows %}{% if not loop.first %},{% endif %}
+[{% for row in DataSets[0].rows %}{% if not loop.first %},{% endif %}
 
 	{{'{'}}{% for value in row.values %}{% if not loop.first %},{% endif %}
 

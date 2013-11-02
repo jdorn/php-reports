@@ -109,9 +109,7 @@ class MysqlReportType extends ReportTypeBase {
 		return $options;
 	}
 	
-	public static function run(&$report) {
-		$rows = array();
-		
+	public static function run(&$report) {		
 		$macros = $report->macros;
 		foreach($macros as $key=>$value) {
 			if(is_array($value)) {
@@ -143,7 +141,13 @@ class MysqlReportType extends ReportTypeBase {
 		//split into individual queries and run each one, saving the last result		
 		$queries = SqlFormatter::splitQuery($sql);
 		
-		foreach($queries as $query) {
+		$datasets = array();
+		
+		$explicit_datasets = preg_match('/--\s+@dataset\s*=\s*true/',$sql);
+		
+		foreach($queries as $i=>$query) {
+			$is_last = $i === count($queries)-1;
+			
 			//skip empty queries
 			$query = trim($query);
 			if(!$query) continue;
@@ -157,12 +161,17 @@ class MysqlReportType extends ReportTypeBase {
 			if(preg_match('/^--[\s+]assert[\s]*=[\s]*empty[\s]*\n/',$query)) {
 				if(mysql_fetch_assoc($result))  throw new Exception("Assert failed.  Query did not return empty results.");
 			}
+			
+			// If this query should be included as a dataset
+			if((!$explicit_datasets && $is_last) || preg_match('/--\s+@dataset\s*=\s*true/',$query)) {
+				$dataset = array('rows'=>array());
+				while($row = mysql_fetch_assoc($result)) {
+					$dataset['rows'][] = $row;
+				}
+				$datasets[] = $dataset;
+			}
 		}
 		
-		while($row = mysql_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-		
-		return $rows;
+		return $datasets;
 	}
 }

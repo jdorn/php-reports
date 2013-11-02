@@ -14,7 +14,7 @@ class DebugReportFormat extends ReportFormatBase {
 		
 			$content .= "****************** Generated Query ******************\n\n".print_r($report->options['Query'],true)."\n\n\n";
 			
-			$content .= "****************** Report Rows ******************\n\n".print_r($report->options['Rows'],true)."\n\n\n";
+			$content .= "****************** Report Rows ******************\n\n".print_r($report->options['DataSets'],true)."\n\n\n";
 		}
 		
 		echo $content;
