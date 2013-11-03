@@ -231,21 +231,47 @@ class Report {
 		}
 	}
 	
-	public function addFilter($column, $type, $options) {
-		if(!isset($this->filters[$column])) $this->filters[$column] = array();
-		
-		$this->filters[$column][$type] = $options;
-	}
-	protected function applyFilters($column, $value, $row) {
-		//no filters to apply
-		if(!isset($this->filters[$column])) return $value;
-		
-		foreach($this->filters[$column] as $type=>$options) {
-			$classname = $type.'Filter';
-			$value = $classname::filter($value, $options, $this, $row);
+	public function addFilter($dataset, $column, $type, $options) {
+		// If adding for multiple datasets
+		if(is_array($dataset)) {
+			foreach($dataset as $d) {
+				$this->addFilter($d,$column,$type,$options);
+			}
+		}
+		// If adding for all datasets
+		else if($dataset === true) {
+			$this->addFilter('all',$column,$type,$options);
+		}
+		// If adding for a single dataset
+		else {
+			if(!isset($this->filters[$dataset])) $this->filters[$dataset] = array();
+			if(!isset($this->filters[$dataset][$column])) $this->filters[$dataset][$column] = array();
 			
-			//if the column should not be displayed
-			if($value === false) return false;
+			$this->filters[$dataset][$column][$type] = $options;
+		}
+		
+	}
+	protected function applyFilters($dataset, $column, $value, $row) {
+		// First, apply filters for all datasets
+		if(isset($this->filters['all']) && isset($this->filters['all'][$column])) {
+			foreach($this->filters['all'][$column] as $type=>$options) {
+				$classname = $type.'Filter';
+				$value = $classname::filter($value, $options, $this, $row);
+				
+				//if the column should not be displayed
+				if($value === false) return false;
+			}
+		}
+		
+		// Then apply filters for this specific dataset
+		if(isset($this->filters[$dataset]) && isset($this->filters[$dataset][$column])) { 
+			foreach($this->filters[$dataset][$column] as $type=>$options) {
+				$classname = $type.'Filter';
+				$value = $classname::filter($value, $options, $this, $row);
+				
+				//if the column should not be displayed
+				if($value === false) return false;
+			}
 		}
 		
 		return $value;
@@ -455,9 +481,9 @@ class Report {
 				$val = new ReportValue($i, $key, $value);
 				
 				//apply filters for the column key
-				$val = $this->applyFilters($key,$val,$row);
+				$val = $this->applyFilters($dataset,$key,$val,$row);
 				//apply filters for the column position
-				if($val) $val = $this->applyFilters($i,$val,$row);
+				if($val) $val = $this->applyFilters($dataset,$i,$val,$row);
 				
 				if($val) {
 					$rowval[] = $val;

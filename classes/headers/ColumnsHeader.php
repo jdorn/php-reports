@@ -1,15 +1,23 @@
 <?php
 class ColumnsHeader extends HeaderBase {
 	public static function init($params, &$report) {
-		foreach($params as $column=>$options) {
+		foreach($params['columns'] as $column=>$options) {
 			if(!isset($options['type'])) throw new Exception("Must specify column type for column $column");
 			$type = $options['type'];
 			unset($options['type']);
-			$report->addFilter($column,$type,$options);
+			$report->addFilter($params['dataset'],$column,$type,$options);
 		}
 	}
 	
 	public static function parseShortcut($value) {
+		if(preg_match('/^[0-9]+\:/',$value)) {
+			$dataset = substr($value,0,strpos($value,':'));
+			$value = substr($value,strlen($dataset)+1);
+		}
+		else {
+			$dataset = 0;
+		}
+		
 		$parts = explode(',',$value);
 		$params = array();
 		$i = 1;
@@ -80,6 +88,9 @@ class ColumnsHeader extends HeaderBase {
 			$i++;
 		}
 		
-		return $params;
+		return array(
+			'dataset'=>$dataset,
+			'columns'=>$params
+		);
 	}
 }
