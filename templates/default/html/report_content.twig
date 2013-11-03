@@ -23,10 +23,10 @@ $(function() {
 	});
 	{% endif %}
 	
-	{% if selectable %}
+	{% if dataset.selectable %}
 	$('#result_table_{{loop.index}}').on('change','input.selectable',function() {
 		//determine selected inputs
-		var selected_inputs = $("input.selectable:checked");
+		var selected_inputs = $("input.selectable:checked",$(this).closest('table'));
 		
 		var selected = [];
 		
@@ -46,9 +46,9 @@ $(function() {
 			}
 			
 			if(selected.length)
-				query_string.selected = selected;
+				query_string.selected_{{loop.index-1}} = selected;
 			else
-				delete query_string.selected;
+				delete query_string.selected_{{loop.index-1}};
 			
 			$(this).attr('href',url+'?'+$.param(query_string));
 		});

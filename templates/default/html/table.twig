@@ -39,7 +39,7 @@
 		{% else %}
 		<thead>
 			<tr class='header'>
-			{% if selectable and not inline_email %}
+			{% if dataset.selectable and not inline_email %}
 				<th> </th>
 			{% endif %}
 			{% for value in dataset.rows[0].values %}
@@ -51,6 +51,9 @@
 		<tfoot>
 			{% for row in dataset.footer %}
 				<tr>
+					{% if dataset.selectable and not inline_email %}
+						<td> </td>
+					{% endif %}
 					{% for value in row.values %}
 						<td>{{ value.getValue(true)|raw }}</td>
 					{% endfor %}
@@ -61,7 +64,7 @@
 		<tbody>
 			{% for row in dataset.rows %}
 			<tr>
-				{% if selectable and not inline_email %}
+				{% if dataset.selectable and not inline_email %}
 					<td style='padding: 0;'>
 						<div style='width:40px;'>
 							<input type='checkbox' class='selectable' style=' vertical-align:middle;' />
@@ -72,7 +75,7 @@
 					</td>
 				{% endif %}
                 {% for value in row.values %}
-                <td class="{{value.class}}{% if selectable and value.key == selectable %} selectable{% endif %}">
+                <td class="{{value.class}}{% if dataset.selectable and value.key == dataset.selectable %} selectable{% endif %}">
                     {{ value.getValue(true)|raw }}
                 </td>
                 {% endfor %}

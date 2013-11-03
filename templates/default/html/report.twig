@@ -77,7 +77,7 @@
 					{% if config.report_formats[format] == 'divider' %}
 					<li class="divider"></li>
 					{% else %}
-					<li><a href='{{base}}/report/{{format}}/?{{report_querystring}}'>{{config.report_formats[format]}}</a></li>
+					<li><a href='{{base}}/report/{{format}}/?{{report_querystring}}' class='report_link'>{{config.report_formats[format]}}</a></li>
 					{% endif %}
 				{% endfor %}
 				</ul>
