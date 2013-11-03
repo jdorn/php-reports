@@ -1,6 +1,5 @@
 <?php
 // Get All Timezones By Region
-// INCLUDE: {report: "functions.php"}
 // VARIABLE: {
 //      name: "regions",
 //      multiple: true,
@@ -9,6 +8,7 @@
 //      options: ["cdt","acst","pdt"],
 //      default: "acst"
 // }
+// ROLLUP: {columns: {Timezone: "AVERAGE", Offset: "{{mean}}"}, dataset: [0,1]}
 
 $timezone_abbreviations = DateTimeZone::listAbbreviations();
 
@@ -29,12 +29,6 @@ foreach($regions as $region) {
             'Offset'=>$timezone['offset']/3600
         );
     }
-    
-    $stats = array_stats($dataset['rows'], 'Offset');
-    $dataset['rows'][] = array(
-        'Timezone'=>'AVERAGE',
-        'Offset'=>$stats['mean']
-    );
     
     $datasets[] = $dataset;
 }
