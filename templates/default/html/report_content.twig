@@ -15,11 +15,13 @@
 <script type='text/javascript'>
 $(function() {
 {% for dataset in DataSets %}
+    {% if not dataset.vertical %}
 	$('#result_table_{{loop.index}}').dataTable({
 		bPaginate: false,
 		aaSorting: [],
 		"sDom": "<'row'<'col-md-6'i><'col-md-6'f>r>t"
 	});
+	{% endif %}
 	
 	{% if selectable %}
 	$('#result_table_{{loop.index}}').on('change','input.selectable',function() {

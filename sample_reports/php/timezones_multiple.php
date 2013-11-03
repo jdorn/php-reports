@@ -8,7 +8,7 @@
 //      options: ["cdt","acst","pdt"],
 //      default: "acst"
 // }
-// ROLLUP: {columns: {Timezone: "AVERAGE", Offset: "{{mean}}"}, dataset: [0,1]}
+// ROLLUP: {columns: {Timezone: "AVERAGE", Offset: "{{mean}}"}, dataset: true}
 
 $timezone_abbreviations = DateTimeZone::listAbbreviations();
 

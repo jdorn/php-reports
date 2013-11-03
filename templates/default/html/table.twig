@@ -3,7 +3,7 @@
     {% if dataset.title %}<h3>{{dataset.title}}</h3>
     {% endif %}
 	<table{% if not inline_email %} id='result_table_{{loop.index}}' class='result_table table table-bordered table-striped'{% else %} border="1" cellspacing="0"{% endif %}>
-		{% if vertical %}
+		{% if dataset.vertical %}
 		<thead>
 			<tr class='header'>
 				{% for value in dataset.vertical[0].values %}

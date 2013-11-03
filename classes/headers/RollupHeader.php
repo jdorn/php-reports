@@ -36,6 +36,22 @@ class RollupHeader extends HeaderBase {
 		//cache for Twig parameters for each dataset/column
 		$twig_params = array();
 		
+		// Now that we know how many datasets we have, expand out Rollup headers with dataset->true
+		$new_rollups = array();
+		foreach($report->options['Rollup'] as $i=>$rollup) {
+			if($rollup['dataset']===true) {
+				$copy = $rollup;
+				foreach($report->options['DataSets'] as $i=>$dataset) {
+					$copy['dataset'] = $i;
+					$new_rollups[] = $copy;
+				}
+			}
+			else {
+				$new_rollups[] = $rollup;
+			}
+		}
+		$report->options['Rollup'] = $new_rollups;
+		
 		// First get all the values
 		foreach($report->options['Rollup'] as $rollup) {			
 			// If we already got twig parameters for this dataset, skip it

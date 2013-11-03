@@ -75,7 +75,17 @@ class OptionsHeader extends HeaderBase {
 			unset($params['ttl']);
 		}
 		
+		// Some parameters were moved to a 'FORMATTING' header
+		// We need to catch those and add the header to the report
+		$formatting_header = array();
+		
 		foreach($params as $key=>$value) {
+			// This is a FORMATTING parameter
+			if(in_array($key,array('limit','noborder','vertical','table','showcount','font','nodata','selectable'))) {
+				$formatting_header[$key] = $value;
+				continue;
+			}
+			
 			//some of the keys need to be uppercase (for legacy reasons)
 			if(in_array($key,array('database','mongodatabase','cache'))) $key = ucfirst($key);
 			
@@ -88,6 +98,11 @@ class OptionsHeader extends HeaderBase {
 					$report->exportHeader('Options',array($key=>$value));
 				}
 			}
+		}
+		
+		if($formatting_header) {
+			$formatting_header['dataset'] = true;
+			$report->parseHeader('Formatting',$formatting_header);
 		}
 	}
 	
@@ -112,57 +127,5 @@ class OptionsHeader extends HeaderBase {
 		}
 		
 		return $params;
-	}
-	
-	public static function beforeRender(&$report) {
-		if(isset($report->options['limit'])) {
-			$report->options['Rows'] = array_slice($report->options['Rows'],0,intval($report->options['limit']));
-		}
-		
-		if(isset($report->options['selectable']) && isset($_REQUEST['selected'])) {			
-			$selected_key = null;
-			foreach($report->options['Rows'][0]['values'] as $key=>$value) {
-				if($value->key == $report->options['selectable']) {
-					$selected_key = $key;
-					break;
-				}
-			}
-			
-			if($selected_key !== null) {
-				foreach($report->options['Rows'] as $key=>$row) {
-					
-					if(!in_array($row['values'][$selected_key]->getValue(),$_GET['selected'])) {
-						unset($report->options['Rows'][$key]);
-					}
-				}
-				$report->options['Rows'] = array_values($report->options['Rows']);
-			}
-		}
-		
-		if(isset($report->options['vertical'])) {
-			$rows = array();
-			foreach($report->options['Rows'] as $row) {
-				foreach($row['values'] as $value) {
-					if(!isset($rows[$value->key])) {
-						$header = new ReportValue(1, 'key', $value->key);
-						$header->class = 'left lpad';
-						$header->is_header = true;
-						
-						$rows[$value->key] = array(
-							'values'=>array(
-								$header
-							),
-							'first'=>!$rows
-						);
-					}
-					
-					$rows[$value->key]['values'][] = $value;
-				}
-			}
-			
-			$rows = array_values($rows);
-			
-			$report->options['VerticalRows'] = $rows;
-		}
 	}
 }
