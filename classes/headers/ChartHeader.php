@@ -5,6 +5,9 @@ class ChartHeader extends HeaderBase {
 			'type'=>'array',
 			'default'=>array()
 		),
+		'dataset'=>array(
+			'default'=>0
+		),
 		'type'=>array(
 			'type'=>'enum',
 			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart','Timeline'),
@@ -142,7 +145,7 @@ class ChartHeader extends HeaderBase {
 		return $value;
 	}
 	
-	protected static function getRowInfo($rows, $params, $num, &$report) {
+	protected static function getRowInfo(&$rows, $params, $num, &$report) {
 		$cols = array();
 		
 		//expand columns
@@ -319,19 +322,52 @@ class ChartHeader extends HeaderBase {
 		else return 'string';
 	}
 
-	public static function beforeRender(&$report) {		
-		foreach($report->options['Charts'] as $num=>&$params) {
-			if(isset($params['xhistogram']) && $params['xhistogram']) {
-				$rows = self::generateHistogramRows($report->options['Rows'],$params['columns'][0],$params['buckets']);
-				$params['columns'] = array(1,2);
-			}
-			else {
-				$rows = $report->options['Rows'];
-
-				if(!$params['columns']) $params['columns'] = range(1,count($rows[0]['values']));
-			}
+	public static function beforeRender(&$report) {	
+		// Expand out multiple datasets into their own charts
+		$new_charts = array();
+		foreach($report->options['Charts'] as $num=>$params) {
+			$copy = $params;
 			
-			self::getRowInfo($rows, $params, $num, $report);
+			// If chart is for multiple datasets
+			if(is_array($params['dataset'])) {
+				foreach($params['dataset'] as $dataset) {
+					$copy['dataset'] = $dataset;
+					$copy['num'] = count($new_charts)+1;
+					$new_charts[] = $copy;
+				}
+			}
+			// If chart is for all datasets
+			elseif($params['dataset']===true) {
+				foreach($report->options['DataSets'] as $j=>$dataset) {
+					$copy['dataset'] = $j;
+					$copy['num'] = count($new_charts)+1;
+					$new_charts[] = $copy;
+				}
+			}
+			// If chart is for one dataset
+			else {
+				$copy['num'] = count($new_charts)+1;
+				$new_charts[] = $copy;
+			}
 		}
+		
+		$report->options['Charts'] = $new_charts;
+		
+		foreach($report->options['Charts'] as $num=>&$params) {
+			self::_processChart($num,$params,$params['dataset'],$report);
+		}
+	}
+	protected static function _processChart($num, &$params, $dataset, &$report) {
+		if(isset($params['xhistogram']) && $params['xhistogram']) {
+			$rows = self::generateHistogramRows($report->options['DataSets'][$dataset]['rows'],$params['columns'][0],$params['buckets']);
+			$params['columns'] = array(1,2);
+		}
+		else {
+			$rows = $report->options['DataSets'][$dataset]['rows'];
+
+			if(!$params['columns']) $params['columns'] = range(1,count($rows[0]['values']));
+		}
+		
+		self::getRowInfo($rows, $params, $num, $report);
 	}
 }
