@@ -143,7 +143,7 @@ class MysqlReportType extends ReportTypeBase {
 		
 		$datasets = array();
 		
-		$explicit_datasets = preg_match('/--\s+@dataset\s*=\s*true/',$sql);
+		$explicit_datasets = preg_match('/--\s+@dataset(\s*=\s*|\s+)true/',$sql);
 		
 		foreach($queries as $i=>$query) {
 			$is_last = $i === count($queries)-1;
@@ -163,11 +163,18 @@ class MysqlReportType extends ReportTypeBase {
 			}
 			
 			// If this query should be included as a dataset
-			if((!$explicit_datasets && $is_last) || preg_match('/--\s+@dataset\s*=\s*true/',$query)) {
+			if((!$explicit_datasets && $is_last) || preg_match('/--\s+@dataset(\s*=\s*|\s+)true/',$query)) {
 				$dataset = array('rows'=>array());
+				
 				while($row = mysql_fetch_assoc($result)) {
 					$dataset['rows'][] = $row;
 				}
+				
+				// Get dataset title if it has one
+				if(preg_match('/--\s+@title(\s*=\s*|\s+)(.*)/',$query,$matches)) {
+					$dataset['title'] = $matches[2];
+				}
+				
 				$datasets[] = $dataset;
 			}
 		}
