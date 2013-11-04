@@ -132,7 +132,7 @@
 
 	    <ul>
 	      <li>Display a report from any data source that can output tabular data (SQL, MongoDB, PHP, etc.)</li>
-	      <li>Output reports in HTML, XML, CSV, JSON, or your own custom format</li>
+	      <li>Output reports in HTML, XML, CSV, XLS, JSON, Plain Text, or your own custom format</li>
 	      <li>Add customizable parameters to a report (e.g. date range, keyword, etc.)</li>
 	      <li>Support for graphs and charts with the Google Data Visualization API</li>
 	      <li>Easily switch between database environments (e.g. Production, Staging, and Dev)</li>
@@ -144,7 +144,7 @@
 	    
 	    <p>
 	      Php Reports requires PHP 5.3, Composer, Apache or nginx, and a modern browser.  
-	      You'll also need a SQL database and/or MongoDB plus their respective PHP extensions if you want to use those report types.
+	      You'll also need a MySQL database and/or MongoDB plus their respective PHP extensions if you want to use those report types.
 	    </p>
 	    
 	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
@@ -302,7 +302,7 @@ cp config/config.php.sample config/config.php</pre>
 	      
 	      <p>
 		MySQL reports consist of 1 or more SQL statements separated by semicolons.
-		The result of the last statement is used for the report.
+		By default, the result of the last statement is used for the report.
 		At the top of the report is a comment block with name, description, and any other report headers you need.
 	      </p>
 	      
@@ -319,10 +319,25 @@ cp config/config.php.sample config/config.php</pre>
 SELECT Name, Price FROM Products WHERE Price > "{{ min_price }}"</pre>
 
 	      <p>Variables and all the other headers you can use are covered in detail in the <a href="#report_headers">Report Headers</a> section.</p>
+	      
+	      <p>You can also display more than one result in a single report by using special SQL comments.  Here is an example:</p>
+	      
+	      <pre class='prettyprint linenums lang-sql'>
+-- Multiple Datasets
+-- This will display two tables
+
+-- @dataset true
+-- @title Products
+SELECT * FROM Products;
+
+-- @dataset true
+-- @title Orders
+SELECT * FROM Orders;
+</pre>
 	    </section>
 
         <section id="adodb">
-            <h2>AdoDB reports</h2>
+            <h3>AdoDB reports</h3>
             <p>
                 There are two types of AdoDB reports - a simple, query based report type (similar to MySQL report type) and more complex, pivot table generator.
             </p>
@@ -498,6 +513,41 @@ var result = db.FoodItems.find(query);
 
 printjson(result);</pre>
 
+	      <p>You can include more than one dataset in a single MongoDB report by using a different return JSON format.  Here's an example:</p>
+	      
+	      <pre class='prettyprint linenums'>
+// Multiple Datasets
+
+printjson([
+  {
+    title: "Foods",
+    rows: [
+      {
+	name: "banana",
+	type: "fruit"
+      },
+      {
+	name: "bacon",
+	type: "meat"
+      }
+    ]
+  },
+  {
+    title: "Beverages",
+    rows: [
+      {
+	'beverage name': "water",
+	temperature: "cold"
+      },
+      {
+	'beverage name': "coffee",
+	temperature: "hot"
+      }
+    ]
+  }
+]);
+</pre>
+
 	    </section>
 	    
 	    <section id="php">
@@ -536,6 +586,40 @@ foreach($charges as $charge) {
 
 echo json_encode($rows);
 ?&gt;</pre>
+
+	      <p>Just like with MongoDB reports, you can include multiple datasets by using a different output format.  Here's an example:</p>
+	      <pre class='prettyprint linenums'>
+// Multiple Datasets
+
+echo json_encode(array(
+  array(
+    'title'=>'Dataset 1',
+    'rows'=>array(
+      array(
+	'first name'=>'John',
+	'last name'=>'Smith'
+      ),
+      array(
+	'first name'=>'Jane',
+	'last name'=>'Doe'
+      )
+    )
+  ),
+  array(
+    'title'=>'Dataset 2',
+    'rows'=>array(
+      array(
+	'company'=>'Acme Inc.',
+	'year started'=>'1950'
+      ),
+      array(
+	'company'=>'Star Fleet',
+	'year started'=>'2215'
+      )
+    )
+  )
+));	      
+</pre>
 	    </section>
 	    
 	    <section id="custom_types">
@@ -767,6 +851,14 @@ VARIABLE: {
 		    <td>All the columns in order</td>
 		  </tr>
 		  <tr>
+		    <td>dataset</td>
+		    <td>number|array|boolean</td>
+		    <td>
+		      Which dataset to pull the chart data from.  If <code>true</code>, the chart will be rendered for every dataset.  If array, the chart will be rendered for each dataset in the array (datasets are numbered starting at 0).  If a number, only that dataset will be used.
+		    </td>
+		    <td><code>0</code></td>
+		  </tr>
+		  <tr>
 		    <td>height</td>
 		    <td>string</td>
 		    <td>
@@ -961,6 +1053,14 @@ CHART: {
 		    <td><code>null</code></td>
 		  </tr>
 		  <tr>
+		    <td>dataset</td>
+		    <td>number|array|boolean</td>
+		    <td>
+		      Which dataset(s) to apply the filter to.  If <code>true</code>, will apply filter every dataset.  If array, will apply filter to each dataset in the array (datasets are numbered starting at 0).  If a number, only that dataset will have the filtered applied.
+		    </td>
+		    <td><code>0</code></td>
+		  </tr>
+		  <tr>
 		    <td>filter</td>
 		    <td>string</td>
 		    <td>The filter to apply to the column.</td>
@@ -1027,6 +1127,14 @@ FILTER: {
 		    </td>
 		    <td><code>{}</code></td>
 		  </tr>
+		  <tr>
+		    <td>dataset</td>
+		    <td>number|array|boolean</td>
+		    <td>
+		      Which dataset to apply the rollup to.  If <code>true</code>, will apply rollup to every dataset.  If array, will apply rollup for each dataset in the array (datasets are numbered starting at 0).  If a number, will apply rollup to the dataset specified.
+		    </td>
+		    <td><code>0</code></td>
+		  </tr>
 		</tbody>
 	      </table>
 	      
@@ -1066,7 +1174,6 @@ ROLLUP: {
 	      
 	      <p>
 		The Options header lets you change miscellaneous report options that change the behavior in some way.
-		The various options do everything from changing the database to changing the layout to setting the cache ttl.
 	      </p>
 	      
 	      <table class="table table-bordered table-striped">
@@ -1096,6 +1203,14 @@ ROLLUP: {
 		    <td>varies</td>
 		  </tr>
 		  <tr>
+		    <td>default_dataset</td>
+		    <td>number</td>
+		    <td>
+		      The datasource that will be used when outputting in formats that don't support multiple datasources (like CSV).  Datasources are numbered starting at 0.
+		    </td>
+		    <td>0</td>
+		  </tr>
+		  <tr>
 		    <td>ignore</td>
 		    <td>boolean</td>
 		    <td>
@@ -1111,11 +1226,33 @@ ROLLUP: {
 		    </td>
 		    <td><code>"test"</code></td>
 		  </tr>
+		</tbody>
+	      </table>
+	      
+	    </section><!--/options header-->
+	    
+	    <section id="formatting">
+	      <h3>Formatting Header</h3>
+	      
+	      <p>
+		The Formatting header lets you change how datasets are formatted.
+	      </p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
 		  <tr>
 		    <td>nodata</td>
 		    <td>boolean</td>
 		    <td>
-		      If true, the report table will be hidden.  This is useful if you only want to show a chart.
+		      If true, the table for this dataset will be hidden.  This is useful if you only want to show a chart.
 		    </td>
 		    <td><code>false</code></td>
 		  </tr>
@@ -1123,7 +1260,7 @@ ROLLUP: {
 		    <td>selectable</td>
 		    <td>boolean</td>
 		    <td>
-		      If true, a column will be added to the beginning of the report table containing checkboxes for every row.  If a user checks one or more rows, any export links (e.g. "Download CSV") will only include the checked rows.
+		      If true, a column will be added to the beginning of the dataset's table containing checkboxes for every row.  If a user checks one or more rows, any export links (e.g. "Download CSV") will only include the checked rows.
 		    </td>
 		    <td><code>false</code></td>
 		  </tr>
@@ -1131,7 +1268,7 @@ ROLLUP: {
 		    <td>vertical</td>
 		    <td>boolean</td>
 		    <td>
-		      If true, the rows and columns will be flipped.  For example, a report to list all the properties of a user might look something like this after the "vertical" option is set:
+		      If true, the rows and columns will be flipped for the dataset's table.  For example, a report to list all the properties of a user might look something like this after the "vertical" option is set:
 		      <table class='table table-bordered'>
 			<tr>
 			  <th>Name</th>
@@ -1152,7 +1289,7 @@ ROLLUP: {
 		</tbody>
 	      </table>
 	      
-	    </section><!--/options header-->
+	    </section><!--/formatting header-->
 	    
 	    <section id="infos">
 	      <h3>Info Header</h3>
