@@ -1,8 +1,26 @@
 {% extends "xml/page.twig" %}
 
 {% block content %}
+{% if dataset_format %}
 <Results>
-{% for row in DataSets[0].rows %}
+{% for dataset in datasets %}
+	<Dataset>
+		{% if DataSets[dataset].title %}<Title>{{ DataSets[dataset].title }}</Title>{% endif %}
+		<Rows>
+		{% for row in DataSets[dataset].rows %}
+			<Row>
+			{% for value in row.values %}
+				<{{value.keyCollapsed}}>{{ value.getValue()|raw }}</{{value.keyCollapsed}}>
+			{% endfor %}
+			</Row>
+		{% endfor %}
+		</Rows>
+	</Dataset>
+{% endfor %}
+</Results>
+{% else %}
+<Results>
+{% for row in DataSets[datasets[0]].rows %}
 	<Row>
 	{% for value in row.values %}
 		<{{value.keyCollapsed}}>{{ value.getValue()|raw }}</{{value.keyCollapsed}}>
@@ -10,4 +28,5 @@
 	</Row>
 {% endfor %}
 </Results>
+{% endif %}
 {% endblock %}

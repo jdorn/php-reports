@@ -65,6 +65,10 @@ class OptionsHeader extends HeaderBase {
 		'ttl'=>array(
 			'min'=>0,
 			'type'=>'number'
+		),
+		'default_dataset'=>array(
+			'type'=>'number',
+			'default'=>0
 		)
 	);
 	
