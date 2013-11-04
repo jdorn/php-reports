@@ -1,6 +1,6 @@
-{% for value in Rows[0].values %}{% if not loop.first %},{% endif %}"{{value.key}}"{% endfor %}
+{% for value in DataSets[dataset].rows[0].values %}{% if not loop.first %},{% endif %}"{{value.key}}"{% endfor %}
 
-{% for row in Rows %}{% for value in row.values %}{% if not loop.first %},{% endif %}
+{% for row in DataSets[dataset].rows %}{% for value in row.values %}{% if not loop.first %},{% endif %}
 "{{ value.getValue()|replace({'"':'""'})|raw }}"{% endfor %}
 
 {% endfor %}

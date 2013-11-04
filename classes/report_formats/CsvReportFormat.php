@@ -11,7 +11,14 @@ class CsvReportFormat extends ReportFormatBase {
 		header("Pragma: no-cache");
 		header("Expires: 0");
 		
-		$data = $report->renderReportPage('csv/report');
+		$i=0;
+		if(isset($_GET['dataset'])) $i = $_GET['dataset'];
+		elseif(isset($report->options['default_dataset'])) $i = $report->options['default_dataset'];
+		$i = intval($i);
+		
+		$data = $report->renderReportPage('csv/report',array(
+			'dataset'=>$i
+		));
 		
 		if(trim($data)) echo $data;
 	}

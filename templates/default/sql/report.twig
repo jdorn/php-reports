@@ -1,6 +1,9 @@
-INSERT INTO `{{Name}}`
-	({% for value in Rows[0].values %}{% if not loop.first %},{% endif %}`{{value.key}}`{% endfor %})
+{% for dataset in DataSets %}{% if not loop.first %}
+
+{% endif %}INSERT INTO `{{Name}}_{{loop.index}}`
+	({% for value in dataset.rows[0].values %}{% if not loop.first %},{% endif %}`{{value.key}}`{% endfor %})
 VALUES
-{% for row in Rows %}{% if not loop.first %},
+{% for row in dataset.rows %}{% if not loop.first %},
 {% endif %}	({% for value in row.values %}{% if not loop.first %},{% endif %}
 "{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}"{% endfor %}){% endfor %};
+{%endfor%}

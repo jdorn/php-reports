@@ -14,16 +14,19 @@
 {% if not nodata %}
 <script type='text/javascript'>
 $(function() {
-	$('#result_table').dataTable({
+{% for dataset in DataSets %}
+    {% if not dataset.vertical %}
+	$('#result_table_{{loop.index}}').dataTable({
 		bPaginate: false,
 		aaSorting: [],
 		"sDom": "<'row'<'col-md-6'i><'col-md-6'f>r>t"
 	});
+	{% endif %}
 	
-	{% if selectable %}
-	$('#result_table').on('change','input.selectable',function() {
+	{% if dataset.selectable %}
+	$('#result_table_{{loop.index}}').on('change','input.selectable',function() {
 		//determine selected inputs
-		var selected_inputs = $("input.selectable:checked");
+		var selected_inputs = $("input.selectable:checked",$(this).closest('table'));
 		
 		var selected = [];
 		
@@ -43,9 +46,9 @@ $(function() {
 			}
 			
 			if(selected.length)
-				query_string.selected = selected;
+				query_string.selected_{{loop.index-1}} = selected;
 			else
-				delete query_string.selected;
+				delete query_string.selected_{{loop.index-1}};
 			
 			$(this).attr('href',url+'?'+$.param(query_string));
 		});
@@ -58,6 +61,7 @@ $(function() {
 		return false;
 	});
 	{% endif %}
+{% endfor %}
 });
 </script>
 {% endif %}

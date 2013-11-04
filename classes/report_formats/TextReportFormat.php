@@ -10,9 +10,20 @@ class TextReportFormat extends ReportFormatBase {
 		//run the report
 		$report->run();
 		
-        if(!$report->options['Rows']) return;
-
-		
+        if(!$report->options['DataSets']) return;
+        
+        foreach($report->options['DataSets'] as $i=>$dataset) {
+			if(isset($dataset['title'])) echo $dataset['title']."\n";
+			TextReportFormat::displayDataSet($dataset);
+			
+			// If this isn't the last dataset, add some spacing
+			if($i < count($report->options['DataSets'])-1) {
+				echo "\n\n";
+			}
+		}
+    }
+    
+    protected static function displayDataSet($dataset) {
 		/**
 		 * This code taken from Stack Overflow answer by ehudokai
 		 * http://stackoverflow.com/a/4597190
@@ -20,7 +31,7 @@ class TextReportFormat extends ReportFormatBase {
 
 		//first get your sizes
 		$sizes = array();
-		$first_row = $report->options['Rows'][0];
+		$first_row = $dataset['rows'][0];
 		foreach($first_row['values'] as $key=>$value){
 			$key = $value->key;
 			$value = $value->getValue();
@@ -28,7 +39,7 @@ class TextReportFormat extends ReportFormatBase {
 			//initialize to the size of the column name
 			$sizes[$key] = strlen($key);
 		}
-		foreach($report->options['Rows'] as $row) {
+		foreach($dataset['rows'] as $row) {
 			foreach($row['values'] as $key=>$value){
 				$key = $value->key;
 				$value = $value->getValue();
@@ -61,7 +72,7 @@ class TextReportFormat extends ReportFormatBase {
 		echo "+\n";
 
 		//output data
-		foreach($report->options['Rows'] as $row) {
+		foreach($dataset['rows'] as $row) {
 			foreach($row['values'] as $key=>$value){
 				$key = $value->key;
 				$value = $value->getValue();

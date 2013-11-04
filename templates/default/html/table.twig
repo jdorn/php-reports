@@ -1,18 +1,21 @@
 {% if not nodata %}
-	<table{% if not inline_email %} id='result_table' class='table table-bordered table-striped'{% else %} border="1" cellspacing="0"{% endif %}>
-		{% if vertical %}
+{% for dataset in DataSets %}
+    {% if dataset.title %}<h3>{{dataset.title}}</h3>
+    {% endif %}
+	<table{% if not inline_email %} id='result_table_{{loop.index}}' class='result_table table table-bordered table-striped'{% else %} border="1" cellspacing="0"{% endif %}>
+		{% if dataset.vertical %}
 		<thead>
 			<tr class='header'>
-				{% for value in VerticalRows[0].values %}
+				{% for value in dataset.vertical[0].values %}
 				<th class="{{ value.class }}">
 					{% if loop.first %}Key{% else %}Value {{ loop.index -1 }}{% endif %}
 				</th>
 				{% endfor %}
 			</tr>
 		</thead>
-		{% if FooterRows %}
+		{% if dataset.footer %}
 		<tfoot>
-			{% for row in FooterRows %}
+			{% for row in dataset.footer %}
 				<tr>
 					{% for value in row.values %}
 						<td>{{ value.getValue(true)|raw }}</td>
@@ -22,7 +25,7 @@
 		</tfoot>
 		{% endif %}
 		<tbody>
-			{% for row in VerticalRows %}
+			{% for row in dataset.vertical %}
 			<tr>
 				{% for value in row.values %}
 				{% if value.is_header is defined and value.is_header %}{% set tag = 'th' %}{% else %}{% set tag = 'td' %}{% endif %}
@@ -36,18 +39,21 @@
 		{% else %}
 		<thead>
 			<tr class='header'>
-			{% if selectable and not inline_email %}
+			{% if dataset.selectable and not inline_email %}
 				<th> </th>
 			{% endif %}
-			{% for value in Rows[0].values %}
+			{% for value in dataset.rows[0].values %}
 				<th class="{{value.class}}">{{value.key}}</th>
 			{% endfor %}
 			</tr>
 		</thead>
-		{% if FooterRows %}
+		{% if dataset.footer %}
 		<tfoot>
-			{% for row in FooterRows %}
+			{% for row in dataset.footer %}
 				<tr>
+					{% if dataset.selectable and not inline_email %}
+						<td> </td>
+					{% endif %}
 					{% for value in row.values %}
 						<td>{{ value.getValue(true)|raw }}</td>
 					{% endfor %}
@@ -56,9 +62,9 @@
 		</tfoot>
 		{% endif %}
 		<tbody>
-			{% for row in Rows %}
+			{% for row in dataset.rows %}
 			<tr>
-				{% if selectable and not inline_email %}
+				{% if dataset.selectable and not inline_email %}
 					<td style='padding: 0;'>
 						<div style='width:40px;'>
 							<input type='checkbox' class='selectable' style=' vertical-align:middle;' />
@@ -69,7 +75,7 @@
 					</td>
 				{% endif %}
                 {% for value in row.values %}
-                <td class="{{value.class}}{% if selectable and value.key == selectable %} selectable{% endif %}">
+                <td class="{{value.class}}{% if dataset.selectable and value.key == dataset.selectable %} selectable{% endif %}">
                     {{ value.getValue(true)|raw }}
                 </td>
                 {% endfor %}
@@ -78,4 +84,5 @@
 		</tbody>
 		{% endif %}
 	</table>
+{% endfor %}
 {% endif %}

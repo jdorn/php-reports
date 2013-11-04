@@ -15,7 +15,7 @@ class XlsReportFormat extends XlsReportBase {
 		//run the report
 		$report->run();
 
-		if(!$report->options['Rows']) return;
+		if(!$report->options['DataSets']) return;
 
 		$objPHPExcel = parent::getExcelRepresantation(&$report);
 

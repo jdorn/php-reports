@@ -12,11 +12,14 @@ class FilterHeader extends HeaderBase {
 		'params'=>array(
 			'type'=>'object',
 			'default'=>array()
+		),
+		'dataset'=>array(
+			'default'=>0
 		)
 	);
 	
 	public static function init($params, &$report) {
-		$report->addFilter($params['column'],$params['filter'],$params['params']);
+		$report->addFilter($params['dataset'],$params['column'],$params['filter'],$params['params']);
 	}
 	
 	//in format: column, params

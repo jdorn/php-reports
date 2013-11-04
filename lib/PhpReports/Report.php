@@ -231,21 +231,47 @@ class Report {
 		}
 	}
 	
-	public function addFilter($column, $type, $options) {
-		if(!isset($this->filters[$column])) $this->filters[$column] = array();
-		
-		$this->filters[$column][$type] = $options;
-	}
-	protected function applyFilters($column, $value, $row) {
-		//no filters to apply
-		if(!isset($this->filters[$column])) return $value;
-		
-		foreach($this->filters[$column] as $type=>$options) {
-			$classname = $type.'Filter';
-			$value = $classname::filter($value, $options, $this, $row);
+	public function addFilter($dataset, $column, $type, $options) {
+		// If adding for multiple datasets
+		if(is_array($dataset)) {
+			foreach($dataset as $d) {
+				$this->addFilter($d,$column,$type,$options);
+			}
+		}
+		// If adding for all datasets
+		else if($dataset === true) {
+			$this->addFilter('all',$column,$type,$options);
+		}
+		// If adding for a single dataset
+		else {
+			if(!isset($this->filters[$dataset])) $this->filters[$dataset] = array();
+			if(!isset($this->filters[$dataset][$column])) $this->filters[$dataset][$column] = array();
 			
-			//if the column should not be displayed
-			if($value === false) return false;
+			$this->filters[$dataset][$column][$type] = $options;
+		}
+		
+	}
+	protected function applyFilters($dataset, $column, $value, $row) {
+		// First, apply filters for all datasets
+		if(isset($this->filters['all']) && isset($this->filters['all'][$column])) {
+			foreach($this->filters['all'][$column] as $type=>$options) {
+				$classname = $type.'Filter';
+				$value = $classname::filter($value, $options, $this, $row);
+				
+				//if the column should not be displayed
+				if($value === false) return false;
+			}
+		}
+		
+		// Then apply filters for this specific dataset
+		if(isset($this->filters[$dataset]) && isset($this->filters[$dataset][$column])) { 
+			foreach($this->filters[$dataset][$column] as $type=>$options) {
+				$classname = $type.'Filter';
+				$value = $classname::filter($value, $options, $this, $row);
+				
+				//if the column should not be displayed
+				if($value === false) return false;
+			}
 		}
 		
 		return $value;
@@ -373,11 +399,19 @@ class Report {
 		}
 		
 		$classname::openConnection($this);
-		$rows = $classname::run($this);
+		$datasets = $classname::run($this);		
 		$classname::closeConnection($this);
 		
-		$this->options['Count'] = count($rows);
-		$this->options['Rows'] = $rows;
+		// Convert old single dataset format to multi-dataset format
+		if(!isset($datasets[0]['rows']) || !is_array($datasets[0]['rows'])) {
+			$datasets = array(
+				array(
+					'rows'=>$datasets
+				)
+			);
+		}
+		
+		$this->options['DataSets'] = $datasets;
 	}
 	
 	protected function getTimeEstimate() {
@@ -417,23 +451,29 @@ class Report {
 			'stdev'=>round($standard_deviation,2)
 		);
 	}
-	
-	protected function prepareRows() {
+	protected function prepareDataSets() {
+		foreach($this->options['DataSets'] as $i=>$dataset) {
+			$this->prepareRows($i);
+		}
+		$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
+		$this->options['Count'] = $this->options['DataSets'][0]['count'];
+	}
+	protected function prepareRows($dataset) {
 		$rows = array();
 		
 		//generate list of all values for each numeric column
 		//this is used to calculate percentiles/averages/etc.
 		$vals = array();
-		foreach($this->options['Rows'] as $row) {
+		foreach($this->options['DataSets'][$dataset]['rows'] as $row) {
 			foreach($row as $key=>$value) {
 				if(!isset($vals[$key])) $vals[$key] = array();
 				
 				if(is_numeric($value)) $vals[$key][] = $value;
 			}
 		}
-		$this->options['Values'] = $vals;
+		$this->options['DataSets'][$dataset]['values'] = $vals;
 		
-		foreach($this->options['Rows'] as $row) {
+		foreach($this->options['DataSets'][$dataset]['rows'] as $row) {
 			$rowval = array();
 			
 			$i=1;
@@ -441,9 +481,9 @@ class Report {
 				$val = new ReportValue($i, $key, $value);
 				
 				//apply filters for the column key
-				$val = $this->applyFilters($key,$val,$row);
+				$val = $this->applyFilters($dataset,$key,$val,$row);
 				//apply filters for the column position
-				if($val) $val = $this->applyFilters($i,$val,$row);
+				if($val) $val = $this->applyFilters($dataset,$i,$val,$row);
 				
 				if($val) {
 					$rowval[] = $val;
@@ -460,7 +500,8 @@ class Report {
 			);
 		}
 		
-		$this->options['Rows'] = $rows;
+		$this->options['DataSets'][$dataset]['rows'] = $rows;
+		$this->options['DataSets'][$dataset]['count'] = count($rows);
 	}
 	
 	public function run() {
@@ -483,7 +524,7 @@ class Report {
 			}
 			else {
 				$this->_runReport();
-				$this->prepareRows();
+				$this->prepareDataSets();
 				$this->storeInCache();
 			}
 
@@ -522,7 +563,7 @@ class Report {
 		$this->has_run = true;
 	}
 	
-	public function renderReportPage($template='html/report') {
+	public function renderReportPage($template='html/report', $additional_vars = array()) {
 		$this->run();
 		
 		$template_vars = array(
@@ -535,6 +576,8 @@ class Report {
 			'vars'=>$this->prepareVariableForm(),
 			'macros'=>$this->macros,
 		);
+		
+		$template_vars = array_merge($template_vars,$additional_vars);
 		
 		$template_vars = array_merge($template_vars,$this->options);
 		
