@@ -220,9 +220,10 @@ class Report {
 		if(!isset($this->options['Name'])) $this->options['Name'] = $this->report;
 	}
 	
-	public function parseHeader($name,$value) {
+	public function parseHeader($name,$value,$dataset=null) {
 		$classname = $name.'Header';
 		if(class_exists($classname)) {
+			if($dataset !== null && isset($classname::$validation) && isset($classname::$validation['dataset'])) $value['dataset'] = $dataset;
 			$classname::parse($name,$value,$this);
 			if(!in_array($name,$this->headers)) $this->headers[] = $name;
 		}
@@ -412,6 +413,20 @@ class Report {
 		}
 		
 		$this->options['DataSets'] = $datasets;
+
+		$this->parseDynamicHeaders();
+	}
+
+	protected function parseDynamicHeaders() {
+		foreach($this->options['DataSets'] as $i=>&$dataset) {
+			if(isset($dataset['headers'])) {
+				foreach($dataset['headers'] as $j=>$header) {
+					if(isset($header['header']) && isset($header['value'])) {
+						$this->parseHeader($header['header'],$header['value'],$i);
+					}
+				}
+			}
+		}
 	}
 	
 	protected function getTimeEstimate() {

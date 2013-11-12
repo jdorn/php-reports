@@ -69,6 +69,9 @@ class OptionsHeader extends HeaderBase {
 		'default_dataset'=>array(
 			'type'=>'number',
 			'default'=>0
+		),
+		'has_charts'=>array(
+			'type'=>'boolean'
 		)
 	);
 	
@@ -77,6 +80,10 @@ class OptionsHeader extends HeaderBase {
 		if(isset($params['ttl'])) {
 			$params['cache'] = $params['ttl'];
 			unset($params['ttl']);
+		}
+
+		if(isset($params['has_charts']) && $params['has_charts']) {
+			if(!isset($report->options['Charts'])) $report->options['Charts'] = array();
 		}
 		
 		// Some parameters were moved to a 'FORMATTING' header
