@@ -412,6 +412,20 @@ class Report {
 		}
 		
 		$this->options['DataSets'] = $datasets;
+
+		$this->parseDynamicHeaders();
+	}
+
+	protected function parseDynamicHeaders() {
+		foreach($this->options['DataSets'] as $i=>&$dataset) {
+			if(isset($dataset['headers'])) {
+				foreach($dataset['headers'] as $j=>$header) {
+					if(isset($header['header']) && isset($header['value'])) {
+						$this->parseHeader($header['header'],$header['value']);
+					}
+				}
+			}
+		}
 	}
 	
 	protected function getTimeEstimate() {

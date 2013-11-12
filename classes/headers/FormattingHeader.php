@@ -34,12 +34,20 @@ class FormattingHeader extends HeaderBase {
 		'dataset'=>array(
 			'required'=>true,
 			'default'=>true
+		),
+		'has_charts'=>array(
+			'type'=>'boolean'
 		)
 	);
 	
 	public static function init($params, &$report) {
 		if(!isset($report->options['Formatting'])) $report->options['Formatting'] = array();
 		$report->options['Formatting'][] = $params;
+
+		if(isset($params['has_charts']) && $params['has_charts']) {
+			$report->options['has_charts'] = true;
+			if(!isset($report->options['Charts'])) $report->options['Charts'] = array();
+		}
 	}
 	
 	public static function parseShortcut($value) {
