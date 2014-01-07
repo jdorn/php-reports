@@ -17,7 +17,7 @@ class XlsReportFormat extends XlsReportBase {
 
 		if(!$report->options['DataSets']) return;
 
-		$objPHPExcel = parent::getExcelRepresantation(&$report);
+		$objPHPExcel = parent::getExcelRepresantation($report);
 
 		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 		$objWriter->save('php://output');
