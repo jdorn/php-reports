@@ -178,6 +178,10 @@ cp config/config.php.sample config/config.php</pre>
 	    <div class='alert alert-info'>
 	      If you use nginx, place the following in your server declaration - <code>try_files $uri $uri/ /index.php;</code>
 	    </div>
+
+	    <div class='alert alert-info'>
+	      If you use Apache, make sure .htaccess files are allowed and mod_rewrite is enabled
+	    </div>
 	    
 	  </section>
 
@@ -873,6 +877,12 @@ VARIABLE: {
 		      The chart type "GeoChart" has two modes.  The region mode colorizes whole regions, such as countries, provinces, or states.  The marker mode marks designates regions using bubbles that are scaled according to a value that you specify.  If this property is true, the map will be in markers mode.  Otherwise, it will be in region mode.  If using another chart type, this option is ignored.
 		    </td>
 		    <td><code>false</code></td>
+		  </tr>
+		  <tr>
+		      <td>options</td>
+		      <td>object</td>
+		      <td>Any additional options to pass into Google Charts.  Should be a JSON object.</td>
+		      <td><code>null</code></td>
 		  </tr>
 		  <tr>
 		    <td>title</td>
