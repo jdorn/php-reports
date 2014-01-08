@@ -1490,7 +1490,7 @@ FILTER: {
 	    <section>
 	      <h3>HTML Filter</h3>
 	      
-	      <p>The HTML filter renders the cells as HTML.  The default action is to escape all values in a report.</p>
+	      <p>The HTML filter renders the cells as HTML.  Without this filter, all values will be HTML escaped.</p>
 	      
 	      <h4>Examples</h4>
 	      
@@ -1656,6 +1656,52 @@ FILTER: {
 FILTER: {
   filter: "pre",
   column: "Customer Address"
+}</pre>  
+
+	    <section>
+	      <h3>Twig Filter</h3>
+	      
+	      <p>The Twig Filter lets you render a twig template using the row's values.</p>
+	      
+	      <table class="table table-bordered table-striped">
+		<thead>
+		  <tr>
+		    <th>Parameter Name</th>
+		    <th>Type</th>
+		    <th>Description</th>
+		    <th>Default Value</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>template</td>
+		    <td>string</td>
+		    <td>
+		      <p>The twig template.  If not defined, the cell's value will be used as the template.</p>
+		      <p>Two twig variables are available: <code>value</code> contains the filtered cell's value.  <code>row</code> is an object containing values for all the other cells in the row.</p>
+		    </td>
+		    <td>The cell's value</td>
+		  </tr>
+		  <tr>
+		    <td>html</td>
+		    <td>boolean</td>
+		    <td>
+		      If true, the value will not be HTML escaped.
+		    </td>
+		    <td><code>false</code></td>
+		  </tr>
+		</tbody>
+	      </table>
+	      
+	      <h4>Examples</h4>
+	      
+	      <pre class="prettyprint">
+FILTER: {
+  filter: "twig",
+  column: "admin_link",
+  params: {
+    template: "&lt;a href='http://example.com/admin/?id={{ row.product_id }}&amp;edit=true'&gt;{{ value }}&lt;/a&gt;"
+  }
 }</pre>  
 	    
 	    
