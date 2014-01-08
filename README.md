@@ -1,26 +1,31 @@
 Php Reports
 ===========
 
-A light weight, extendable, PHP reporting framework for managing and displaying nice looking, exportable reports from any data source, including SQL and MongoDB
+A reporting framework for managing and displaying nice looking, exportable reports from any data source, including SQL and MongoDB.
 
 Major features include:
 
 *   Display a report from any data source that can output tabular data (SQL, MongoDB, PHP, etc.)
 *   Output reports in HTML, XML, CSV, JSON, or your own custom format
 *   Add customizable parameters to a report (e.g. start date and end date)
-*   Support for graphs and charts with the Google Data Visualization API
-*   Easily switch between database environments (e.g. Production, Staging, and Dev)
+*   Add graphs and charts with the Google Data Visualization API
+*   Supports multiple database environments (e.g. Production, Staging, and Dev)
 *   Fully extendable and customizable
 
-Introduction
+For installation instructions and documentation, check out http://jdorn.github.io/php-reports/
+
+
+Basic Introduction
 ============
 
 Reports are organized and grouped in directories.  Each report is it's own file.
 
-A report consists of headers containing meta-data (e.g. name, description, column formatting, etc.) 
-and the actual report (SQL statements, MongoDB js file, PHP code, etc.).
+A report consists of headers containing meta-data (e.g. name and description) 
+and the actual report (SQL queries, javascript, or PHP code).
 
-All reports return rows of data which are then outputted in the specified format (HTML, CSV, etc.).
+All reports return rows of data which are then displayed in a sortable/searchable HTML table.
+
+Reports can be exported to a number of formats including CSV, XLS, JSON, and XML.
 
 The Php Reports framework ties together all these different report types, output formats, and meta-data into
 a consistent interface.
@@ -28,32 +33,32 @@ a consistent interface.
 Example Reports
 ==============
 
-Here's an example of a SQL report:
+Here's an example SQL report:
 
 ```sql
--- My Report
--- This lists all the products that cost
--- more than a given price.
--- VARIABLE: min_price, Minimum Price
+-- Products That Cost At Least $X
+-- VARIABLE: {"name": "min_price"}
 
 SELECT Name, Price FROM Products WHERE Price > "{{min_price}}"
 ```
 
-The set of SQL comments at the top are the report headers.  
+The set of SQL comments at the top are the report headers.  The first row is always the report name.
 
-The first row is always the report name.  After that comes a description.  Following that are any parameters or options.
-
-The VARIABLE header tells the report framework to prompt the user before running the report.  Once a value is provided,
-it will be passed into the report body ("{{min_price}}" in this example).
+The `VARIABLE` header tells the report framework to prompt the user for a value before running the report.  Once provided
+it will be passed into the report body ("{{min_price}}" in this example) and executed.
 
 
 Here's a MongoDB report:
 
 ```js
-// My Other Report
-// Lists all food products in a MongoDB collection
+// List of All Foods
 // MONGODATABASE: MyDatabase
-// VARIABLE: include_inactive, Include Inactive?, yes|no
+// VARIABLE: {
+//   "name": "include_inactive", 
+//   "display": "Include Inactive?", 
+//   "type": "select",
+//   "options": ["yes","no"]
+// }
 
 var query = {'type': 'food'};
 
@@ -70,17 +75,15 @@ As you can see, the structure is very similar.  MongoDB reports use javascript s
 
 The MONGODATABASE header, if specified, will populate the 'db' variable.
 
-All VARIABLE headers are defined as variables in javascript before the report is run.
-
 
 Here's a PHP Report:
 
 ```php
 <?php
-//My Third Report
+//List of Payment Charges
 //This connects to the Stripe Payments api and shows a list of charges
 //INCLUDE: /stripe.php
-//VARIABLE: count, Number of Charges
+//VARIABLE: {"name": "count", "display": "Number to Display"}
 
 if($count > 100 || $count < 1) throw new Exception("Count must be between 1 and 100");
 
@@ -116,6 +119,6 @@ Stripe::setApiKey("123456");
 ?>
 ```
 
-Hopefully, you can begin to see the power of the Php Report Framework.  
+Hopefully, you can begin to see the power of Php Reports.
 
-For full documentation, see the [wiki](http://github.com/jdorn/php-reports/wiki).
+For full documentation and information on getting started, check out http://jdorn.github.io/php-reports/
