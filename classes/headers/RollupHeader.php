@@ -64,6 +64,7 @@ class RollupHeader extends HeaderBase {
 				}
 			}
 		}
+
 		// Then, calculate other statistical properties
 		foreach($twig_params as $dataset=>&$tp) {
 			foreach($tp as $column=>&$params) {
@@ -95,6 +96,8 @@ class RollupHeader extends HeaderBase {
 			
 			foreach($twig_params[$rollup['dataset']] as $column=>$p) {
 				if(isset($columns[$column])) {
+					$p = array_merge($p,array('row'=>$twig_params[$rollup['dataset']]));
+
 					$row['values'][] = new ReportValue(-1,$column,PhpReports::renderString($columns[$column],$p));
 				}
 				else {
