@@ -136,6 +136,7 @@
 	      <li>Add customizable parameters to a report (e.g. date range, keyword, etc.)</li>
 	      <li>Support for graphs and charts with the Google Data Visualization API</li>
 	      <li>Easily switch between database environments (e.g. Production, Staging, and Dev)</li>
+	      <li>Create dashboards that combine multiple reports in a single page</li>
 	      <li>Fully extendable and customizable</li>
 	    </ul>
 	  </section>
@@ -194,6 +195,8 @@ cp config/config.php.sample config/config.php</pre>
 	      <h3>Basic Settings</h3>
 	      
 	      <p><strong>reportDir</strong> is the path to the directory containing all of your report files. It is relative to the project's root.</p>
+	      
+	      <p><strong>dashboardDir</strong> is the path to the directory containing all of your dashboard configuration files. It is relative to the project's root.</p>
 	      
 	      <p>
 		<strong>cacheDir</strong> is the path to the cache directory.  
@@ -1028,7 +1031,7 @@ CHART: {
 	      
 	      <pre class='prettyprint linenums'>INCLUDE: {"report": "/relative/to/reportdir/report.sql"}</pre>
 	    </section><!--/include-->
-	    <section id="filters">
+	    <section id="filter">
 	      <h3>Filter Header</h3>
 	      
 	      <p>The Filter header modifies all the values in a column.</p>
@@ -1359,7 +1362,7 @@ ROLLUP: {
 	    </section><!--/info header-->
 	      
 	  </section><!-- /headers -->
-	  <section>
+	  <section id="filters">
 	    <h2>Report Filters</h2>
 	    
 	    <p>Report filters are used to modify columns in a report before outputting to a browser.  An example might be making a url column into a clickable link or making an ip address column into a city, state location.</p>
@@ -1750,7 +1753,126 @@ FILTER: {
 	    </section><!--/bar filter-->
 	    
 	  </section><!--/filters-->
-	  
+  	
+	  <section id="dashboards">
+	    <h2>Dashboards</h2>
+	    
+	    <p>Dashboards allow you to combine multiple reports in a single page.</p>
+	    
+	    <p>Each dashboard requires a JSON configuration file in <strong>dashboardDir</strong> (from config.php).</p>
+	    
+	    <p>You can see a list of all dashboards at <code>/dashboards/</code></p>
+	    
+	    <p>Here are the allowed top level fields in the JSON files:</p>
+	    
+	    <table class='table table-striped table-bordered'>
+	      <thead>
+	      <tr>
+		<th>Key</th>
+		<th>Description</th>
+	      </tr>
+	      </thead>
+	      <tbody>
+	      <tr>
+		<td>title</td>
+		<td>Shows up in the dashboard list and as a header in the dashboard.</td>
+	      </tr>
+	      <tr>
+		<td>description</td>
+		<td>Shows below the header in the dashboard (optional)</td>
+	      </tr>
+	      <tr>
+		<td>reports</td>
+		<td>An array of reports (see below)</td>
+	      </tr>
+	      </tbody>
+	    </table>
+	    
+	    <p>Each report is the reports array is an object with the following allowed fields:</p>
+	    
+	    <table class='table table-striped table-bordered'>
+	      <thead>
+	      <tr>
+		<th>Key</th>
+		<th>Description</th>
+	      </tr>
+	      </thead>
+	      <tbody>
+	      <tr>
+		<td>report</td>
+		<td>The path to the report.</td>
+	      </tr>
+	      <tr>
+		<td>title</td>
+		<td>Shows as a header above the report data (optional)</td>
+	      </tr>
+	      <tr>
+		<td>description</td>
+		<td>Shows below the header (optional)</td>
+	      </tr>
+	      <tr>
+		<td>macros</td>
+		<td>A JSON object containing macro variables to pass into the report (optional)</td>
+	      </tr>
+	      <tr>
+		<td>format</td>
+		<td>What format to display the report in.  Allowed formats are:
+		<ul>
+		  <li>html</li>
+		  <li>chart</li>
+		  <li>text</li>
+		</ul>
+		</td>
+	      </tr>
+	      <tr>
+		<td>newRow</td>
+		<td>If true, the report will start a new row in the dashboard.  Otherwise, it will be in the same row as the previous report.</td>
+	      </tr>
+	      <tr>
+		<td>class</td>
+		<td>CSS classes to apply to the report container.  The most common use case is specifying the width of the report with bootstrap's <code>col-*-*</code> classes.</td>
+	      </tr>
+	      <tr>
+		<td>style</td>
+		<td>Inline styles to apply to the report container.</td>
+	      </tr>
+	      </tbody>
+	    </table>
+	    
+	    <p>Here's a full example dashboard (taken from <code>sample_dashboards/timezone.json</code>)</p>
+	    
+	    
+	      <pre class="prettyprint">
+{
+  "title": "Timezone Dashboard",
+  "description": "Shows off the dashboard feature of Php Reports",
+  "reports": [
+    {
+      "report": "php/timezones.php",
+      "title": "ACST Timezone",
+      "macros": {
+        "region": "acst"
+      },
+      "format": "html",
+      "newRow": false,
+      "style": "max-height: 400px; overflow-y: auto; overflow-x: hidden;",
+      "class": "col-md-6"
+    },
+    {
+      "report": "php/timezones.php",
+      "title": "CDT Timezone",
+      "macros": {
+        "region": "cdt"
+      },
+      "format": "chart",
+      "newRow": false,
+      "class": "col-md-6"
+    }
+  ]
+}</pre>
+	    
+	  </section>
+		  
         </div><!--/span-->
       </div><!--/row-->
 
