@@ -1,0 +1,104 @@
+{% extends "html/page.twig" %}
+
+{% block title %}Dashboard List{% endblock %}
+
+{% block header %}
+<h2>{{dashboard.title}}</h2>
+{% if dashboard.description %}<p>{{dashboard.description|raw}}</p>{% endif %}
+{% endblock %}
+
+{% block content %}
+<div id='reports_holder' style='margin-top: 20px;'>
+
+</div>
+{% endblock %}
+
+
+{% block javascripts %}
+{{ parent() }}
+<script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
+<script type="text/javascript" src="{{base}}/public/js/moment-2.0.min.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/daterangepicker-1.2.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/prettify.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/lang-sql.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/jquery.browser.js"></script>
+<script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.plugin.1.9.3.js"></script>
+<script type="text/javascript">
+    $("#content").on('click','a[data-role="button"]',function(e) {
+        e.preventDefault();
+    });
+</script>
+<script>
+var dashboard = {{ dashboard|json_encode|raw }};
+
+var last_row = $("<div class='row'>").appendTo($("#reports_holder"));
+var first = true;
+
+$.each(dashboard.reports, function(i,report) {
+  if(!first && report.newRow) {
+    last_row = $("<div class='row'>").appendTo($("#reports_holder"));
+  }
+  
+  var container = $("<div>").appendTo(last_row);
+  
+  if(report.class) container.addClass(report.class);  
+  
+  var report_data = {
+    macros: report.macros || {},
+    report: report.report
+  };
+  
+  
+  if(report.title) {
+    container.append("<div style='float: right; line-height: 30px;'><a href='{{base}}/report/html/?"+$.param(report_data)+"'>View full report</a></div>");
+    container.append($("<h2>").text(report.title).css({
+      marginTop: 0,
+      paddingTop: 0
+    }));
+  }
+  else {
+    container.append("<p><a href='{{base}}/report/html/?"+$.param(report_data)+"'>View full report</a></p>");
+  }
+  
+  if(report.description) {
+    container.append($("<p>").text(report.description));
+  }
+
+  var holder;
+      
+  if(!report.format || report.format === 'html' || report.format === 'table') {
+    holder = $("<div>").appendTo(container);
+    
+    var report_url = "{{base}}/report/html";
+    
+    // Loading message
+    holder.append("<p>Loading...</p>");
+    
+    report_data.content_only = true;
+    report_data.no_charts = true;
+    
+    $.get(report_url,report_data,function(response) {
+      holder.empty().html(response);
+    });
+    
+    if(report.style) holder.attr('style',report.style);
+  }
+  else {
+    holder = $("<iframe>").appendTo(container).css({
+      border: 0,
+      width: '100%'
+    }).iframeAutoHeight();
+    
+    holder.attr('src',"{{base}}/report/"+report.format+"?"+$.param(report_data));
+    
+    if(report.style) holder.attr('style',holder.attr('style')+';'+report.style);
+  }
+  
+  
+});
+
+
+</script>
+{% endblock %}

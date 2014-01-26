@@ -1,6 +1,6 @@
 {% block chart_area %}
-    {% if has_charts %}
-        <iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
+    {% if has_charts and not no_charts %}
+				<iframe src="{{base}}/report/chart/?{{report_querystring}}" id='chart_container' class="auto-height" scrolling="no" style='width:100%;' frameborder="0"></iframe>
         <script>
             $(function() {
                 $('iframe#chart_container').iframeAutoHeight();
@@ -14,7 +14,7 @@
 {% if not nodata %}
 <script type='text/javascript'>
 $(function() {
-{% for dataset in DataSets %}
+{% for dataset in DataSets %} 
     {% if not dataset.vertical %}
 	$('#result_table_{{loop.index}}').dataTable({
 		bPaginate: false,

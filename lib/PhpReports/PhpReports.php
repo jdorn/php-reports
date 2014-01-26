@@ -232,6 +232,48 @@ class PhpReports {
 		$start = microtime(true);
 		echo self::render('html/report_list',$template_vars);
 	}
+	
+	public static function listDashboards() {
+		$dashboards = self::getDashboards();
+		
+		uasort($dashboards,function($a,$b) {
+			return strcmp($a['title'],$b['title']);
+		});
+		
+		echo self::render('html/dashboard_list',array(
+			'dashboards'=>$dashboards
+		));
+	}
+	
+	public static function displayDashboard($dashboard) {
+		$content = self::getDashboard($dashboard);
+		
+		echo self::render('html/dashboard',array(
+			'dashboard'=>$content
+		));
+	}
+	
+	public static function getDashboards() {
+		$dashboards = glob(PhpReports::$config['dashboardDir'].'/*.json');
+		
+		$ret = array();
+		foreach($dashboards as $key=>$value) {
+			$name = basename($value,'.json');
+			$ret[$name] = self::getDashboard($name);
+		}
+		
+		return $ret;
+	}
+	
+	public static function getDashboard($dashboard) {
+		$file = PhpReports::$config['dashboardDir'].'/'.$dashboard.'.json';
+		if(!file_exists($file)) {
+			throw "Unknown dashboard - ".$dashboard;
+		}
+		
+		return json_decode(file_get_contents($file),true);
+	}
+	
 	public static function getRecentReports() {
 		$recently_run = FileSystemCache::retrieve(FileSystemCache::generateCacheKey('recently_run'));
 		$recent = array();

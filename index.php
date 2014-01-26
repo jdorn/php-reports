@@ -14,6 +14,14 @@ Flight::route('/',function() {
 	PhpReports::listReports();
 });
 
+Flight::route('/dashboards',function() {
+	PhpReports::listDashboards();
+});
+
+Flight::route('/dashboard/@name',function($name) {
+	PhpReports::displayDashboard($name);
+});
+
 //JSON list of reports (used for typeahead search)
 Flight::route('/report-list-json',function() {
 	header("Content-Type: application/json");

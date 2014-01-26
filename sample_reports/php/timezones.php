@@ -8,6 +8,7 @@
 //      options: ["cdt","acst","pdt"],
 //      default: "acst"
 // }
+// CHART: {type: "LineChart"}
 
 $timezone_abbreviations = DateTimeZone::listAbbreviations();
 

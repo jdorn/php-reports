@@ -1,0 +1,27 @@
+{
+  "title": "Timezone Dashboard",
+  "description": "Shows off the dashboard feature of Php Reports",
+  "reports": [
+    {
+      "report": "php/timezones.php",
+      "title": "ACST Timezone",
+      "macros": {
+        "region": "acst"
+      },
+      "format": "html",
+      "newRow": false,
+      "style": "max-height: 400px; overflow-y: auto; overflow-x: hidden;",
+      "class": "col-md-6"
+    },
+    {
+      "report": "php/timezones.php",
+      "title": "CDT Timezone",
+      "macros": {
+        "region": "cdt"
+      },
+      "format": "chart",
+      "newRow": false,
+      "class": "col-md-6"
+    }
+  ]
+}

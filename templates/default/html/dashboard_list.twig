@@ -1,0 +1,19 @@
+{% extends "html/page.twig" %}
+
+{% block title %}Dashboard List{% endblock %}
+
+{% set breadcrumb = {"Dashboard List": true} %}
+
+{% block header %}
+<h2>Dashboards</h2>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+<ul>
+  {% for key, dashboard in dashboards %}
+  <li><a href='{{base}}/dashboard/{{key}}'>{{dashboard.title}}</a></li>
+  {% endfor %}
+</ul>
+</div>
+{% endblock %}

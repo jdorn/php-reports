@@ -236,7 +236,7 @@ class ChartHeader extends HeaderBase {
 					$val->datatype = 'date';
 				}
 				elseif($types[$key] === 'number') {
-					$val->setValue(round(floatval(preg_replace('/[^0-9\.]*/','',$val->getValue())),6));
+					$val->setValue(round(floatval(preg_replace('/[^-0-9\.]*/','',$val->getValue())),6));
 					$val->datatype = 'number';
 				}
 				else {

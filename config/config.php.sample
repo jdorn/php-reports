@@ -3,6 +3,9 @@ return array(
 	//the root directory of all your reports
 	//reports can be organized in subdirectories
 	'reportDir' => 'sample_reports',
+
+	//the root directory of all dashboards
+	'dashboardDir' => 'sample_dashboards',
 	
 	//the directory where things will be cached
 	//this is relative to the project root by default, but can be set to an absolute path too

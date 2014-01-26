@@ -15,11 +15,13 @@ class HtmlReportFormat extends ReportFormatBase {
 		}
 		
 		try {
-			$html = $report->renderReportPage($template);
+			$additional_vars = array();
+			if(isset($request->query['no_charts'])) $additional_vars['no_charts'] = true;
+			
+			$html = $report->renderReportPage($template,$additional_vars);
 			echo $html;
 		}
-		catch(Exception $e) {
-			
+		catch(Exception $e) {			
 			if(isset($request->query['content_only'])) {
 				$template = 'html/blank_page';
 			}
