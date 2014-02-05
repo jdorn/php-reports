@@ -103,7 +103,7 @@
         // if selection length is 0, we deselected an element
         if (sel.length > 0) {
             // if row is undefined, we clicked on the legend
-            if (typeof sel[0].row === 'undefined') {
+            if (sel[0].row == null) {
                 var col = sel[0].column;
                 if (columns[col] == col) {
                     // hide the data series
