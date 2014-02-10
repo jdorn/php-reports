@@ -101,6 +101,8 @@ $(function() {
     });
 
 	$('.daterangepicker_holder',$('#variable_form')).each(function() {
+        moment.lang(window.navigator.language);
+
 		var range_holder = $(this);
 		range_holder.daterangepicker(
 			{
@@ -114,7 +116,9 @@ $(function() {
 				},
                 showWeekNumbers: true,
                 showDropdowns: true,
-
+                locale: {
+                    firstDay: moment.langData()._week.dow
+                }
 			},
 			function(start, end) {
 				$('#var_'+range_holder.data('var')+'_start').val(start.format('YYYY-MM-DD')+" 00:00:00");
