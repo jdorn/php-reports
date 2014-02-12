@@ -12,7 +12,7 @@ class numberFilter extends FilterBase {
         $dec_sepr = $options['decimal_sep'] ? $options['decimal_sep'] : ',';
         $thousand = $options['thousands_sep'] ? $options['thousands_sep'] : ' ';
         if (is_numeric($value->getValue())) {
-            $value->setValue(number_format($value->getValue(), $decimals, $dec_sepr, $thousand));
+            $value->setValue(number_format($value->getValue(), $decimals, $dec_sepr, $thousand), true);
         }
 
         return $value;
