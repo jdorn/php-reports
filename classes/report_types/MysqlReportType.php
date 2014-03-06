@@ -91,6 +91,10 @@ class MysqlReportType extends ReportTypeBase {
 		if(isset($params['where'])) {
 			$query .= ' WHERE '.$params['where'];
 		}
+
+		if(isset($params['order']) && in_array($params['order'], array('ASC', 'DESC')) ) {
+			$query .= ' ORDER BY '.$params['column'].' '.$params['order'];
+		}
 		
 		$result = mysql_query($query, $report->conn);
 		
