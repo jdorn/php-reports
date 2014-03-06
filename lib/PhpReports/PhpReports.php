@@ -268,7 +268,7 @@ class PhpReports {
 	public static function getDashboard($dashboard) {
 		$file = PhpReports::$config['dashboardDir'].'/'.$dashboard.'.json';
 		if(!file_exists($file)) {
-			throw "Unknown dashboard - ".$dashboard;
+			throw new Exception("Unknown dashboard - ".$dashboard);
 		}
 		
 		return json_decode(file_get_contents($file),true);
