@@ -14,6 +14,8 @@ Major features include:
 
 For installation instructions and documentation, check out http://jdorn.github.io/php-reports/
 
+If you have a question, post on the official forum - http://ost.io/@jdorn/php-reports
+
 
 Basic Introduction
 ============
