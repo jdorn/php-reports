@@ -103,13 +103,15 @@ class Report {
 	public function exportHeader($name,$params) {
 		$this->exported_headers[] = array('name'=>$name,'params'=>$params);
 	}
-	
+	public function getCacheKeyParameters() {
+            return array(
+                'report'=>$this->report,
+                'macros'=>$this->macros,
+                'database'=>$this->options['Environment']
+            );
+        }
 	public function getCacheKey() {
-		return FileSystemCache::generateCacheKey(array(
-			'report'=>$this->report,
-			'macros'=>$this->macros,
-			'database'=>$this->options['Environment']
-		),'report_results');
+		return FileSystemCache::generateCacheKey($this->getCacheKeyParameters(),'report_results');
 	}
 	public function getReportTimesCacheKey() {
 		return FileSystemCache::generateCacheKey($this->report,'report_times');
