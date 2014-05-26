@@ -503,7 +503,7 @@
         hide: function (e) {
             this.container.hide();
 
-            if (!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
+            //if (!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
                 this.notify();
 
             this.oldStartDate = this.startDate.clone();
