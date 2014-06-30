@@ -177,7 +177,7 @@ cp config/config.php.sample config/config.php</pre>
 	    <p>You should now be able to view the report list in your browser</p>
 	    
 	    <div class='alert alert-info'>
-	      If you use nginx, place the following in your server declaration - <code>try_files $uri $uri/ /index.php;</code>
+	      If you use nginx, place the following in your server declaration - <code>try_files $uri $uri/ /index.php?$query_string;</code>
 	    </div>
 
 	    <div class='alert alert-info'>
