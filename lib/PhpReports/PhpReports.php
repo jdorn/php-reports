@@ -349,7 +349,7 @@ class PhpReports {
 		//the url parameter ?nocache will bypass this and not use cache
 		$data =false;
 		if(!isset($_REQUEST['nocache'])) {
-			$data = FileSystemCache::retrieve($cacheKey, filemtime($report));
+			$data = FileSystemCache::retrieve($cacheKey, filemtime(Report::getFileLocation($report)));
 		}
 
 		//report data not cached, need to parse it
