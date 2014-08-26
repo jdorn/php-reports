@@ -7,7 +7,7 @@ return array(
         
 	//the root directory of all your reports
 	//reports can be organized in subdirectories
-	'reportDir' => '/home/chitika/reports',
+	'reportDir' => 'reports',
 
 	//the root directory of all dashboards
 	'dashboardDir' => 'dashboards',
