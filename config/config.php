@@ -1,11 +1,16 @@
 <?php
 return array(
+    
+        //Confugure whether to use Login System or not for PHPReports
+        //Assign 1 to enable, assign 0 for disable. Default it is '0' (Disabled)
+        'loginEnable' => 1,
+        
 	//the root directory of all your reports
 	//reports can be organized in subdirectories
-	'reportDir' => 'sample_reports',
+	'reportDir' => '/home/chitika/reports',
 
 	//the root directory of all dashboards
-	'dashboardDir' => 'sample_dashboards',
+	'dashboardDir' => 'dashboards',
 	
 	//the directory where things will be cached
 	//this is relative to the project root by default, but can be set to an absolute path too
@@ -56,24 +61,53 @@ return array(
 	//email settings
 	'mail_settings' => array(
 		//set 'enabled' to true to enable the 'email this report' functionality
-		'enabled'=>false,
+		'enabled'=>true,
 		
-		'from'=>'reports@yourdomain.com',
+		'from'=>'sreekanthreddy.vasavi@gmail.com',
 		
 		//php's mail function
-		'method'=>'mail'
+		// 'method'=>'mail'
 		
 		//sendmail
-		/*
-		'method'=>'sendmail',
-		'command'=>'/usr/sbin/sendmail -bs' //optional
-		*/
+		
+		// 'method'=>'sendmail',
+		// 'command'=>'/usr/sbin/sendmail -bs' //optional
+		
 		
 		//smtp
-		/*
+		
 		'method'=>'smtp',
-		'server'=>'smtp.yourdomain.com',
+		'server'=>'smtp.gmail.com',
+		'port'=>'587', 						//optional (default 25)
+		
+		'username'=>'', 	//optional
+		'password'=>'', 	//optional
+		'encryption'=>'tls' 				//optional (either 'ssl' or 'tls')
+		
+	),
+
+	//email settings
+	'mail_scheduler' => array(
+		//set 'enabled' to true to enable the 'email this report' functionality
+		'enabled'=>true,
+		
+		'from'=>'reports@reports.adrtr.net',
+		
+		//php's mail function
+		// 'method'=>'mail'
+		
+		//sendmail
+		
+		// 'method'=>'sendmail',
+		// 'command'=>'/usr/sbin/sendmail -bs' //optional
+		
+		
+		//smtp
+		
+		'method'=>'smtp',
+		'server'=>'localhost',
 		'port'=>'25', 						//optional (default 25)
+		/*
 		'username'=>'youremailusername', 	//optional
 		'password'=>'yoursmtppassword', 	//optional
 		'encryption'=>'ssl' 				//optional (either 'ssl' or 'tls')
@@ -93,11 +127,18 @@ return array(
 			),
 
 			'mysql'=>array(
-				'host'=>'localhost',
-				'user'=>'root',
+				'host'=>'',
+				'user'=>'',
 				'pass'=>'',
-				'database'=>'test'
+				'database'=>'',
 			),
+                        'mysql1'=>array(
+				'host'=>'',
+				'user'=>'',
+				'pass'=>'',
+				'database'=>'test',
+			),
+
 
 			'mongo'=>array(
 				'host'=>'localhost',
