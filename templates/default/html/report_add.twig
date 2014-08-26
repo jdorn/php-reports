@@ -1,0 +1,158 @@
+{% extends "html/page.twig" %}
+
+{% if options.Name %}
+	{% set Name = options.Name %}
+{% else %}
+	{% set Name = report %}
+{% endif %}
+	
+{% block title %}
+	{{ Name }}
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+#editor * {
+	font-family:"Courier New", Courier, monospace;
+}
+
+#preview_holder {
+	border-top: 1px solid #999;
+	margin-top: 30px;
+	display:none;
+}
+#preview_holder h3 a {
+	font-size: .8em;
+	font-weight:normal;
+	margin-left: 20px;
+}
+
+#preview_area .section {
+	margin: 10px;
+}
+#preview_area .section .line_number {
+	color: #999;
+	margin-left: -10px;
+	font-style: italic;
+}
+#preview_area ins {
+	text-decoration:none;
+	background-color: #55ff55;
+}
+#preview_area del {
+	text-decoration:none;
+	background-color: #ff5555;
+}
+input{
+	border:inset 2px #EBE9ED;
+	border-right:solid 1px #CCCCCC;
+	border-bottom:solid 1px #CCCCCC;
+	font-size: 20px;
+}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ base }}/public/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	$('.alert').hide();
+	var editor = ace.edit("editor");    
+	editor.setTheme("ace/theme/eclipse");
+	
+	//set the mode
+	{% if options.Type == 'Mysql' %}
+    editor.getSession().setMode("ace/mode/sql");
+    {% elseif options.Type == 'Mongo' %}
+    editor.getSession().setMode("ace/mode/javascript");
+    {% elseif options.Type == 'Php' %}
+    editor.getSession().setMode("ace/mode/php");
+    {% else %}
+	editor.getSession().setMode("ace/mode/{{extension}}");
+    {% endif %}
+    
+    $("#preview_button").click(function() {
+		//open a modal with diff output
+		$.post(
+			"{{ base }}/add/?{{ querystring }}",
+			{
+				
+				contents: editor.getSession().getDocument().getAllLines().join("\n"),
+				preview: true
+			},
+			function(data) {
+				$("#preview_area").html(data);
+				$("#preview_holder").show(200);
+				window.location.href = '#preview_changes';
+			},
+			'html'
+		);
+		
+		return false;
+    });
+    
+    $("#save_button").click(function() {
+		//save report
+		$.post(
+			"{{ base }}/add/?{{ querystring }}",
+			{
+				reportName: '{{ Name }}' + $('#addReport').val() + '.' + $('#fileTypes').val(),
+				contents: editor.getSession().getDocument().getAllLines().join("\n"),
+				save: true
+			},
+			function(data) {
+				$("#notice_holder").html("Report File Saved Successfully").show(200).delay(3000).hide(200);
+			},
+			'html'
+		).error(function() {
+			$("#error_holder").html("There was a problem saving the report.").show(200).delay(3000).hide(200);
+		});
+		
+		return false;
+    });
+    
+    $("#close_preview").click(function() {
+		$("#preview_holder").hide(200);
+		return false;
+    });
+</script>
+{% endblock %}
+
+{% block breadcrumb %}
+	{% set report_url = "report/html/?" ~ querystring %}
+	{% set breadcrumb = {"Report List": "", (Name): report_url, "Edit": true} %}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+<h3>Add New Report: {{Name}} <input type='text' name='addReport' id='addReport' placeholder='Enter Report Name' required/> . 
+<input list="fileTypes" name="fileTypes" id='fileTypes' placeholder="Enter Report Type (sql)" required>
+<datalist id="fileTypes">
+  <option value="sql">
+  <option value="ado">
+  <option value="php">
+  <option value="js">
+</datalist>
+</h3>
+<div id='notice_holder' class='alert alert-success' style='display:none;'></div>
+<div id='error_holder' class='alert alert-error' style='display:none;'></div>
+
+<div id="editor" style='position:relative; width: 100%; height: 600px;'>{{contents}}</div>
+
+<div style='margin: 20px 0;'>
+	<a href='#' class='btn' id='preview_button'>Preview</a>
+	<a href='#' class='btn btn-primary' id='save_button'>Save Changes</a>
+	<a href='{{ url }}' class='btn btn-link'>Cancel</a>
+</div>
+
+<div id='preview_holder'>
+	<h3>
+		Preview Changes
+		<a name='preview_changes'></a>
+		<a href='#' id='close_preview'>hide</a>
+	</h3>
+	
+	<div id='preview_area'></div>
+</div>
+{% endblock %}
