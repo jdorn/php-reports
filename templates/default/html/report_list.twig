@@ -42,7 +42,7 @@
                                     <span style="padding-left: 20px;">
                                         <a href="{{base}}/report/raw/?report={{error.report}}" style="margin-right: 10px;" target="_blank">view source</a>
                                         <a href="{{base}}/edit/?report={{error.report}}" target="_blank">edit</a>
-                                    </span>
+				</span>
                                 </div>
                             {% endfor %}
                         </div>
@@ -56,7 +56,8 @@
 			{% for item in reports %}
 			<div class="report_list">
 				{% if not loop.first %}
-					<a href="#" class="pull-right" style="font-size: 12px; font-weight:normal;">top</a>
+					<a href="#" class="pull-right" style="font-size: 12px;  font-weight:normal;">top</a>
+					
 				{% endif %}
 				{% include "html/report_list_item.twig" %}
 			</div>

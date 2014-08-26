@@ -80,6 +80,10 @@
 </form>
 <script>
 $(function() {
+    if ($("#var_value_modifier").length > 0){ 
+	$(".form-group.variable").replaceWith(function() { return "" + this.innerHTML + ""; });
+	$(".col-sm-10.controls").replaceWith(function() { return "" + this.innerHTML + ""; });
+    }
     $('#variables-fieldset').on('hide.bs.collapse', function () {
         var t = new Array();
         $('#variables-fieldset .variable').each(function() {

@@ -89,6 +89,7 @@
 		$.post(
 			"{{ base }}/edit/?{{ querystring }}",
 			{
+				
 				contents: editor.getSession().getDocument().getAllLines().join("\n"),
 				save: true
 			},
