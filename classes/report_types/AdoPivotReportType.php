@@ -62,12 +62,12 @@ class AdoPivotReportType extends ReportTypeBase {
         foreach($macros as $key=>$value) {
             if(is_array($value)) {
                 foreach($value as $key2=>$value2) {
-                    $value[$key2] = mysql_real_escape_string(trim($value2));
+                    $value[$key2] = AdoReportType::sql_escape_string($report,trim($value2));
                 }
                 $macros[$key] = $value;
             }
             else {
-                $macros[$key] = mysql_real_escape_string($value);
+                $macros[$key] = AdoReportType::sql_escape_string($report,$value);
             }
 
             if($value === 'ALL') $macros[$key.'_all'] = true;
@@ -109,13 +109,13 @@ class AdoPivotReportType extends ReportTypeBase {
 			if(is_array($value)) {
 				$first = true;
 				foreach($value as $key2=>$value2) {
-					$value[$key2] = mysql_real_escape_string(trim($value2));
+					$value[$key2] = AdoReportType::sql_escape_string($report,trim($value2));
 					$first = false;
 				}
 				$macros[$key] = $value;
 			}
 			else {
-				$macros[$key] = mysql_real_escape_string($value);
+				$macros[$key] = AdoReportType::sql_escape_string($report,$value);
 			}
 			
 			if($value === 'ALL') $macros[$key.'_all'] = true;
