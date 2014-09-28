@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="row">
-        <fieldset id="variables-fieldset" class="collapse in">
+        <fieldset id="variables-fieldset" class="collapse {% if not collapse_configuration %}in{% endif %}">
             {% for var in vars %}
                 {% block variable_form_row %}
                     <div class='form-group variable'>
@@ -83,22 +83,29 @@ $(function() {
     $('#variables-fieldset').on('hide.bs.collapse', function () {
         var t = new Array();
         $('#variables-fieldset .variable').each(function() {
-            t.push($(this).find('label.control-label').text() + ': <em>' + $(this).find('.btn').text().trim() + '</em>');
-        });
-        var text = ' : ';
-        $.each(t, function(index, value) {
-            text += value;
-            if (index < t.length-1) {
-                text += ', ';
-            }
-        });
+						var inputs = $(this).find('input,select,textarea');
+						var label = $(this).find('label.control-label').text();
+						var values = [];
+						inputs.each(function() {
+							if(($(this).attr('name')||'').match(/^macros/)) {
+								values.push($(this).val());
+							}
+						});
+						if(values.length) {
+							t.push(label+': <em>'+values.join(' - ')+'</em>');
+						}
+				});
+        var text = ' : '+t.join(', ');
         $('#variables-holder').html(text);
         $('#variables-header span.glyphicon').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-right');
     }).on('show.bs.collapse', function() {
         $('#variables-selected').collapse('hide');
         $('#variables-holder').text('');
         $('#variables-header span.glyphicon').removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
-    });
+    })
+		{% if collapse_configuration %}
+		.trigger('hide.bs.collapse')
+		{% endif %};
 
 	$('.daterangepicker_holder',$('#variable_form')).each(function() {
         moment.lang(window.navigator.language);
@@ -151,5 +158,6 @@ $(function() {
             }
         }
     });
+		
 });
 </script>

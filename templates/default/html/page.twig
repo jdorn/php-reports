@@ -164,7 +164,7 @@
 
 		{% block notice_area %}
 			{% if error %}
-				<div class="alert alert-error">
+				<div class="alert alert-danger">
 					{% if error.message is defined %}
 						{{error.message}}
 					{% else %}

@@ -35,7 +35,7 @@
                         <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#report_errors_holder">See all errors</button>
                     </div>
                     <div class="collapse" id="report_errors_holder">
-                        <div class="alert alert-error alert-block">
+                        <div class="alert alert-danger alert-block">
                             {% for error in report_errors %}
                                 <div>
                                     <strong>{{ error.report }}</strong> - {{ error.exception.message }}

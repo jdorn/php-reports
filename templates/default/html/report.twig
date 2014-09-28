@@ -1,5 +1,7 @@
 {% extends "html/page.twig" %}
 
+{% set collapse_configuration = is_ready %}
+
 {% block title %}{{ Name }}{% endblock %}
 
 {% block stylesheets %}
@@ -99,7 +101,7 @@
                                 <h4 class="modal-title">Email Report</h4>
                             </div>
                             <div class="modal-body">
-            					<div class="alert alert-error" id="email-report-modal-alert" style="display: none;"></div>
+            					<div class="alert alert-danger" id="email-report-modal-alert" style="display: none;"></div>
             					<p>A CSV file will be attached and a link will be sent</p>
 
                                 <form class="form-horizontal" role="form">
@@ -179,7 +181,7 @@
 
     <div id='report_content'>
         {% if not is_ready %}
-            <div class='alert'>
+            <div class='alert alert-info'>
             This report needs more information before running.
             </div>
         {% elseif async %}
