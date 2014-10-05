@@ -10,6 +10,39 @@ include 'vendor/autoload.php';
 //sets up autoload (looks in classes/local/, classes/, and lib/ in that order)
 require 'lib/PhpReports/PhpReports.php';
 
+// Google Analytics API
+if(isset(PhpReports::$config['ga_api'])) {
+  $ga_client = new Google_Client();
+  $ga_client->setApplicationName($config['ga_api']['applicationName']);
+  $ga_client->setClientId($config['ga_api']['clientId']);
+  $ga_client->setClientSecret($config['ga_api']['clientSecret']);
+  $ga_client->setRedirectUri($config['ga_api']['redirectUri']);
+  $ga_service = new Google_Service_Analytics($ga_client);
+  $ga_client->addScope(Google_Service_Analytics::ANALYTICS);
+  if(isset($_GET['code'])) {
+    $ga_client->authenticate($_GET['code']);
+    $_SESSION['ga_token'] = $ga_client->getAccessToken();
+    
+    if(isset($_SESSION['ga_authenticate_redirect'])) {
+      $url = $_SESSION['ga_authenticate_redirect'];
+      unset($_SESSION['ga_authenticate_redirect']);
+      header("Location: $url");
+      exit;
+    }
+  }
+  if(isset($_SESSION['ga_token'])) {
+    $ga_client->setAccessToken($_SESSION['ga_token']);
+  }
+  Flight::route('/ga_authenticate',function() use($ga_client) {
+    $authUrl = $ga_client->createAuthUrl();
+    if(isset($_GET['redirect'])) {
+      $_SESSION['ga_authenticate_redirect'] = $_GET['redirect'];
+    }
+    header("Location: $authUrl");
+    exit;
+  });
+}
+
 Flight::route('/',function() {
 	PhpReports::listReports();
 });

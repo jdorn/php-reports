@@ -79,6 +79,16 @@ return array(
 		'encryption'=>'ssl' 				//optional (either 'ssl' or 'tls')
 		*/
 	),
+	
+	// Google Analytics API Integration
+	/*
+	'ga_api'=>array(
+		'applicationName'=>'PHP Reports',
+		'clientId'=>'abcdef123456',
+		'clientSecret'=>'1234abcd',
+		'redirectUri'=>'http://example.com/'
+	),
+	*/
 
 	//this defines the database environments
 	//the keys are the environment names (e.g. "dev", "production")

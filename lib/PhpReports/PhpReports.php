@@ -139,7 +139,8 @@ class PhpReports {
 			'querystring'=>$_SERVER['QUERY_STRING'],
 			'config'=>self::$config,
 			'environment'=>$_SESSION['environment'],
-			'recent_reports'=>self::getRecentReports()
+			'recent_reports'=>self::getRecentReports(),
+			'session'=>$_SESSION
 		);
 		$macros = array_merge($default,$macros);
 		
