@@ -139,6 +139,7 @@ class PhpReports {
 			'querystring'=>$_SERVER['QUERY_STRING'],
 			'config'=>self::$config,
 			'environment'=>$_SESSION['environment'],
+			'loginEnable'=>self::$config['loginEnable'],
 			'recent_reports'=>self::getRecentReports()
 		);
 		$macros = array_merge($default,$macros);
@@ -221,6 +222,42 @@ class PhpReports {
 		}
 	}
 	
+	public static function addReport($report) {
+		$template_vars = array();
+		
+		try {
+			$report = ReportFormatBase::prepareReport($report);
+			
+			$template_vars = array(
+				'report'=>$report->report,
+				'options'=>$report->options,
+				'	s'=>$report->getRaw(),
+				'extension'=>array_pop(explode('.',$report->report))
+			);
+		}
+		//if there is an error parsing the report
+		catch(Exception $e) {
+			$template_vars = array(
+				'report'=>$report,
+				'contents'=>Report::getReportFileContents($report),
+				'options'=>array(),
+				'extension'=>array_pop(explode('.',$report)),
+				'error'=>$e
+			);
+		}
+		
+		if(isset($_POST['preview'])) {
+			echo "<pre>".SimpleDiff::htmlDiffSummary($template_vars['contents'],$_POST['contents'])."</pre>";
+		}
+		elseif(isset($_POST['save'])) {
+			Report::addReportFileContents($_POST['reportName'],$_POST['contents']);
+		}
+		else {
+			echo self::render('html/report_add',$template_vars);
+		}
+	}
+
+	
 	public static function listReports() {
 		$errors = array();
 
@@ -268,7 +305,7 @@ class PhpReports {
 	public static function getDashboard($dashboard) {
 		$file = PhpReports::$config['dashboardDir'].'/'.$dashboard.'.json';
 		if(!file_exists($file)) {
-			throw new Exception("Unknown dashboard - ".$dashboard);
+			throw "Unknown dashboard - ".$dashboard;
 		}
 		
 		return json_decode(file_get_contents($file),true);
@@ -471,7 +508,7 @@ class PhpReports {
 		
 		// Get the CSV file attachment and the inline HTML table
 		$csv = self::urlDownload($csv_link);
-		$table = self::urlDownload($table_link);
+		//$table = self::urlDownload($table_link);
 		$text = self::urlDownload($text_link);
 		
 		$email_text = $body."\n\n".$text."\n\nView the report online at $link";
@@ -521,6 +558,42 @@ class PhpReports {
 				'error'=>'Failed to send email to requested recipient'
 			));
 		}
+	}
+	
+	public static function scheduleEmail() {		
+		if(!isset($_REQUEST['email']) || !filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL)) {
+			echo json_encode(array('error'=>'Valid email address required'));
+			return;
+		}
+		if(!isset($_REQUEST['url'])) {
+			echo json_encode(array('error'=>'Report url required'));
+			return;
+		}
+		if(!isset(PhpReports::$config['mail_settings']['enabled']) || !PhpReports::$config['mail_settings']['enabled']) {
+			echo json_encode(array('error'=>'Email is disabled on this server'));
+			return;
+		}
+		if(!isset(PhpReports::$config['mail_settings']['from'])) {
+			echo json_encode(array('error'=>'Email settings have not been properly configured on this server'));
+			return;
+		}
+		$logFile = __DIR__.'/emailSchedulerJobs/curl.log';
+		$fileName = __DIR__.'/emailSchedulerJobs/'.substr($_REQUEST['email'], 0, 4);
+		$fileName.= substr($_REQUEST['subject'], 18, 5);
+		$fileName.= date("Ymd",time());
+		$fileName.= '.sh';
+		//echo $fileName;
+		$current = 'curl --request GET ' . '"'. $_REQUEST['curl'] .'"';
+		//echo $current;
+		file_put_contents($fileName, $current);
+		
+		$curl = $_REQUEST['cron']. ' ' . $fileName .' >> ' . $logFile .' 2>&1';
+		//echo $curl;
+		$output = shell_exec('(crontab -l ; echo "'.$curl.'") | crontab -');
+		
+		echo json_encode(array(
+			'success'=>true
+		));	
 	}
 	
 	/**
@@ -637,6 +710,7 @@ class PhpReports {
 	protected static function urlDownload($url) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERPWD, "reports:1nasnap");
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		

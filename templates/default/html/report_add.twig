@@ -44,6 +44,12 @@
 	text-decoration:none;
 	background-color: #ff5555;
 }
+input{
+	border:inset 2px #EBE9ED;
+	border-right:solid 1px #CCCCCC;
+	border-bottom:solid 1px #CCCCCC;
+	font-size: 20px;
+}
 </style>
 {% endblock %}
 
@@ -51,6 +57,7 @@
 {{ parent() }}
 <script src="{{ base }}/public/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
+	$('.alert').hide();
 	var editor = ace.edit("editor");    
 	editor.setTheme("ace/theme/eclipse");
 	
@@ -68,8 +75,9 @@
     $("#preview_button").click(function() {
 		//open a modal with diff output
 		$.post(
-			"{{ base }}/edit/?{{ querystring }}",
+			"{{ base }}/add/?{{ querystring }}",
 			{
+				
 				contents: editor.getSession().getDocument().getAllLines().join("\n"),
 				preview: true
 			},
@@ -87,9 +95,9 @@
     $("#save_button").click(function() {
 		//save report
 		$.post(
-			"{{ base }}/edit/?{{ querystring }}",
+			"{{ base }}/add/?{{ querystring }}",
 			{
-				
+				reportName: '{{ Name }}' + $('#addReport').val() + '.' + $('#fileTypes').val(),
 				contents: editor.getSession().getDocument().getAllLines().join("\n"),
 				save: true
 			},
@@ -118,10 +126,17 @@
 {% endblock %}
 
 {% block content %}
-<h2>Edit Report: {{Name}}</h2>
-
+<h3>Add New Report: {{Name}} <input type='text' name='addReport' id='addReport' placeholder='Enter Report Name' required/> . 
+<input list="fileTypes" name="fileTypes" id='fileTypes' placeholder="Enter Report Type (sql)" required>
+<datalist id="fileTypes">
+  <option value="sql">
+  <option value="ado">
+  <option value="php">
+  <option value="js">
+</datalist>
+</h3>
 <div id='notice_holder' class='alert alert-success' style='display:none;'></div>
-<div id='error_holder' class='alert alert-danger' style='display:none;'></div>
+<div id='error_holder' class='alert alert-error' style='display:none;'></div>
 
 <div id="editor" style='position:relative; width: 100%; height: 600px;'>{{contents}}</div>
 

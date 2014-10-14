@@ -75,6 +75,15 @@ class Report {
 		
 		echo "\n".$new_contents;
 	}
+	public static function addReportFileContents($report, $new_contents) {
+		echo "CREATING REPORT AND SAVING CONTENTS TO ".$report;
+		
+		if(!file_put_contents(self::getFileLocation($report),$new_contents)) {
+			throw new Exception("Failed to set report contents");
+		}
+		
+		echo "\n".$new_contents;
+	}
 	public static function getReportFileContents($report) {
 		$contents = file_get_contents(self::getFileLocation($report));
 		

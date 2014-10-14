@@ -138,6 +138,17 @@
                             });
                         }
                     </script>
+		  {% if loginEnable %}
+                     <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="theme-swtich">My Account<b class="caret"></b></a>
+                            <ul class="dropdown-menu" id="themes-list">
+                               <li><a href='login/account/logout.php'>Logout</a></li>
+			       <li><a href='login/account/account_settings.php'>Account Settings</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                   {% endif %}
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="theme-swtich">Theme: <strong>{{ theme }}</strong> <b class="caret"></b></a>
@@ -260,5 +271,6 @@
 			$(queued_jquery_calls[i]);
 		}
 	</script>
+	
   </body>
 </html>

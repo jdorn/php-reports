@@ -10,6 +10,7 @@
     {% if not nodata %}
         <link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
     {% endif %}
+    
     <link rel="stylesheet" type="text/css" href="{{base}}/public/css/daterangepicker-bs3.css" />
     <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/public/css/datepicker.css" />
     <link rel="stylesheet" type="text/css" href="{{base}}/public/css/bootstrap-multiselect.css" />
@@ -47,7 +48,19 @@
     <script type="text/javascript" src="{{base}}/public/js/bootstrap-multiselect.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/prettify.js"></script>
     <script type="text/javascript" src="{{base}}/public/js/lang-sql.js"></script>
+    <link type="text/css" href="{{base}}/public/js/gentleSelect/jquery-gentleSelect.css" rel="stylesheet" />
+    <link type="text/css" href="{{base}}/public/js/cron/jquery-cron.css" rel="stylesheet" />
+    <script type="text/javascript" src="{{base}}/public/js/gentleSelect/jquery-gentleSelect-min.js"></script>
+    <script type="text/javascript" src="{{base}}/public/js/cron/jquery-cron.js"></script>
+    
     <script type="text/javascript">
+	 $('#example1b').cron({
+            initial: "42 3 * * 5",
+            onChange: function() {
+                $('#example1b-val').text($(this).cron("value"));
+            },
+            useGentleSelect: true
+        });
         $("#content").on('click','a[data-role="button"]',function(e) {
             e.preventDefault();
         });
@@ -57,7 +70,8 @@
 {% block header %}
     <h1>{{Name}}</h1>
     {% if Description %}
-        <p id='report_description'>{{Description|raw}}</p>
+        <p id='report_description'>{{Description|raw}}
+	<a href="{{base}}/edit/?{{querystring}}" style='float:right;' target="_blank">Edit {{Name}} Report</a></p>
     {% endif %}
     
     {% if Variables is not empty %}
@@ -66,6 +80,7 @@
 {% endblock %}
 
 {% block content %}
+  
     <div class='row export_links' style='margin: 10px 0;'>
     {% block export_links %}
 		{% block download_link %}
@@ -93,6 +108,7 @@
         {% if config.mail_settings.enabled %}
 			{% block email_report_button %}
                 <a data-toggle="modal" href="#email-modal" class="btn btn-primary btn-sm"><i class='icon-envelope'></i> Email Report</a>
+		
                 <div class="modal fade" id="email-modal">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -125,15 +141,18 @@
                                     </div>
                                 </form>
                             </div>
+			    
 				            <div class="modal-footer">
-					            <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+						    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
 					            <button type="submit" id="sendReport" class="btn btn-primary submit-button" data-loading-text="Sending">Send Email</button>
+						    
 				            </div>
 				        </div>
                     </div>
                 </div>
 				<script>
 					$(function() {
+
 						$('#sendReport').on('click', function() {
 							var button = $(this);
 							button.button('loading');
@@ -168,6 +187,104 @@
 				</script>
 			{% endblock %}
 		{% endif %}
+		
+	 {% if config.mail_scheduler.enabled %}
+			{% block email_report_button2 %}
+                <a data-toggle="modal" style="float:right;" href="#email-modal2" class="btn btn-primary btn-sm"><i class='icon-envelope'></i> Email Scheduler</a>
+		
+                <div class="modal fade" id="email-modal2">
+                    <div class="modal-dialog">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button"  class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Email Scheduler</h4>
+                            </div>
+                            <div class="modal-body">
+            					<div class="alert alert-error" id="email-report-modal-alert" style="display: none;"></div>
+            					<p>A CSV file will be attached and a link will be sent</p>
+
+                                <form class="form-horizontal" role="form">
+                                    <div class="form-group">
+                                        <label class="col-lg-5" for='email-report-modal-email_scheduler'>Recipient Email Address</label>
+                                        <div class="col-lg-7">
+                                            <input type='email' id='email-report-modal-email_scheduler' class='form-control' value='' />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-5" for='email-report-modal-subject_scheduler'>Subject</label>
+                                        <div class="col-lg-7">
+                                            <input type='text' id='email-report-modal-subject_scheduler' class='form-control' value="Database Report - {{Name}}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-5" for='email-report-modal-message_scheduler'>Message (optional)</label>
+                                        <div class="col-lg-7">
+                                            <textarea rows='4' id='email-report-modal-message_scheduler' class='form-control'></textarea>
+                                        </div>
+                                    </div>
+				    
+				<br />
+				    <div class='form-group'>
+				        <h4>&nbsp;&nbsp; &nbsp;&nbsp;<b>Run</b><div style="float:right;margin-right:15px;" id='example1b'></div></h4>
+				    </div>
+				    <div class='form-group'>
+					<p style='float:right;margin-right:15px;'>(Generated cron entry: <span class='example-text' id='example1b-val'></span>)</p>
+				    </div>
+				</form>
+                            </div>
+				    <div class="modal-footer">
+					    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+					    <button type="submit" id="emailScheduler"  class="btn btn-primary submit-button" data-loading-text="Sending">Schedule Email</button>
+				    </div>
+			    </div>
+                    </div>
+                </div>
+		<script>
+		    $(function() {
+					  $('#emailScheduler').on('click', function() {
+							var button = $(this);
+							button.button('loading');
+							
+							var email = $('#email-report-modal-email_scheduler').val();
+							var subject = $('#email-report-modal-subject_scheduler').val();
+							var message = $('#email-report-modal-message_scheduler').val();
+							var url = window.location.href;
+							var curl = '{{base}}/email?email='+email+'&subject='+subject+'&message='+message+'&url='+encodeURIComponent(url);
+							var data = {
+								email: $('#email-report-modal-email_scheduler').val(),
+								subject: $('#email-report-modal-subject_scheduler').val(),
+								message: $('#email-report-modal-message_scheduler').val(),
+								url: window.location.href,
+								cron: $('#example1b-val').text(),
+								curl: curl
+							};
+
+							$.getJSON('{{base}}/email_scheduler',data,function(response) {
+								if(response && response.success) {
+									$('#email-modal2').modal('hide');
+									
+									//show success message
+									$('#email-scheduler-success-message').show(300).delay(5000).hide(300);
+								}
+								else {
+									var error = (response && response.error)? response.error : "There was a problem sending the email";
+									$('#email-report-modal-alert').text(error).show(300);
+								}
+								button.button('reset');
+							})
+							.error(function() {
+								$('#email-report-modal-alert').text("There was an error while sending the email").show(300);
+							});
+							
+							return false;
+						});
+		    });
+		    
+		</script>
+			{% endblock %}
+		{% endif %}	
+		
+		
     {% endblock %}
     </div>
     
@@ -178,11 +295,20 @@
 			{% endblock %}
 		</div>
     {% endif %}
-
+    
+    {% if config.mail_scheduler.enabled %}
+		<div class='alert alert-success' style='display: none;' id='email-scheduler-success-message'>
+			{% block email_scheduler_success_message %}
+				Email Scheduled Successfully
+			{% endblock %}
+		</div>
+    {% endif %}
+    
     <div id='report_content'>
         {% if not is_ready %}
             <div class='alert alert-info'>
             This report needs more information before running.
+	    
             </div>
         {% elseif async %}
             {% include "html/report_ajax_loading.twig" %}
@@ -207,3 +333,4 @@
         {% endif %}
     {% endblock %}
 {% endblock %}
+

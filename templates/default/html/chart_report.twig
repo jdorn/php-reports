@@ -2,7 +2,7 @@
 
 {% block content %}
 	{% for chart in Charts %}
-	<div id='chart_div_{{chart.num}}' style='{% if chart.width %}width:{{chart.width}};{% endif %}{% if chart.height %}height:{{chart.height}};{% endif %}'></div>
+	<div id='chart_div_{{chart.num}}' style='float:left;{% if chart.width %}width:{{chart.width}};{% endif %}{% if chart.height %}height:{{chart.height}};{% endif %}'></div>
 	{% endfor %}
 	
 	<script type="text/javascript">
