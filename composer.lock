@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "ae4b684d119a328cef0763a421366a9a45edd50e"
+                "reference": "bf0c50a41d6ff95f27eea4078661781c142a2ce1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/ae4b684d119a328cef0763a421366a9a45edd50e",
-                "reference": "ae4b684d119a328cef0763a421366a9a45edd50e",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/bf0c50a41d6ff95f27eea4078661781c142a2ce1",
+                "reference": "bf0c50a41d6ff95f27eea4078661781c142a2ce1",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2014-10-01 12:11:46"
+            "time": "2014-10-29 16:30:53"
         },
         {
             "name": "google/apiclient",
@@ -257,12 +257,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "37b4d18d456e3b533d838099f208e5d3f089a954"
+                "reference": "e7cfdacf95a103f07911980a9fa6e39dfcf0675d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/37b4d18d456e3b533d838099f208e5d3f089a954",
-                "reference": "37b4d18d456e3b533d838099f208e5d3f089a954",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e7cfdacf95a103f07911980a9fa6e39dfcf0675d",
+                "reference": "e7cfdacf95a103f07911980a9fa6e39dfcf0675d",
                 "shasum": ""
             },
             "require": {
@@ -306,7 +306,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2014-09-13 15:12:45"
+            "time": "2014-11-26 22:25:36"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -314,12 +314,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "74d3dd246fa8abcdee7bd97d1e238bc5991a2446"
+                "reference": "84ff290871c3436c3703ce15ec5e344da0b59472"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/74d3dd246fa8abcdee7bd97d1e238bc5991a2446",
-                "reference": "74d3dd246fa8abcdee7bd97d1e238bc5991a2446",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/84ff290871c3436c3703ce15ec5e344da0b59472",
+                "reference": "84ff290871c3436c3703ce15ec5e344da0b59472",
                 "shasum": ""
             },
             "require": {
@@ -358,20 +358,20 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2014-10-04 05:53:52"
+            "time": "2014-11-23 19:27:48"
         },
         {
             "name": "twig/twig",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fabpot/Twig.git",
-                "reference": "9fb15e343e881c9a89b97ee2262d7b8fbf512c6e"
+                "url": "https://github.com/twigphp/Twig.git",
+                "reference": "efed4fa3b10f8ad6f856d817f4e4a6d9ac527915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/9fb15e343e881c9a89b97ee2262d7b8fbf512c6e",
-                "reference": "9fb15e343e881c9a89b97ee2262d7b8fbf512c6e",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/efed4fa3b10f8ad6f856d817f4e4a6d9ac527915",
+                "reference": "efed4fa3b10f8ad6f856d817f4e4a6d9ac527915",
                 "shasum": ""
             },
             "require": {
@@ -406,7 +406,7 @@
                 },
                 {
                     "name": "Twig Team",
-                    "homepage": "https://github.com/fabpot/Twig/graphs/contributors",
+                    "homepage": "http://twig.sensiolabs.org/contributors",
                     "role": "Contributors"
                 }
             ],
@@ -415,7 +415,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2014-10-01 17:51:59"
+            "time": "2014-11-20 10:35:14"
         }
     ],
     "packages-dev": [],
