@@ -10,7 +10,7 @@ class ChartHeader extends HeaderBase {
 		),
 		'type'=>array(
 			'type'=>'enum',
-			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart','Timeline','AreaChart','Histogram'),
+			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart','Timeline','AreaChart','Histogram','ComboChart'),
 			'default'=>'LineChart'
 		),
 		'title'=>array(
