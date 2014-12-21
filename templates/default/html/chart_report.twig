@@ -10,8 +10,12 @@
 		{% for chart in Charts %}
 			var data_{{chart.num}} = new google.visualization.DataTable();
 					
-			{% for key,value in chart.datatypes %}
-			data_{{chart.num}}.addColumn("{{value}}","{{chart.Rows[0].values[key].key}}");
+			{% for key,value in chart.Rows[0].values %}
+                {% if chart.roles[key] %} 
+                    data_{{chart.num}}.addColumn({{chart.roles[key]|json_encode|raw}});
+                {% else %}
+                    data_{{chart.num}}.addColumn("{{chart.datatypes[key]}}","{{chart.Rows[0].values[key].key}}");
+                {% endif %}
 			{% endfor %}
 		
 			var rows = [

@@ -1,6 +1,6 @@
 {% extends "html/page.twig" %}
 
-{% block title %}Dashboard List{% endblock %}
+{% block title %}{{dashboard.title | default('Dashboard')}}{% endblock %}
 
 {% block header %}
 <h2>{{dashboard.title}}</h2>
@@ -8,11 +8,32 @@
 {% endblock %}
 
 {% block content %}
-<div id='reports_holder' style='margin-top: 20px;'>
+<div id='reports_holder'>
 
 </div>
 {% endblock %}
 
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+  #reports_holder {
+    margin-top: 20px;
+  }
+  .rendered {
+    font-size: .7em;
+    padding-left: 8px;
+  }
+  h2.report-title {
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+  {% if dashboard.style %}
+  <style type="text/css">
+    {{ dashboard.style|raw }}
+  </style>
+  {% endif %}
+{% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
@@ -34,14 +55,19 @@
 var dashboard = {{ dashboard|json_encode|raw }};
 
 var last_row = $("<div class='row'>").appendTo($("#reports_holder"));
-var first = true;
+
+if(dashboard.refresh) {
+  window.setTimeout(function() {
+    window.location.reload(true);
+  },dashboard.refresh*1000);
+}
 
 $.each(dashboard.reports, function(i,report) {
-  if(!first && report.newRow) {
+  if(i && report.newRow) {
     last_row = $("<div class='row'>").appendTo($("#reports_holder"));
   }
   
-  var container = $("<div>").appendTo(last_row);
+  var container = $("<div class='report-holder'>").appendTo(last_row);
   
   if(report.class) container.addClass(report.class);  
   
@@ -52,36 +78,36 @@ $.each(dashboard.reports, function(i,report) {
   
   
   if(report.title) {
-    container.append("<div style='float: right; line-height: 30px;'><a href='{{base}}/report/html/?"+$.param(report_data)+"'>View full report</a></div>");
-    container.append($("<h2>").text(report.title).css({
-      marginTop: 0,
-      paddingTop: 0
-    }));
+    container.append($("<h2 class='report-title'>").text(report.title));
   }
-  else {
-    container.append("<p><a href='{{base}}/report/html/?"+$.param(report_data)+"'>View full report</a></p>");
-  }
+  container.append("<div class='info'><a class='full-link' href='{{base}}/report/html/?"+$.param(report_data)+"'>View full report</a><span class='rendered'></span></div>");
   
   if(report.description) {
-    container.append($("<p>").text(report.description));
+    container.append($("<p class='description'>").text(report.description));
   }
 
   var holder;
+
+  var render = function() {
+    if(!report.format || report.format === 'html' || report.format === 'table') {
+      var report_url = "{{base}}/report/html";
+      
+      // Loading message
+      holder.html("<p>Loading...</p>");
+      
+      $.get(report_url,report_data,function(response) {
+        holder.empty().html(response);
+      });
+    }
+    else {
+      holder.attr('src',"{{base}}/report/"+report.format+"?"+$.param(report_data));
+    }
+  };
       
   if(!report.format || report.format === 'html' || report.format === 'table') {
-    holder = $("<div>").appendTo(container);
-    
-    var report_url = "{{base}}/report/html";
-    
-    // Loading message
-    holder.append("<p>Loading...</p>");
-    
+    holder = $("<div>").appendTo(container);    
     report_data.content_only = true;
     report_data.no_charts = true;
-    
-    $.get(report_url,report_data,function(response) {
-      holder.empty().html(response);
-    });
     
     if(report.style) holder.attr('style',report.style);
   }
@@ -91,11 +117,48 @@ $.each(dashboard.reports, function(i,report) {
       width: '100%'
     }).iframeAutoHeight();
     
-    holder.attr('src',"{{base}}/report/"+report.format+"?"+$.param(report_data));
-    
     if(report.style) holder.attr('style',holder.attr('style')+';'+report.style);
   }
   
+
+  var render_date = new Date();
+  var rendered_span = $('.rendered',container);
+  if(report.refresh) {
+    window.setInterval(function() {
+      render();
+      render_date = new Date();
+      rendered_span.attr('title','refreshed at '+render_date.toTimeString().substr(0,8)).text('last refreshed 0 seconds ago');
+    },report.refresh*1000);
+
+    var refreshRenderDate = function() {
+      var date = new Date();
+      var diff = Math.floor((date.getTime() - render_date.getTime())/1000);
+      console.log(diff);
+
+      if(diff < 60) {
+        rendered_span.text('last refreshed '+diff+' seconds ago');
+        window.setTimeout(refreshRenderDate,5000);
+      }
+      else if(diff < 300) {
+        rendered_span.text('last refreshed '+Math.floor(diff/60)+' minute'+(diff>=120?'s':'')+((diff%60)?' '+diff%60+' second'+((diff%60 !== 1)?'s':'') : '')+' ago');
+        window.setTimeout(refreshRenderDate,20000);
+      }
+      else if(diff < 3600) {
+        rendered_span.text('last refreshed '+Math.floor(diff/60)+' minutes ago');
+        window.setTimeout(refreshRenderDate,60000);
+      }
+      else if(diff < 84600){
+        rendered_span.text('last refreshed '+Math.floor(diff/3600)+' hour'+(diff>=7200?'s':'')+' ago');
+        window.setTimeout(refreshRenderDate,600000);
+      }
+      else {
+        rendered_span.text('last refreshed more than 1 day ago');
+      }
+    };
+    window.setTimeout(refreshRenderDate,5000);
+  }
+  render();
+
   
 });
 

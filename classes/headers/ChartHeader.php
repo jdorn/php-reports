@@ -69,14 +69,18 @@ class ChartHeader extends HeaderBase {
 			'type'=>'array',
 			'default'=>array()
 		),
+		'roles'=>array(
+			'type'=>'object',
+			'default'=>array()
+		),
 		'markers'=>array(
 			'type'=>'boolean',
 			'default'=>false
 		),
-        'omit-columns'=>array(
-            'type'=>'array',
-            'default'=>array()
-        ),
+    'omit-columns'=>array(
+        'type'=>'array',
+        'default'=>array()
+    ),
 		'options'=>array(
 			'type'=>'object',
 			'default'=>array()
@@ -314,9 +318,9 @@ class ChartHeader extends HeaderBase {
 		if(is_null($value)) return null;
 		elseif($value === '') return null;
 		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';
-		elseif($temp = strtotime($value)) {
-			if(preg_match('/^[0-2][0-9]:/',$value)) return 'timeofday';
-			elseif(date('H:i:s',$temp) === '00:00:00') return 'date';
+		elseif(preg_match('/^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/',$value)) return 'timeofday';
+		elseif(preg_match('/^[0-9]+(\/|-)[0-9]+/',$value) && strtotime($value)) {
+			if(date('H:i:s',strtotime($value))==='00:00:00') return 'date';
 			else return 'datetime';
 		}
 		else return 'string';
