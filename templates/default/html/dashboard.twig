@@ -16,6 +16,9 @@
 {% block stylesheets %}
   {{ parent() }}
   <style>
+  #content {
+   width: auto;
+  }
   #reports_holder {
     margin-top: 20px;
   }
@@ -115,7 +118,10 @@ $.each(dashboard.reports, function(i,report) {
     holder = $("<iframe>").appendTo(container).css({
       border: 0,
       width: '100%'
-    }).iframeAutoHeight();
+    }).on('load',function() {
+	$(this).height($(this).get(0).contentWindow.document.body.scrollHeight);
+	$(this).width($(this).get(0).contentWindow.document.body.scrollWidth);
+    });
     
     if(report.style) holder.attr('style',holder.attr('style')+';'+report.style);
   }

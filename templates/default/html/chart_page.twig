@@ -8,3 +8,11 @@
     <script src="{{ base }}/public/js/timeline.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ base }}/public/css/timeline.css">
 {% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+<style type='text/css'>
+body {
+ margin: 0;
+}
+</style>
+{% endblock %}
