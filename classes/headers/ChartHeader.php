@@ -10,7 +10,26 @@ class ChartHeader extends HeaderBase {
 		),
 		'type'=>array(
 			'type'=>'enum',
-			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart','Timeline','AreaChart','Histogram','ComboChart'),
+			'values'=>array(
+				'LineChart',
+				'GeoChart',
+				'AnnotatedTimeLine',
+				'BarChart',
+				'ColumnChart',
+				'Timeline',
+				'AreaChart',
+				'Histogram',
+				'ComboChart',
+				'BubbleChart',
+				'CandlestickChart',
+				'Gauge',
+				'Map',
+				'PieChart',
+				'Sankey',
+				'ScatterChart',
+				'SteppedAreaChart',
+				'WordTree',
+			),
 			'default'=>'LineChart'
 		),
 		'title'=>array(
@@ -88,6 +107,8 @@ class ChartHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
+		$report->exportHeader('Chart',$params);
+
 		if(!isset($params['type'])) {
 			$params['type'] = 'LineChart';
 		}
@@ -108,6 +129,7 @@ class ChartHeader extends HeaderBase {
 		$report->options['Charts'][] = $params;
 		
 		$report->options['has_charts'] = true;
+
 	}
 	protected static function fixDimension($dim) {		
 		if(preg_match('/^[0-9]+$/',$dim)) $dim .= "px";

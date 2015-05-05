@@ -102,6 +102,8 @@ class FormattingHeader extends HeaderBase {
 			}
 		}
 		
+		$report->options['Formatting'] = $formatting;
+		
 		// Apply formatting options for each dataset
 		foreach($formatting as $i=>$params) {
 			if(isset($params['limit']) && $params['limit']) {

@@ -1,4 +1,13 @@
 {% extends "html/blank_page.twig" %}
+{% block stylesheets %}
+{{parent()}}
+<style>
+body {
+    padding: 0;
+    margin: 0;
+}
+</style>
+{% endblock %}
 {% block javascripts %}
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script src="{{base}}/public/js/jquery-2.0.3.min.js"></script>

@@ -1,4 +1,3 @@
-{% if not nodata %}
 {% for dataset in DataSets %}
     {% if dataset.title %}<h3>{{dataset.title}}</h3>{% endif %}
 	{% if DataSets|length > 1 %}
@@ -26,6 +25,7 @@
 			{% endif %}
 		{% endblock %}
 	{% endif %}
+	{% if not Formatting[loop.index-1].nodata %}
 	<table{% if not inline_email %} id='result_table_{{loop.index}}' class='result_table table table-bordered table-striped'{% else %} border="1" cellspacing="0"{% endif %}>
 		{% if dataset.vertical %}
 		<thead>
@@ -108,5 +108,5 @@
 		</tbody>
 		{% endif %}
 	</table>
+	{% endif %}
 {% endfor %}
-{% endif %}

@@ -411,8 +411,27 @@ class Report {
 				)
 			);
 		}
-		
-		$this->options['DataSets'] = $datasets;
+
+		// Only include a subset of datasets
+		$include = array_keys($datasets);
+		if(isset($_GET['dataset'])) {
+			$include = array($_GET['dataset']);
+		}
+		elseif(isset($_GET['datasets'])) {
+			// If just a single dataset was specified, make it an array
+			if(!is_array($_GET['datasets'])) {
+				$include = explode(',',$_GET['datasets']);
+			}
+			else {
+				$include = $_GET['datasets'];
+			}
+		}
+
+		$this->options['DataSets'] = array();
+		foreach($include as $i) {
+			if(!isset($datasets[$i])) continue;
+			$this->options['DataSets'][$i] = $datasets[$i];
+		}
 
 		$this->parseDynamicHeaders();
 	}

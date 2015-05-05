@@ -50,6 +50,8 @@ class PhpReports {
         self::$twig->addGlobal('theme', $_COOKIE['reports-theme'] != '' ? $_COOKIE['reports-theme'] : self::$config['bootstrap_theme']);
         self::$twig->addGlobal('path', $path);
 
+		self::$twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
+
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String(), array('autoescape'=>false));
         self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 

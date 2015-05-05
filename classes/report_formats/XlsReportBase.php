@@ -25,7 +25,7 @@ abstract class XlsReportBase extends ReportFormatBase {
 									 ->setDescription("");
 		
 		foreach($report->options['DataSets'] as $i=>$dataset) {
-			if(!$i) $objPHPExcel->createSheet($i);
+			$objPHPExcel->createSheet($i);
 			self::addSheet($objPHPExcel,$dataset,$i);
 		}
 		

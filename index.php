@@ -10,11 +10,14 @@ include 'vendor/autoload.php';
 //sets up autoload (looks in classes/local/, classes/, and lib/ in that order)
 require 'lib/PhpReports/PhpReports.php';
 
+header("Access-Control-Allow-Origin: *");
+
 // Google Analytics API
 if(isset(PhpReports::$config['ga_api'])) {
   $ga_client = new Google_Client();
   $ga_client->setApplicationName(PhpReports::$config['ga_api']['applicationName']);
   $ga_client->setClientId(PhpReports::$config['ga_api']['clientId']);
+  $ga_client->setAccessType('offline');
   $ga_client->setClientSecret(PhpReports::$config['ga_api']['clientSecret']);
   $ga_client->setRedirectUri(PhpReports::$config['ga_api']['redirectUri']);
   $ga_service = new Google_Service_Analytics($ga_client);
@@ -30,9 +33,14 @@ if(isset(PhpReports::$config['ga_api'])) {
       exit;
     }
   }
-  if(isset($_SESSION['ga_token'])) {
+  if(isset($_SESSION['ga_token'])) {    
     $ga_client->setAccessToken($_SESSION['ga_token']);
   }
+  elseif(isset(PhpReports::$config['ga_api']['accessToken'])) {    
+    $ga_client->setAccessToken(PhpReports::$config['ga_api']['accessToken']);
+    $_SESSION['ga_token'] = $ga_client->getAccessToken();
+  }
+  
   Flight::route('/ga_authenticate',function() use($ga_client) {
     $authUrl = $ga_client->createAuthUrl();
     if(isset($_GET['redirect'])) {
