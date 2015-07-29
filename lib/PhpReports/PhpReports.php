@@ -16,7 +16,13 @@ class PhpReports {
 		if(!file_exists($config)) {
 			throw new Exception("Cannot find config file");
 		}
-		
+
+		// The config.php.sample is used to populate default values should the config.php be incomplete.
+		// As a result, we require it be there.
+		if(!file_exists('config/config.php.sample')) {
+			throw new Exception("Cannot find sample config. Please leave config/config.php.sample in place for default values.");
+		}
+
 		$default_config = include('config/config.php.sample');
 		$config = include($config);
 	
