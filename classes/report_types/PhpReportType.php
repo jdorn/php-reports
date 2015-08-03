@@ -38,46 +38,16 @@ class PhpReportType extends ReportTypeBase {
 
 			if (stristr($params['type'], 'mysql')) {
 
-				if (isset($params['query'])) {
-					$query = $params['query'];
-				} else if (isset($params['column']) && isset($params['table'])) {
-					$query = 'SELECT DISTINCT ' . $params['column'] . ' FROM ' . $params['table'];
+				// create a clone of our report for a mysql connection to not pollute
+				// the original object. This may not be necessary.
+				$reportMysql = clone $report;
 
-					if (isset($params['where'])) {
-						$query .= ' WHERE ' . $params['where'];
-					}
-
-					if (isset($params['order']) && in_array($params['order'], array('ASC', 'DESC'))) {
-						$query .= ' ORDER BY ' . $params['column'] . ' ' . $params['order'];
-					}
-				}
-
-				if (!isset($query)) return array();
-
-				// open a connection to mysql:
-
-				$reportMysql = $report;
+				// Connect to the database since this we are using a different type.
+				// This also allows for setting the database with the varaible string.
 				$reportMysql->options['Database'] = isset($params['database']) ? $params['database'] : 'mysql';
 				MysqlReportType::openConnection($reportMysql);
-				$result = mysql_query($query, $reportMysql->conn);
-				if (!$result) {
-					throw new Exception("Unable to get variable options: " . mysql_error());
-				}
 
-				$options = array();
-
-				if (isset($params['all'])) $options[] = 'ALL';
-
-				if (isset($params['column'])) {
-					while ($row = mysql_fetch_assoc($result)) {
-						$options[] = $row[$params['column']];
-					}
-				} else {
-					while ($row = mysql_fetch_array($result)) {
-						$options[] = $row[0];
-					}
-				}
-				return $options;
+				return MysqlReportType::getVariableOptions($params, $reportMysql);
 			}
 		}
 
