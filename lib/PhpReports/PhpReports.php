@@ -356,6 +356,7 @@ class PhpReports {
 
 		//check if report data is cached and newer than when the report file was created
 		//the url parameter ?nocache will bypass this and not use cache
+
 		$data =false;
 
 		$loc = Report::getFileLocation($report);
