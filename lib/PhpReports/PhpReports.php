@@ -352,13 +352,18 @@ class PhpReports {
 	}
 
 	protected static function getReportHeaders($report) {
-		$cacheKey = FileSystemCache::generateCacheKey($report,'report_headers');
+		$cacheKey = FileSystemCache::generateCacheKey(array(self::$request->base, $report),'report_headers');
 
 		//check if report data is cached and newer than when the report file was created
 		//the url parameter ?nocache will bypass this and not use cache
 		$data =false;
+
+		$loc = Report::getFileLocation($report);
+		if(!file_exists($loc)) {
+			return false;
+		}
 		if(!isset($_REQUEST['nocache'])) {
-			$data = FileSystemCache::retrieve($cacheKey, filemtime(Report::getFileLocation($report)));
+			$data = FileSystemCache::retrieve($cacheKey, filemtime($loc));
 		}
 
 		//report data not cached, need to parse it
