@@ -91,16 +91,22 @@ class MysqlReportType extends ReportTypeBase {
 	}
 	
 	public static function getVariableOptions($params, &$report) {
-		$query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
-		
-		if(isset($params['where'])) {
-			$query .= ' WHERE '.$params['where'];
+		if (isset($params['query'])) {
+			$query = $params['query'];
+		} else if (isset($params['column']) && isset($params['table'])) {
+			$query = 'SELECT DISTINCT ' . $params['column'] . ' FROM ' . $params['table'];
+
+			if (isset($params['where'])) {
+				$query .= ' WHERE ' . $params['where'];
+			}
+
+			if (isset($params['order']) && in_array($params['order'], array('ASC', 'DESC'))) {
+				$query .= ' ORDER BY ' . $params['column'] . ' ' . $params['order'];
+			}
 		}
 
-		if(isset($params['order']) && in_array($params['order'], array('ASC', 'DESC')) ) {
-			$query .= ' ORDER BY '.$params['column'].' '.$params['order'];
-		}
-		
+		if(empty($query)) return array();
+
 		$result = mysql_query($query, $report->conn);
 		
 		if(!$result) {
@@ -110,11 +116,16 @@ class MysqlReportType extends ReportTypeBase {
 		$options = array();
 		
 		if(isset($params['all'])) $options[] = 'ALL';
-		
-		while($row = mysql_fetch_assoc($result)) {
-			$options[] = $row[$params['column']];
+
+		if (isset($params['column'])) {
+			while ($row = mysql_fetch_assoc($result)) {
+				$options[] = $row[$params['column']];
+			}
+		} else {
+			while ($row = mysql_fetch_array($result)) {
+				$options[] = $row[0];
+			}
 		}
-		
 		return $options;
 	}
 	

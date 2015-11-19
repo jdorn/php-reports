@@ -27,7 +27,33 @@ class PhpReportType extends ReportTypeBase {
 	public static function closeConnection(&$report) {
 		
 	}
-	
+
+	public static function getVariableOptions($params, &$report)
+	{
+
+		if (is_array($params)) {
+
+			// support for dynamic select type using database_options in php reports
+			// only supporting mysql currently:
+
+			if (stristr($params['type'], 'mysql')) {
+
+				// create a clone of our report for a mysql connection to not pollute
+				// the original object. This may not be necessary.
+				$reportMysql = clone $report;
+
+				// Connect to the database since this we are using a different type.
+				// This also allows for setting the database with the varaible string.
+				$reportMysql->options['Database'] = isset($params['database']) ? $params['database'] : 'mysql';
+				MysqlReportType::openConnection($reportMysql);
+
+				return MysqlReportType::getVariableOptions($params, $reportMysql);
+			}
+		}
+
+		return array();
+	}
+
 	public static function run(&$report) {		
 		$eval = "<?php /*BEGIN REPORT MACROS*/ ?><?php ";
 		foreach($report->macros as $key=>$value) {
