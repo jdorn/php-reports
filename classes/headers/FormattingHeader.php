@@ -71,33 +71,35 @@ class FormattingHeader extends HeaderBase {
 		foreach($report->options['Formatting'] as $params) {
 			$copy = $params;
 			unset($copy['dataset']);
-			
-			// Multiple datasets defined
-			if(is_array($params['dataset'])) {
-				foreach($params['dataset'] as $i) {
-					if(isset($report->options['DataSets'][$i])) {
+
+			if(isset($report->options['DataSets'])) {
+				// Multiple datasets defined
+				if(is_array($params['dataset'])) {
+					foreach($params['dataset'] as $i) {
+						if(isset($report->options['DataSets'][$i])) {
+							if(!isset($formatting[$i])) $formatting[$i] = array();
+							foreach($copy as $k=>$v) {
+								$formatting[$i][$k] = $v;
+							}
+						}
+					}
+				}
+				// All datasets
+				elseif($params['dataset']===true) {
+					foreach($report->options['DataSets'] as $i=>$dataset) {
 						if(!isset($formatting[$i])) $formatting[$i] = array();
 						foreach($copy as $k=>$v) {
 							$formatting[$i][$k] = $v;
 						}
 					}
 				}
-			}
-			// All datasets
-			elseif($params['dataset']===true) {
-				foreach($report->options['DataSets'] as $i=>$dataset) {
-					if(!isset($formatting[$i])) $formatting[$i] = array();
+				// Single dataset
+				else {
+					if(!isset($report->options['DataSets'][$params['dataset']])) continue;
+					if(!isset($formatting[$params['dataset']])) $formatting[$params['dataset']] = array();
 					foreach($copy as $k=>$v) {
-						$formatting[$i][$k] = $v;
+						$formatting[$params['dataset']][$k] = $v;
 					}
-				}
-			}
-			// Single dataset
-			else {
-				if(!isset($report->options['DataSets'][$params['dataset']])) continue;
-				if(!isset($formatting[$params['dataset']])) $formatting[$params['dataset']] = array();
-				foreach($copy as $k=>$v) {
-					$formatting[$params['dataset']][$k] = $v;
 				}
 			}
 		}

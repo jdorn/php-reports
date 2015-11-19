@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8aacbd0c91877aa480bacf524e41af84",
+    "hash": "04da3bb8014696a4b84a4a1ab9b981cc",
     "packages": [
         {
             "name": "adodb/adodb-php",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "bf0c50a41d6ff95f27eea4078661781c142a2ce1"
+                "reference": "506c69bd3020f9a2ee6dc5bfdd31375626fa4e38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/bf0c50a41d6ff95f27eea4078661781c142a2ce1",
-                "reference": "bf0c50a41d6ff95f27eea4078661781c142a2ce1",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/506c69bd3020f9a2ee6dc5bfdd31375626fa4e38",
+                "reference": "506c69bd3020f9a2ee6dc5bfdd31375626fa4e38",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2014-10-29 16:30:53"
+            "time": "2015-11-14 15:27:05"
         },
         {
             "name": "google/apiclient",
@@ -150,12 +150,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdorn/sql-formatter.git",
-                "reference": "ff0515fa8ce7d97d6cba279e8ed9d51d3eaa0316"
+                "reference": "7ef9b85961956aa572413693e1194b60f50ab9ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/ff0515fa8ce7d97d6cba279e8ed9d51d3eaa0316",
-                "reference": "ff0515fa8ce7d97d6cba279e8ed9d51d3eaa0316",
+                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/7ef9b85961956aa572413693e1194b60f50ab9ab",
+                "reference": "7ef9b85961956aa572413693e1194b60f50ab9ab",
                 "shasum": ""
             },
             "require": {
@@ -195,7 +195,7 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2014-07-28 13:45:38"
+            "time": "2015-08-30 16:36:01"
         },
         {
             "name": "lespoilus/spyc",
@@ -245,11 +245,43 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git://github.com/mikecao/flight.git",
-                "reference": "d0818793794a36a55741771675ad573fa59cd568"
+                "url": "https://github.com/mikecao/flight.git",
+                "reference": "1feeb95ff2f31fd93749bd0ea74c1ffedf884d33"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikecao/flight/zipball/1feeb95ff2f31fd93749bd0ea74c1ffedf884d33",
+                "reference": "1feeb95ff2f31fd93749bd0ea74c1ffedf884d33",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.6"
             },
             "type": "library",
-            "time": "2012-12-13 18:22:51"
+            "autoload": {
+                "files": [
+                    "flight/autoload.php",
+                    "flight/Flight.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Cao",
+                    "email": "mike@mikecao.com",
+                    "homepage": "http://www.mikecao.com/",
+                    "role": "Original Developer"
+                }
+            ],
+            "description": "Flight is a fast, simple, extensible framework for PHP. Flight enables you to quickly and easily build RESTful web applications.",
+            "homepage": "http://flightphp.com",
+            "time": "2015-09-26 08:01:38"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -257,18 +289,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "e7cfdacf95a103f07911980a9fa6e39dfcf0675d"
+                "reference": "ba04463cc954264546d94c109e6cb903b01abe41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e7cfdacf95a103f07911980a9fa6e39dfcf0675d",
-                "reference": "e7cfdacf95a103f07911980a9fa6e39dfcf0675d",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/ba04463cc954264546d94c109e6cb903b01abe41",
+                "reference": "ba04463cc954264546d94c109e6cb903b01abe41",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
                 "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "2.*"
             },
             "type": "library",
             "autoload": {
@@ -278,7 +314,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL"
+                "LGPL-2.1"
             ],
             "authors": [
                 {
@@ -289,11 +325,11 @@
                     "name": "Mark Baker"
                 },
                 {
-                    "name": "Franck Lefevre",
-                    "homepage": "http://blog.rootslabs.net"
+                    "name": "Erik Tilt"
                 },
                 {
-                    "name": "Erik Tilt"
+                    "name": "Franck Lefevre",
+                    "homepage": "http://rootslabs.net"
                 }
             ],
             "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
@@ -306,32 +342,32 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2014-11-26 22:25:36"
+            "time": "2015-10-15 22:07:22"
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "dev-master",
+            "version": "5.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "84ff290871c3436c3703ce15ec5e344da0b59472"
+                "reference": "6522539daf0a7bdada1cc2dccb7ec37dc0712136"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/84ff290871c3436c3703ce15ec5e344da0b59472",
-                "reference": "84ff290871c3436c3703ce15ec5e344da0b59472",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/6522539daf0a7bdada1cc2dccb7ec37dc0712136",
+                "reference": "6522539daf0a7bdada1cc2dccb7ec37dc0712136",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "mockery/mockery": "~0.9.1"
+                "mockery/mockery": "~0.9.1,<0.9.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.3-dev"
+                    "dev-master": "5.4-dev"
                 }
             },
             "autoload": {
@@ -355,32 +391,37 @@
             "description": "Swiftmailer, free feature-rich PHP mailer",
             "homepage": "http://swiftmailer.org",
             "keywords": [
+                "email",
                 "mail",
                 "mailer"
             ],
-            "time": "2014-11-23 19:27:48"
+            "time": "2015-09-04 05:47:20"
         },
         {
             "name": "twig/twig",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "efed4fa3b10f8ad6f856d817f4e4a6d9ac527915"
+                "reference": "db93842e80d758f6c74c3e1f1f088badb3fc84f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/efed4fa3b10f8ad6f856d817f4e4a6d9ac527915",
-                "reference": "efed4fa3b10f8ad6f856d817f4e4a6d9ac527915",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/db93842e80d758f6c74c3e1f1f088badb3fc84f0",
+                "reference": "db93842e80d758f6c74c3e1f1f088badb3fc84f0",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2.4"
+                "php": ">=5.2.7"
+            },
+            "require-dev": {
+                "symfony/debug": "~2.7",
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.16-dev"
+                    "dev-master": "1.23-dev"
                 }
             },
             "autoload": {
@@ -415,7 +456,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2014-11-20 10:35:14"
+            "time": "2015-11-17 12:22:13"
         }
     ],
     "packages-dev": [],
@@ -431,6 +472,7 @@
         "google/apiclient": 10
     },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
 }

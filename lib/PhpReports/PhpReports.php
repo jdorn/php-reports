@@ -51,9 +51,15 @@ class PhpReports {
 		));
 		self::$twig = new Twig_Environment($loader);
 		self::$twig->addFunction(new Twig_SimpleFunction('dbdate', 'PhpReports::dbdate'));
-        self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+    self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
-        self::$twig->addGlobal('theme', $_COOKIE['reports-theme'] != '' ? $_COOKIE['reports-theme'] : self::$config['bootstrap_theme']);
+		if(isset($_COOKIE['reports-theme']) && $_COOKIE['reports-theme']) {
+			$theme = $_COOKIE['reports-theme'];
+		}
+		else {
+			$theme = self::$config['bootstrap_theme'];
+		}
+        self::$twig->addGlobal('theme', $theme);
         self::$twig->addGlobal('path', $path);
 
 		self::$twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
@@ -182,7 +188,10 @@ class PhpReports {
 			}
 			
 			$classname::display($report,self::$request);
-			$content = $report->options['Query_Formatted'];
+
+			if(isset($report->options['Query_Formatted'])) {
+				$content = $report->options['Query_Formatted'];
+			}
 		}
 		catch(Exception $e) {
 			echo self::render('html/page',array(
@@ -331,7 +340,9 @@ class PhpReports {
 			else {
 				//skip if report is marked as dangerous
 				if((isset($report['stop'])&&$report['stop']) || isset($report['Caution']) || isset($report['warning'])) continue;
-				
+				if(!isset($report['url'])) continue;
+				if(!isset($report['report'])) continue;
+
 				//skip if report is marked as ignore
 				if(isset($report['ignore']) && $report['ignore']) continue;
 
@@ -358,7 +369,9 @@ class PhpReports {
 		//the url parameter ?nocache will bypass this and not use cache
 		$data =false;
 		if(!isset($_REQUEST['nocache'])) {
-			$data = FileSystemCache::retrieve($cacheKey, filemtime(Report::getFileLocation($report)));
+			$m = @filemtime(Report::getFileLocation($report));
+
+			$data = FileSystemCache::retrieve($cacheKey, $m);
 		}
 
 		//report data not cached, need to parse it
@@ -437,10 +450,10 @@ class PhpReports {
 		usort($return,function(&$a,&$b) {
 			if($a['is_dir'] && !$b['is_dir']) return 1;
 			elseif($b['is_dir'] && !$a['is_dir']) return -1;
-			
-			if(!$a['Title'] && !$b['Title']) return strcmp($a['Name'],$b['Name']);
-			elseif(!$a['Title']) return 1;
-			elseif(!$b['Title']) return -1;
+
+			if(empty($a['Title']) && empty($b['Title'])) return strcmp($a['Name'],$b['Name']);
+			elseif(empty($a['Title'])) return 1;
+			elseif(empty($b['Title'])) return -1;
 			
 			return strcmp($a['Title'], $b['Title']);
 		});

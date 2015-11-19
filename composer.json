@@ -4,20 +4,6 @@
     "homepage": "http://jdorn.github.com/php-reports/",
     "keywords": ["reports", "mongodb", "sql", "reporting", "csv", "database"],
     "license": "LGPL-3.0+",
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "mikecao/flight",
-                "version": "dev-master",
-                "source": {
-                    "url": "git://github.com/mikecao/flight.git",
-                    "type": "git",
-                    "reference": "d0818793794a36a55741771675ad573fa59cd568"
-                }
-            }
-        }
-    ],
     "authors": [
         {
             "name": "Jeremy Dorn",
@@ -37,7 +23,6 @@
     },
     "autoload": {
         "files": [
-            "vendor/mikecao/flight/flight/Flight.php",
             "lib/adodb/pivottable.inc.php"
         ],
         "classmap": [

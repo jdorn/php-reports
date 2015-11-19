@@ -171,7 +171,7 @@ class Report {
 			$has_name_value = preg_match('/^\s*[A-Z0-9_\-]+\s*\:/',$line);
 		
 			//if this is the first header and not in the format name:value, assume it is the report name
-			if(!$has_name_value && $name === null && !$this->options['Name']) {
+			if(!$has_name_value && $name === null && (!isset($this->options['Name']) || !$this->options['Name'])) {
 				$this->parseHeader('Info',array('name'=>$line));
 			}
 			else {

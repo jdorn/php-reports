@@ -17,7 +17,12 @@ class MysqlReportType extends ReportTypeBase {
 		
 		//replace legacy shorthand macro format
 		foreach($report->macros as $key=>$value) {
-			$params = $report->options['Variables'][$key];
+			if(isset($report->options['Variables'][$key])) {
+				$params = $report->options['Variables'][$key];
+			}
+			else {
+				$params = array();
+			}
 			
 			//macros shortcuts for arrays
 			if(isset($params['multiple']) && $params['multiple']) {

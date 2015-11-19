@@ -389,9 +389,14 @@ class ChartHeader extends HeaderBase {
 			$params['columns'] = array(1,2);
 		}
 		else {
-			$rows = $report->options['DataSets'][$dataset]['rows'];
+			$rows = array();
+			if(isset($report->options['DataSets'])) {
+				$rows = $report->options['DataSets'][$dataset]['rows'];
+			}
 
-			if(!$params['columns']) $params['columns'] = range(1,count($rows[0]['values']));
+			if(count($rows)) {
+				if(!$params['columns']) $params['columns'] = range(1,count($rows[0]['values']));
+			}
 		}
 		
 		self::getRowInfo($rows, $params, $num, $report);
