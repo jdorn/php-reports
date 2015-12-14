@@ -107,13 +107,13 @@ class AdoReportType extends ReportTypeBase {
 			if(is_array($value)) {
 				$first = true;
 				foreach($value as $key2=>$value2) {
-					$value[$key2] = mysql_real_escape_string(trim($value2));
+					$value[$key2] = AdoReportType::sql_escape_string($report,trim($value2));
 					$first = false;
 				}
 				$macros[$key] = $value;
 			}
 			else {
-				$macros[$key] = mysql_real_escape_string($value);
+				$macros[$key] = AdoReportType::sql_escape_string($report,$value);
 			}
 			
 			if($value === 'ALL') $macros[$key.'_all'] = true;
@@ -153,4 +153,12 @@ class AdoReportType extends ReportTypeBase {
 		
 		return $result->GetArray();
 	}
+
+    public static function sql_escape_string(&$report,&$value) {
+        $uri = PhpReports::$config['environments'][$report->options['Environment']]['ado']['uri'];
+        if(preg_match('/^postgres:/',$uri)) {
+            return pg_escape_string($value);
+        }
+        return mysql_real_escape_string($value);
+    }
 }
