@@ -112,7 +112,7 @@ class MysqlReportType extends ReportTypeBase {
 		if(isset($params['all'])) $options[] = 'ALL';
 		
 		while($row = mysql_fetch_assoc($result)) {
-			$options[] = $row[$params['column']];
+			$options[] = $row;
 		}
 		
 		return $options;
