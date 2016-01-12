@@ -5,3 +5,6 @@ cache/
 classes/local/*.php
 templates/local
 vendor/
+.settings
+.buildpath
+.project
