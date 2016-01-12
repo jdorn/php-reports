@@ -4,3 +4,5 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 
 DirectoryIndex index.php
+
+php_value error_reporting 22527
