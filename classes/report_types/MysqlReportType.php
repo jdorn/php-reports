@@ -76,6 +76,9 @@ class MysqlReportType extends ReportTypeBase {
 		if(!($report->conn = mysql_connect($host, $username, $password))) {
 			throw new Exception('Could not connect to Mysql: '.mysql_error());
 		}
+		mysql_query ("set character_set_client='utf8'");
+		mysql_query ("set character_set_results='utf8'");
+		mysql_query ("set collation_connection='utf8_general_ci'");
 		
 		if(isset($config['database'])) {
 			if(!mysql_select_db($config['database'],$report->conn)) {
