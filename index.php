@@ -23,21 +23,27 @@ function _call_admin_report_api($method, $params = array()) {
 	return json_decode ( $result_json );
 }
 
-$params = array("request_uri"=>$_SERVER ["REQUEST_URI"]);
-$check_result = _call_admin_report_api ( "api_report_check_session", $params )->object;
-if ($check_result != 'OK') {
-	if (isset ( $_SERVER ['HTTP_HOST'] )) {
-		$base_url = isset ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) !== 'off' ? 'https' : 'http';
-		$base_url .= '://' . $_SERVER ['HTTP_HOST'];
-		$base_url .= str_replace ( basename ( $_SERVER ['SCRIPT_NAME'] ), '', $_SERVER ["REQUEST_URI"] );
-	} 
+$report = $_GET ["report"];
+if (isset ( $report )) {
+	$params = array (
+			"report" => $report 
+	);
+	$check_result = _call_admin_report_api ( "api_report_check_session", $params )->object;
+	if ($check_result != '' && $check_result != 'OK') {
+		if (isset ( $_SERVER ['HTTP_HOST'] )) {
+			$base_url = isset ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) !== 'off' ? 'https' : 'http';
+			$base_url .= '://' . $_SERVER ['HTTP_HOST'];
+			$base_url .= str_replace ( basename ( $_SERVER ['SCRIPT_NAME'] ), '', $_SERVER ["REQUEST_URI"] );
+		} 
 
-	else {
-		$base_url = 'http://localhost/';
+		else {
+			$base_url = 'http://localhost/';
+		}
+		$uri = '/login?redirect_url=' . urlencode ( $base_url ) . "&err_key=" . $check_result;
+		$http_response_code = "302";
+		header ( "Location: " . $uri, TRUE, $http_response_code );
+		exit ();
 	}
-	$uri = '/login?redirect_url=' . urlencode ( $base_url ) . "&err_key=" . $check_result;
-	$http_response_code = "302";
-	header ( "Location: " . $uri, TRUE, $http_response_code );
 }
 
 //set php ini so the page doesn't time out for long requests
