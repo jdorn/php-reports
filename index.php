@@ -23,12 +23,11 @@ function _call_admin_report_api($method, $params = array()) {
 	return json_decode ( $result_json );
 }
 
-$report = $_GET ["report"];
-if (isset ( $report )) {
+if (isset ( $_GET ["report"] )) {
 	$params = array (
-			"report" => $report 
+			"report" => $_GET ["report"]
 	);
-	$check_result = _call_admin_report_api ( "api_report_check_session", $params )->object;
+	$check_result = _call_admin_report_api ( "api_report_check_session", $params )->result;
 	if ($check_result != '' && $check_result != 'OK') {
 		if (isset ( $_SERVER ['HTTP_HOST'] )) {
 			$base_url = isset ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) !== 'off' ? 'https' : 'http';
