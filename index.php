@@ -1,6 +1,50 @@
 <?php
 session_start();
 
+function _call_admin_report_api($method, $params = array()) {
+	$url = 'http://' . $_SERVER ['SERVER_NAME'] . ':' . $_SERVER ["SERVER_PORT"] . '/admin_report/' . $method;
+	$fields_string = '';
+	foreach ( $params as $key => $value ) {
+		$fields_string .= $key . '=' . urlencode ( $value ) . '&';
+	}
+	rtrim ( $fields_string, '&' );
+	$ch = curl_init ();
+	curl_setopt ( $ch, CURLOPT_URL, $url );
+	curl_setopt ( $ch, CURLOPT_POST, count ( $params ) );
+	curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields_string );
+	curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+	if (isset ( $_COOKIE ["ci_session"] )) {
+		curl_setopt ( $ch, CURLOPT_COOKIE, 'ci_session=' . urlencode ( $_COOKIE ["ci_session"] ) );
+	} else {
+		curl_setopt ( $ch, CURLOPT_COOKIE, 'ci_session=' );
+	}
+	$result_json = curl_exec ( $ch );
+	curl_close ( $ch );
+	return json_decode ( $result_json );
+}
+
+if (isset ( $_GET ["report"] )) {
+	$params = array (
+			"report" => $_GET ["report"]
+	);
+	$check_result = _call_admin_report_api ( "api_report_check_session", $params )->result;
+	if ($check_result != '' && $check_result != 'OK') {
+		if (isset ( $_SERVER ['HTTP_HOST'] )) {
+			$base_url = isset ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) !== 'off' ? 'https' : 'http';
+			$base_url .= '://' . $_SERVER ['HTTP_HOST'];
+			$base_url .= str_replace ( basename ( $_SERVER ['SCRIPT_NAME'] ), '', $_SERVER ["REQUEST_URI"] );
+		} 
+
+		else {
+			$base_url = 'http://localhost/';
+		}
+		$uri = '/login?redirect_url=' . urlencode ( $base_url ) . "&err_key=" . $check_result;
+		$http_response_code = "302";
+		header ( "Location: " . $uri, TRUE, $http_response_code );
+		exit ();
+	}
+}
+
 //set php ini so the page doesn't time out for long requests
 ini_set('max_execution_time', 300);
 
