@@ -5,4 +5,4 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 
 DirectoryIndex index.php
 
-php_value error_reporting 22527
+php_value error_reporting 22519
