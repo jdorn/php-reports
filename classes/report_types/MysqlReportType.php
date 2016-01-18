@@ -94,7 +94,7 @@ class MysqlReportType extends ReportTypeBase {
 	}
 	
 	public static function getVariableOptions($params, &$report) {
-		$query = 'SELECT DISTINCT '.$params['column'].' FROM '.$params['table'];
+		$query = 'SELECT DISTINCT '.(isset($params['columns'])?$params['columns']:$params['column']).' FROM '.$params['table'];
 		
 		if(isset($params['where'])) {
 			$query .= ' WHERE '.$params['where'];
@@ -115,7 +115,11 @@ class MysqlReportType extends ReportTypeBase {
 		if(isset($params['all'])) $options[] = 'ALL';
 		
 		while($row = mysql_fetch_assoc($result)) {
-			$options[] = $row[$params['column']];
+			if(isset($params['columns'])) {
+				$options[] = $row;
+			} else{
+				$options[] = $row[$params['column']];
+			}
 		}
 		
 		return $options;
