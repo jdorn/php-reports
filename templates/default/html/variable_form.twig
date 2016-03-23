@@ -88,11 +88,22 @@ $(function() {
 						var values = [];
 						inputs.each(function() {
 							if(($(this).attr('name')||'').match(/^macros/)) {
+							    // For dropdowns, use the display name instead of the value
+							    if($('option:selected',$(this)).length) {
+								var t = [];
+								$('option:selected',$(this)).each(function() {
+								    t.push($(this).text());
+								});
+								values.push(t.join(' | '));
+							    }
+							    // Otherwise, show the value
+							    else {
 								values.push($(this).val());
+							    }
 							}
 						});
 						if(values.length) {
-							t.push(label+': <em>'+values.join(' - ')+'</em>');
+							t.push('<strong>'+label+'</strong>: <em>'+values.join(' - ')+'</em>');
 						}
 				});
         var text = ' : '+t.join(', ');
