@@ -190,7 +190,7 @@ class VariableHeader extends HeaderBase {
 			}
 
 			//if the type is daterange, parse start and end with strtotime
-			if($params['type'] === 'daterange' && $report->macros[$params['name']][0] && $report->macros[$params['name']][1]) {
+			if($params['type'] === 'daterange' && !empty($report->macros[$params['name']][0]) && !empty($report->macros[$params['name']][1])) {
 				$start = date_create($report->macros[$params['name']][0]);
 				if(!$start) throw new Exception($params['display']." must have a valid start date.");
 				date_time_set($start,0,0,0);

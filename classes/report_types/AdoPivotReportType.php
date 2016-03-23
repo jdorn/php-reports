@@ -10,6 +10,9 @@ class AdoPivotReportType extends ReportTypeBase {
 		//make sure the syntax highlighting is using the proper class
 		SqlFormatter::$pre_attributes = "class='prettyprint linenums lang-sql'";
 
+        //set a formatted query here for debugging.  It will be overwritten below after macros are substituted.
+        $report->options['Query_Formatted'] = "<pre class='prettyprint linenums lang-yaml'>".$report->raw_query."</pre>";
+
         $object = spyc_load($report->raw_query);
 
         $report->raw_query = array();
@@ -25,10 +28,6 @@ class AdoPivotReportType extends ReportTypeBase {
 		}
 
         $report->raw_query[] = $object;
-
-		//set a formatted query here for debugging.  It will be overwritten below after macros are substituted.
-        //We can not set the query here - it's not a query just yet...
-		//$report->options['Query_Formatted'] = SqlFormatter::format($report->raw_query);
 	}
 	
 	public static function openConnection(&$report) {
@@ -38,7 +37,7 @@ class AdoPivotReportType extends ReportTypeBase {
 		$config = $environments[$report->options['Environment']][$report->options['Database']];
 		
 		if(!($report->conn = ADONewConnection($config['uri']))) {
-			throw new Exception('Could not connect to the database: '.$report->conn->ErrorMsg());
+			throw new Exception('Could not connect to the database');
 		}
 	}
 	

@@ -21,6 +21,7 @@ return array(
 		'php'=>'Php',
 		'js'=>'Mongo',
 		'ado'=>'Ado',
+		'pivot'=>'AdoPivot',
 	),
 	
 	//this enables listing different types of download formats on the report page
@@ -117,3 +118,4 @@ return array(
 	),
 );
 ?>
+

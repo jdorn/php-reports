@@ -15,8 +15,11 @@ class AdoReportType extends ReportTypeBase {
 		
 		//replace legacy shorthand macro format
 		foreach($report->macros as $key=>$value) {
-			$params = $report->options['Variables'][$key];
-			
+			$params = array();
+			if(isset($report->options['Variables'][$key])) {
+				$params = $report->options['Variables'][$key];
+			}
+
 			//macros shortcuts for arrays
 			if(isset($params['multiple']) && $params['multiple']) {
 				//allow {macro} instead of {% for item in macro %}{% if not item.first %},{% endif %}{{ item.value }}{% endfor %}
@@ -55,7 +58,7 @@ class AdoReportType extends ReportTypeBase {
 		$config = $environments[$report->options['Environment']][$report->options['Database']];
 		
 		if(!($report->conn = ADONewConnection($config['uri']))) {
-			throw new Exception('Could not connect to the database: '.$report->conn->ErrorMsg());
+			throw new Exception('Could not connect to the database');
 		}
 	}
 	
