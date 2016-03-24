@@ -490,11 +490,13 @@ class PhpReports {
 		$csv_link = str_replace('report/html/?','report/csv/?',$link);
 		$table_link = str_replace('report/html/?','report/table/?',$link);
 		$text_link = str_replace('report/html/?','report/text/?',$link);
+                $chart_link = str_replace('report/html/?','report/imagechart/?',$link);
 		
-		// Get the CSV file attachment and the inline HTML table
+		// Get the CSV file attachment, the inline HTML table, and any chart images
 		$csv = self::urlDownload($csv_link);
 		$table = self::urlDownload($table_link);
 		$text = self::urlDownload($text_link);
+                $chart = self::urlDownload($chart_link);
 		
 		$email_text = $body."\n\n".$text."\n\nView the report online at $link";
 		$email_html = "<p>$body</p>$table<p>View the report online at <a href=\"".htmlentities($link)."\">".htmlentities($link)."</a></p>";
@@ -510,14 +512,24 @@ class PhpReports {
 		  ->addPart($email_html, 'text/html')
 		;
 		
+                // CSV
 		$attachment = Swift_Attachment::newInstance()
 			->setFilename('report.csv')
 			->setContentType('text/csv')
 			->setBody($csv)
 		;
-		
 		$message->attach($attachment);
 		
+                // Charts
+                if($chart) {
+                        $attachment = Swift_Attachment::newInstance()
+                                ->setFilename('charts.png')
+                                ->setContentType('image/png')
+                                ->setBody($chart)
+                        ;
+                        $message->attach($attachment);
+                }
+                
 		// Create the Transport
 		$transport = self::getMailTransport();
 		$mailer = Swift_Mailer::newInstance($transport);

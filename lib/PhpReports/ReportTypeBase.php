@@ -16,5 +16,7 @@ abstract class ReportTypeBase {
 		return array();
 	}
 	
-	abstract public static function run(&$report);
+	public static function run(&$report) {
+                
+        }
 }
