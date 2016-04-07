@@ -89,8 +89,14 @@ class RollupHeader extends HeaderBase {
 				}
 				
 				$devs = array();
-				foreach($real_values as $v) $devs[] = pow($v - $params['mean'], 2);
-				$params['stdev'] = sqrt(array_sum($devs) / (count($devs) - 1));
+				if (empty($real_values)) {
+					$params['stdev'] = 0;
+				} else 	if (function_exists('stats_standard_deviation')) {
+					$params['stdev'] = stats_standard_deviation($real_values);
+				} else {
+					foreach($real_values as $v) $devs[] = pow($v - $params['mean'], 2);
+					$params['stdev'] = sqrt(array_sum($devs) / (count($devs)));
+				}
 			}
 		}
 		
