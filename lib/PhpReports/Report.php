@@ -205,7 +205,8 @@ class Report {
 		
 		//try to infer report type from file extension
 		if(!isset($this->options['Type'])) {
-			$file_type = array_pop(explode('.',$this->report));
+			$reportexplode = explode('.',$this->report);
+			$file_type = array_pop($reportexplode);
 			
 			if(!isset(PhpReports::$config['default_file_extension_mapping'][$file_type])) {
 				throw new Exception("Unknown report type - ".$this->report);

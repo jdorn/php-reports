@@ -100,7 +100,8 @@ class VariableHeader extends HeaderBase {
 		//if the 3rd item is "LIST", use multi-select
 		if(preg_match('/^\s*LIST\s*\b/',$extra)) {
 			$params['multiple'] = true;
-			$extra = array_pop(explode(',',$extra,2));
+			$extraexplode = explode(',',$extra,2);
+			$extra = array_pop($extraexplode);
 		}
 		
 		//table.column, where clause, ALL
