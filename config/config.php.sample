@@ -116,6 +116,17 @@ return array(
 			),
 		),
 	),
+/* Extend twig by creating a function and setting the twig_init_function to it's name.
+	'twig_init_function' => 'twig_extend',
+// With function to add json_encode and json_decode
+function twig_extend($twig) {
+        if (function_exists('json_encode') && function_exists('json_decode')) {
+                $function = new Twig_SimpleFunction('json_encode', 'json_encode');
+                $twig->addFunction($function);
+                $function = new Twig_SimpleFunction('json_decode', 'json_decode');
+                $twig->addFunction($function);
+        }
+}*/
 );
 ?>
 

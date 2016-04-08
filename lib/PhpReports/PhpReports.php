@@ -30,7 +30,7 @@ class PhpReports {
 		
 		self::$request = Flight::request();
 
-        $path = self::$request->base;
+		$path = self::$request->base;
 		
 		if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
 			$protocol = 'https://';
@@ -51,7 +51,7 @@ class PhpReports {
 		));
 		self::$twig = new Twig_Environment($loader);
 		self::$twig->addFunction(new Twig_SimpleFunction('dbdate', 'PhpReports::dbdate'));
-    self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+		self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
 		if(isset($_COOKIE['reports-theme']) && $_COOKIE['reports-theme']) {
 			$theme = $_COOKIE['reports-theme'];
@@ -59,18 +59,24 @@ class PhpReports {
 		else {
 			$theme = self::$config['bootstrap_theme'];
 		}
-        self::$twig->addGlobal('theme', $theme);
-        self::$twig->addGlobal('path', $path);
+	        self::$twig->addGlobal('theme', $theme);
+        	self::$twig->addGlobal('path', $path);
 
 		self::$twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
 
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String(), array('autoescape'=>false));
-        self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+	        self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
-        FileSystemCache::$cacheDir = self::$config['cacheDir'];
+        	FileSystemCache::$cacheDir = self::$config['cacheDir'];
 
 		if(!isset($_SESSION['environment']) || !isset(self::$config['environments'][$_SESSION['environment']])) {
 			$_SESSION['environment'] = array_shift(array_keys(self::$config['environments']));
+		}
+
+		// Extend twig.
+		if (isset($config['twig_init_function']) && function_exists($config['twig_init_function'])) {
+			$config['twig_init_function'](self::$twig);
+			$config['twig_init_function'](self::$twig_string);
 		}
 	}
 	
