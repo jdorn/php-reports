@@ -145,7 +145,7 @@
 	    
 	    <p>
 	      Php Reports requires PHP 5.3, Composer, Apache or nginx, and a modern browser.  
-	      You'll also need a MySQL database and/or MongoDB plus their respective PHP extensions if you want to use those report types.
+	      You'll also need a PDO database and/or MongoDB plus their respective PHP extensions if you want to use those report types.
 	    </p>
 	    
 	    <p>The easiest way to start using Php Reports is to clone the git repo.</p>
@@ -209,9 +209,11 @@ cp config/config.php.sample config/config.php</pre>
 		<strong>default_file_extension_mapping</strong> defines the default file extensions for different report types.  Here is an example:
 	      </p>
 	      <pre class='prettyprint linenums'>array(
-	'sql'=>'Mysql',
-	'php'=>'Php',
-	'js'=>'Mongo'
+  'sql'=>'Pdo',
+  'php'=>'Php',
+  'js'=>'Mongo',
+  'ado'=>'Ado',
+  'pivot'=>'AdoPivot',
 )</pre>
 	      <p><em>*Note</em> - This mapping can be overridden on a report-by-report basis if needed.</p>
 	    </section>
@@ -281,11 +283,10 @@ cp config/config.php.sample config/config.php</pre>
 	      
 	      <pre class='prettyprint linenums'>'environments'=>array(
   'production'=>array(
-    'mysql'=>array(
-      'host'=>'mysql.yourdomain.com',
+    'pdo'=>array(
+      'dsn'=>'mysql:host=localhost;dbname=test',
       'user'=>'readonly',
       'pass'=>'password',
-      'database'=>'test'
     ),
     'mongo'=>array(
       'host'=>'mongodb.yourdomain.com',
@@ -297,24 +298,85 @@ cp config/config.php.sample config/config.php</pre>
 	      <p>It is recommended to use readonly database users whenever possible to protect against possible database corruption.</p>
 	      
 	    </section>
+
+          <section id="advanced-settings">
+              <h3>Advanced Settings</h3>
+
+              <p><strong>report_formats</strong> is an array that controls the download options for a report. By default, all the supported download options are allowed:</p>
+                <pre class="prettyprint linenums">array(
+  'csv'=>'CSV',
+  'xlsx'=>'Download Excel 2007',
+  'xls'=>'Download Excel 97-2003',
+  'text'=>'Text',
+  'table'=>'Simple table',
+  // An element with the value "divider" will cause a visual break in the list
+  'raw data'=>'divider',
+  'json'=>'JSON',
+  'xml'=>'XML',
+  'sql'=>'SQL INSERT command',
+  'technical'=>'divider',
+  'debug'=>'Debug information',
+  'raw'=>'Raw report dump',
+)</pre>
+
+              <p>
+                  <strong>bootstrap_themelist</strong> is an array of available bootstrap themes for the theme-switcher.  By default, all the supported themes are allowed:</p>
+              <pre class="prettyprint linenums">array(
+  'default',
+  'amelia',
+  'cerulean',
+  'cosmo',
+  'cyborg',
+  'flatly',
+  'journal',
+  'readable',
+  'simplex',
+  'slate',
+  'spacelab',
+  'united'
+)</pre>
+
+              <p>
+                  <strong>bootstrap_theme</strong> sets the default theme.  If not set, <code>default</code> will be used.
+              </p>
+
+              <p>
+                  <strong>ga_api</strong> configures an optional Google Analytics API integration.  This lets you query Google Analytics from within a PHP Report.
+                  This setting is an associative array with the following properties:
+              </p>
+              <pre class="prettyprint linenums">array(
+  'applicationName'=>'PHP Reports',
+  'clientId'=>'abcdef123456',
+  'clientSecret'=>'1234abcd',
+  'redirectUri'=>'http://example.com/'
+)</pre>
+
+              <p>
+                  <strong>twig_init_function</strong> is an anonymous function that lets you configure the Twig templating engine.
+              </p>
+              <pre class="prettyprint linenums">'twig_init_function'=> function(Twig_Environment $twig) {
+  // Add custom twig plugins here...
+}</pre>
+
+          </section>
 	  </section>
 	  
 	  <section id="report_types">
 	    <h2>Report Types</h2>
 	    
-	    <p>Out of the box, Php Reports supports Mysql, MongoDB, and PHP data sources.  It's also easy to add your own custom format.</p>
+	    <p>Out of the box, Php Reports supports PDO, AdoDB, MongoDB, and PHP data sources.  It's also easy to add your own custom format.</p>
 	    
-	    <section id="mysql">
-	      <h3>MySQL Reports</h3>
+	    <section id="pdo">
+	      <h3>PDO Reports</h3>
 	      
 	      <p>
-		MySQL reports consist of 1 or more SQL statements separated by semicolons.
+		PDO reports consist of 1 or more SQL statements separated by semicolons.
 		By default, the result of the last statement is used for the report.
 		At the top of the report is a comment block with name, description, and any other report headers you need.
 	      </p>
 	      
 	      <p>
-		All MySQL reports are parsed with the Twig templating language before running.
+		All PDO reports are parsed with the Twig templating language before running.
 	      </p>
 	      
 	      <pre class='prettyprint linenums lang-sql'>
@@ -346,7 +408,7 @@ SELECT * FROM Orders;
         <section id="adodb">
             <h3>AdoDB reports</h3>
             <p>
-                There are two types of AdoDB reports - a simple, query based report type (similar to MySQL report type) and more complex, pivot table generator.
+                There are two types of AdoDB reports - a simple, query based report type (similar to PDO report type) and more complex, pivot table generator.
             </p>
 
             <p>
@@ -392,7 +454,7 @@ SELECT Name, Price FROM Products WHERE Price > "{{ min_price }}"</pre>
 
 	      <pre class='prettyprint linenums'>'environments'=>array(
 'default_file_extension_mapping' => array(
-    'sql'=>'Mysql',
+    'sql'=>'Pdo',
     'php'=>'Php',
     'js'=>'Mongo',
     'ado'=>'Ado',
@@ -1002,7 +1064,7 @@ CHART: {
 	      <p>Possible uses include:</p>
 	      
 	      <ul>
-		<li>Creating a temp table for a set of MySQL reports</li>
+		<li>Creating a temp table for a set of MySql reports</li>
 		<li>Defining helper functions for MongoDB or PHP reports</li>
 		<li>Setting up an API connection for a PHP report</li>
 	      </ul>
@@ -1212,7 +1274,7 @@ ROLLUP: {
 		    <td>database</td>
 		    <td>string</td>
 		    <td>
-		      The database connection info to use in the current environment.  By default, this is the same as the report type.  For example, if this is a Mysql report type, the database named "mysql" will be used.  Mongo reports will use the database "mongo" by default.
+		      The database connection info to use in the current environment.  By default, this is the same as the report type.  For example, if this is a PDO report type, the database named "pdo" will be used.  Mongo reports will use the database "mongo" by default.
 		    </td>
 		    <td>varies</td>
 		  </tr>
@@ -1354,7 +1416,7 @@ ROLLUP: {
 		    <td>type</td>
 		    <td>string</td>
 		    <td>
-		      The type of report (e.g. "Mongo", "Mysql", or "Php").  This is set automatically based on the file extension of the report, but can be overridden here.  For example, you can force a .js file to run as a PHP report (not sure why you would want to do this though).
+		      The type of report (e.g. "Mongo", "Pdo", "Ado", "AdoPivot", or "Php").  This is set automatically based on the file extension of the report, but can be overridden here.  For example, you can force a .js file to run as a PHP report (not sure why you would want to do this though).
 		    </td>
 		    <td>varies by file extension</td>
 		  </tr>
@@ -1873,7 +1935,8 @@ FILTER: {
 }</pre>
 	    
 	  </section>
-		  
+            </section>
+          </section>
         </div><!--/span-->
       </div><!--/row-->
 
