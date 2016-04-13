@@ -59,15 +59,15 @@ class PhpReports {
 		else {
 			$theme = self::$config['bootstrap_theme'];
 		}
-	        self::$twig->addGlobal('theme', $theme);
-        	self::$twig->addGlobal('path', $path);
+		self::$twig->addGlobal('theme', $theme);
+		self::$twig->addGlobal('path', $path);
 
 		self::$twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
 
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String(), array('autoescape'=>false));
-	        self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+		self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
-        	FileSystemCache::$cacheDir = self::$config['cacheDir'];
+		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 
 		if(!isset($_SESSION['environment']) || !isset(self::$config['environments'][$_SESSION['environment']])) {
 			$_SESSION['environment'] = array_shift(array_keys(self::$config['environments']));
@@ -136,20 +136,20 @@ class PhpReports {
 		return $time;
 	}
 
-    public static function generateSqlIN($column, $values, $or_null = false) {
-        $sql = "$column IN (";
-        foreach ($values as $value) {
-            $sql .= is_numeric($value) ? $value : "'$value'";
-            if ($value !== end($values)) {
-                $sql .= ', ';
-            }
-        }
-        $sql .= ")";
-        if ($or_null) {
-            $sql.= " OR $column IS NULL";
-        }
-        return $sql;
-    }
+	public static function generateSqlIN($column, $values, $or_null = false) {
+		$sql = "$column IN (";
+		foreach ($values as $value) {
+			$sql .= is_numeric($value) ? $value : "'$value'";
+			if ($value !== end($values)) {
+				$sql .= ', ';
+			}
+		}
+		$sql .= ")";
+		if ($or_null) {
+			$sql.= " OR $column IS NULL";
+		}
+		return $sql;
+	}
 
 	public static function render($template, $macros) {
 		$default = array(
@@ -369,15 +369,18 @@ class PhpReports {
 	}
 
 	protected static function getReportHeaders($report) {
-		$cacheKey = FileSystemCache::generateCacheKey($report,'report_headers');
+		$cacheKey = FileSystemCache::generateCacheKey(array(self::$request->base, $report),'report_headers');
 
 		//check if report data is cached and newer than when the report file was created
 		//the url parameter ?nocache will bypass this and not use cache
 		$data =false;
-		if(!isset($_REQUEST['nocache'])) {
-			$m = @filemtime(Report::getFileLocation($report));
 
-			$data = FileSystemCache::retrieve($cacheKey, $m);
+		$loc = Report::getFileLocation($report);
+		if(!file_exists($loc)) {
+			return false;
+		}
+		if(!isset($_REQUEST['nocache'])) {
+			$data = FileSystemCache::retrieve($cacheKey, filemtime($loc));
 		}
 
 		//report data not cached, need to parse it
