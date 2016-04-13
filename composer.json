@@ -11,6 +11,8 @@
         }
     ],
     "require": {
+        "php": ">=5.3",
+        "ext-pdo": "*",
         "twig/twig": "1.*",
         "swiftmailer/swiftmailer": "5.*",
         "mikecao/flight": "dev-master",
