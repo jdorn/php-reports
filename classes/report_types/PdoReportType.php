@@ -1,6 +1,6 @@
 <?php
 class PdoReportType extends ReportTypeBase {
-	public $default_driver = null;
+	public static $default_driver = null;
 
 	public static function init(&$report) {
 		$environments = PhpReports::$config['environments'];
