@@ -6,7 +6,7 @@ return array(
 
 	//the root directory of all dashboards
 	'dashboardDir' => 'sample_dashboards',
-	
+
 	//the directory where things will be cached
 	//this is relative to the project root by default, but can be set to an absolute path too
 	//the cache has some relatively long lived data so don't use /tmp if you can avoid it
@@ -23,10 +23,10 @@ return array(
 		'ado'=>'Ado',
 		'pivot'=>'AdoPivot',
 	),
-	
+
 	//this enables listing different types of download formats on the report page
 	//to change that one can add or remove any format from the list below
-	//in order to create a divider a list entry have to be added with any key name and 
+	//in order to create a divider a list entry have to be added with any key name and
 	//a value of 'divider'
 	'report_formats' => array(
 		'csv'=>'CSV',
@@ -53,23 +53,23 @@ return array(
 	    'default',
 	    'amelia', 'cerulean', 'cosmo', 'cyborg', 'flatly', 'journal', 'readable', 'simplex', 'slate', 'spacelab', 'united'
 	),
-	
+
 	//email settings
 	'mail_settings' => array(
 		//set 'enabled' to true to enable the 'email this report' functionality
 		'enabled'=>false,
-		
+
 		'from'=>'reports@yourdomain.com',
-		
+
 		//php's mail function
 		'method'=>'mail'
-		
+
 		//sendmail
 		/*
 		'method'=>'sendmail',
 		'command'=>'/usr/sbin/sendmail -bs' //optional
 		*/
-		
+
 		//smtp
 		/*
 		'method'=>'smtp',
@@ -80,7 +80,7 @@ return array(
 		'encryption'=>'ssl' 				//optional (either 'ssl' or 'tls')
 		*/
 	),
-	
+
 	// Google Analytics API Integration
 	/*
 	'ga_api'=>array(
@@ -116,17 +116,8 @@ return array(
 			),
 		),
 	),
-/* Extend twig by creating a function and setting the twig_init_function to it's name.
-	'twig_init_function' => 'twig_extend',
-// With function to add json_encode and json_decode
-function twig_extend($twig) {
-        if (function_exists('json_encode') && function_exists('json_decode')) {
-                $function = new Twig_SimpleFunction('json_encode', 'json_encode');
-                $twig->addFunction($function);
-                $function = new Twig_SimpleFunction('json_decode', 'json_decode');
-                $twig->addFunction($function);
-        }
-}*/
+	'twig_init_function' => function (Twig_Environment $twig) {
+		// This is called twice, once for each Twig_Environment that is used
+	}
 );
 ?>
-
