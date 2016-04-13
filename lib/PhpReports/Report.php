@@ -489,8 +489,10 @@ class Report {
 		foreach($this->options['DataSets'] as $i=>$dataset) {
 			$this->prepareRows($i);
 		}
-		$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
-		$this->options['Count'] = $this->options['DataSets'][0]['count'];
+		if(isset($this->options['DataSets'][0])) {
+			$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
+			$this->options['Count'] = $this->options['DataSets'][0]['count'];
+		}
 	}
 	protected function prepareRows($dataset) {
 		$rows = array();

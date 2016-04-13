@@ -17,7 +17,7 @@ return array(
 	//to override this for a specific report, simply add a TYPE header
 	//any file extension not in this array will be ignored when pulling the report list
 	'default_file_extension_mapping' => array(
-		'sql'=>'Mysql',
+		'sql'=>'Pdo',
 		'php'=>'Php',
 		'js'=>'Mongo',
 		'ado'=>'Ado',
@@ -96,28 +96,28 @@ return array(
 	//the values are arrays that contain connection info
 	'environments' => array(
 		'main'=>array(
-			//this is what is used as the "host" macro within reports
-			'host'=>'localhost',
-
+			// Supports AdoDB connections
 			'ado'=>array(
 				'uri'=>'mysql://username:password@localhost/database'
 			),
 
-			'mysql'=>array(
-				'host'=>'localhost',
-				'user'=>'root',
-				'pass'=>'',
-				'database'=>'test'
+			// Supports and PDO database
+			'pdo'=>array(
+				'dsn'=>'mysql:host=localhost;dbname=test',
+				'user'=>'readonly',
+				'pass'=>'password',
 			),
 
+			// Supports MongoDB
 			'mongo'=>array(
 				'host'=>'localhost',
 				'port'=>'27017'
 			),
 		),
 	),
+	// This is called twice, once for each Twig_Environment that is used
 	'twig_init_function' => function (Twig_Environment $twig) {
-		// This is called twice, once for each Twig_Environment that is used
+
 	}
 );
 ?>
