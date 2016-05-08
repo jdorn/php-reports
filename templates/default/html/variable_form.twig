@@ -130,7 +130,9 @@ $(function() {
                     'Last 7 Days': [moment().subtract('days', 6), moment()],
                     'Last 30 Days': [moment().subtract('days', 29), moment()],
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
+                    'Last 3 Months': [moment().subtract('month', 3), moment()],
+                    'Last 6 Months': [moment().subtract('month', 6), moment()]
 				},
                 showWeekNumbers: true,
                 showDropdowns: true,
@@ -141,7 +143,7 @@ $(function() {
 			function(start, end) {
 				$('#var_'+range_holder.data('var')+'_start').val(start.format('YYYY-MM-DD')+" 00:00:00");
 				$('#var_'+range_holder.data('var')+'_end').val(end.format('YYYY-MM-DD')+" 23:59:59");
-				
+
 				$('span',range_holder).html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 			}
 		);
@@ -169,6 +171,6 @@ $(function() {
             }
         }
     });
-		
+
 });
 </script>
