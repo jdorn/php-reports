@@ -93,7 +93,7 @@ Flight::route('/set-environment', function () {
     header("Content-Type: application/json");
     $_SESSION['environment'] = $_REQUEST['environment'];
 
-    echo '{ "status": "OK" }';
+    echo json_encode(['status' => 'OK']);
 });
 
 //email report
