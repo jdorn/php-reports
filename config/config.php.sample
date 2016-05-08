@@ -7,6 +7,9 @@ return array(
 	//the root directory of all dashboards
 	'dashboardDir' => 'sample_dashboards',
 
+	// Company name on navigation
+	'brand' => 'PHP Reports',
+
 	//the directory where things will be cached
 	//this is relative to the project root by default, but can be set to an absolute path too
 	//the cache has some relatively long lived data so don't use /tmp if you can avoid it
