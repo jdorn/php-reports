@@ -31,5 +31,8 @@
             "vendor/jdorn/file-system-cache/"
         ]
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "^5.3"
+    }
 }

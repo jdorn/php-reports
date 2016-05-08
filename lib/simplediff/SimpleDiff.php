@@ -53,12 +53,13 @@ class SimpleDiff
         $diff = self::diff(explode(" ", $old), explode(" ", $new));
         foreach ($diff as $k) {
             if (is_array($k)) {
-                $ret .= (!empty($k['d']) ? "<del>" . implode(" ", array_map('htmlentities', $k['d'])) . "</del> ":'') .
-                    (!empty($k['i']) ? "<ins>" . implode(" ", array_map('htmlentities', $k['i'])) . "</ins> " : '');
+                $ret .= (!empty($k['d']) ? "<del>".implode(" ", array_map('htmlentities', $k['d']))."</del> " : '').
+                    (!empty($k['i']) ? "<ins>".implode(" ", array_map('htmlentities', $k['i']))."</ins> " : '');
             } else {
-                $ret .= htmlentities($k) . " ";
+                $ret .= htmlentities($k)." ";
             }
         }
+
         return $ret;
     }
 
@@ -75,7 +76,6 @@ class SimpleDiff
                 return true;
             }
         }
-
 
         if (!isset($diff[$i])) {
             return false;
@@ -114,10 +114,10 @@ class SimpleDiff
             }
 
             if (is_array($k)) {
-                $ret .= (!empty($k['d']) ? "<del>" . implode("\n", array_map('htmlentities', $k['d'])) . "</del>\n" : '') .
-                    (!empty($k['i']) ? "<ins>" . implode("\n", array_map('htmlentities', $k['i'])) . "</ins>\n" : '');
+                $ret .= (!empty($k['d']) ? "<del>".implode("\n", array_map('htmlentities', $k['d']))."</del>\n" : '').
+                    (!empty($k['i']) ? "<ins>".implode("\n", array_map('htmlentities', $k['i']))."</ins>\n" : '');
             } elseif ($diff_section) {
-                $ret .= htmlentities($k) . "\n";
+                $ret .= htmlentities($k)."\n";
             }
         }
 
