@@ -25,11 +25,12 @@
     },
     "autoload": {
         "files": [
-            "lib/adodb/pivottable.inc.php"
+            "lib/adodb/pivottable.inc.php",
+            "lib/simplediff/SimpleDiff.php"
         ],
-        "classmap": [
-            "vendor/jdorn/file-system-cache/"
-        ]
+        "psr-4": {
+            "PhpReports\\": "src/"
+        }
     },
     "minimum-stability": "dev",
     "require-dev": {
