@@ -5,5 +5,4 @@ dashboards/
 cache/
 classes/local/*.php
 templates/local
-old/
 vendor/
