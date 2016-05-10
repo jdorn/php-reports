@@ -100,7 +100,7 @@ Flight::route('/email', function () {
     PhpReports::emailReport();
 });
 
-// Flight::set('flight.handle_errors', false);
+Flight::set('flight.handle_errors', false);
 Flight::set('flight.log_errors', true);
 
 Flight::start();

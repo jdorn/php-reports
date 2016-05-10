@@ -1,19 +1,19 @@
 {% extends "html/blank_page.twig" %}
 {% block javascripts %}
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script src="{{base}}/js/jquery-2.0.3.min.js"></script>
-	<script>
-	google.load("visualization", "1", {packages:["corechart","geochart","annotatedtimeline"]});
-	</script>
-    <script src="{{ base }}/js/timeline.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ base }}/css/timeline.css">
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="{{base}}/js/jquery-2.0.3.min.js"></script>
+  <script>
+    google.load("visualization", "1", {packages:["corechart","geochart","annotatedtimeline"]});
+  </script>
+  <script src="{{ base }}/js/timeline.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ base }}/css/timeline.css">
 {% endblock %}
 {% block stylesheets %}
 {{ parent() }}
 <style>
 body {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 </style>
 {% endblock %}
