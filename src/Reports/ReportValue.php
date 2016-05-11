@@ -111,6 +111,9 @@ class ReportValue
         }
     }
 
+    /**
+     * @return string
+     */
     public function getKeyCollapsed()
     {
         return trim(preg_replace(['/\s+/', '/[^a-zA-Z0-9_]*/'], ['_', ''], $this->key), '_');
