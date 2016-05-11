@@ -355,11 +355,12 @@ class PhpReports
 
         return array_values($recent);
     }
-    public static function getReportListJSON($reports = null)
+
+    public static function getReportList($reports = null)
     {
         if ($reports === null) {
             $errors = [];
-            $reports = self::getReports(self::$config['reportDir'].'/', $errors);
+            $reports = self::getReports(self::$config['reportDir'] . '/', $errors);
         }
 
         //weight by popular reports
@@ -383,8 +384,8 @@ class PhpReports
                     continue;
                 }
 
-                $part = trim(self::getReportListJSON($report['children']), '[],');
-                if ($part) {
+                $part = self::getReportList($report['children']);
+                if (!empty($part)) {
                     $parts[] = $part;
                 }
             } else {
@@ -410,15 +411,15 @@ class PhpReports
                     $popularity = 0;
                 }
 
-                $parts[] = json_encode([
+                $parts[] = [
                     'name' => $report['Name'],
                     'url' => $report['url'],
                     'popularity' => $popularity,
-                ]);
+                ];
             }
         }
 
-        return '['.trim(implode(',', $parts), ',').']';
+        return $parts;
     }
 
     protected static function getReportHeaders($report)

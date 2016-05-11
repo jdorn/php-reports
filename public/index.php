@@ -54,24 +54,25 @@ if (isset(PhpReports::$config['ga_api'])) {
     });
 }
 
-Flight::route('/', function () {
+Flight::route('GET /', function () {
     PhpReports::listReports();
 });
 
-Flight::route('/dashboards', function () {
+Flight::route('GET /dashboards', function () {
     PhpReports::listDashboards();
 });
 
-Flight::route('/dashboard/@name', function ($name) {
+Flight::route('GET /dashboard/@name', function ($name) {
     PhpReports::displayDashboard($name);
 });
 
 //JSON list of reports (used for typeahead search)
-Flight::route('/report-list-json', function () {
-    header("Content-Type: application/json");
-    header("Cache-Control: max-age=3600");
-
-    echo PhpReports::getReportListJSON();
+Flight::route('GET /report-list-json', function () {
+    $reports = PhpReports::getReportList();
+    Flight::response()->header('Cache-Control', 'max-age=86400, public');
+    Flight::response()->header('Pragma', '');
+    Flight::etag(substr(md5(serialize($reports)), 0, 15));
+    Flight::json($reports);
 });
 
 //if no report format is specified, default to html
@@ -88,12 +89,19 @@ Flight::route('/edit', function () {
     PhpReports::editReport($_REQUEST['report']);
 });
 
-Flight::route('/set-environment', function () {
-    header("Content-Type: application/json");
-    $_SESSION['environment'] = $_REQUEST['environment'];
+Flight::route('GET|POST /set-environment', function () {
+    $request = Flight::request();
+    $environment = array_filter([
+        array_key_exists('environment', $request->query->getData()) ? $request->query['environment'] : null,
+        array_key_exists('environment', $request->data->getData()) ? $request->data['environment'] : null
+    ]);
 
-    echo json_encode(['status' => 'OK']);
-});
+    $environment = array_pop($environment);
+
+    $_SESSION['environment'] = $environment;
+
+    Flight::json(['status' => 'OK']);
+}, true);
 
 //email report
 Flight::route('/email', function () {
