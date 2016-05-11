@@ -2,13 +2,15 @@
 namespace PhpReports\Formats;
 
 use PhpReports\PhpReports;
+use PhpReports\Report;
+use flight\net\Request;
 
 class HtmlReportFormat extends Format implements FormatInterface
 {
     /**
      * @{inheritDoc}
      */
-    public static function display(&$report, &$request)
+    public static function display(Report &$report, Request &$request = null)
     {
         //determine if this is an asyncronous report or not
         $report->async = !isset($request->query['content_only']);

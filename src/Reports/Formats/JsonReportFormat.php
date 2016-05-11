@@ -1,10 +1,15 @@
 <?php
+namespace PhpReports\Formats;
+
+use PhpReports\Report;
+use flight\net\Request;
+
 class JsonReportFormat extends ReportFormatBase
 {
     /**
      * @{inheritDoc}
      */
-    public static function display(&$report, &$request)
+    public static function display(Report &$report)
     {
         header("Content-type: application/json");
         header("Pragma: no-cache");
@@ -28,19 +33,19 @@ class JsonReportFormat extends ReportFormatBase
                 $datasets = explode(',', $datasets);
             }
 
-            foreach ($datasets as $i) {
-                $result[] = self::getDataSet($i, $report);
+            foreach ($datasets as $datasetIndex) {
+                $result[] = self::getDataSet($datasetIndex, $report);
             }
         } else {
-            $i = 0;
+            $datasetIndex = 0;
             if (isset($_GET['dataset'])) {
-                $i = $_GET['dataset'];
+                $datasetIndex = $_GET['dataset'];
             } elseif (isset($report->options['default_dataset'])) {
-                $i = $report->options['default_dataset'];
+                $datasetIndex = $report->options['default_dataset'];
             }
-            $i = intval($i);
+            $datasetIndex = intval($datasetIndex);
 
-            $dataset = self::getDataSet($i, $report);
+            $dataset = self::getDataSet($datasetIndex, $report);
             $result = $dataset['rows'];
         }
 
@@ -51,17 +56,17 @@ class JsonReportFormat extends ReportFormatBase
         }
     }
 
-    public static function getDataSet($i, &$report)
+    public static function getDataSet($datasetIndex, &$report)
     {
         $dataset = [];
-        foreach ($report->options['DataSets'][$i] as $k => $v) {
+        foreach ($report->options['DataSets'][$datasetIndex] as $k => $v) {
             $dataset[$k] = $v;
         }
 
         $rows = [];
-        foreach ($dataset['rows'] as $i => $row) {
+        foreach ($dataset['rows'] as $datasetIndex => $row) {
             $tmp = [];
-            foreach ($row['values'] as $key => $value) {
+            foreach ($row['values'] as $value) {
                 $tmp[$value->key] = $value->getValue();
             }
             $rows[] = $tmp;

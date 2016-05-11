@@ -2,27 +2,32 @@
 namespace PhpReports\Formats;
 
 use PHPExcel;
+use PhpReports\Report;
 
 abstract class XlsReportBase extends Format implements FormatInterface
 {
-    private static function columnLetter($c)
+    /**
+     * @param int $columnLetter
+     * @return string $letter
+     */
+    private static function columnLetter($columnLetter)
     {
-        $c = intval($c);
-        if ($c <= 0) {
+        $columnLetter = intval($columnLetter);
+        if ($columnLetter <= 0) {
             return '';
         }
         $letter = '';
 
-        while ($c != 0) {
-            $p = ($c - 1) % 26;
-            $c = intval(($c - $p) / 26);
-            $letter = chr(65 + $p).$letter;
+        while ($columnLetter != 0) {
+            $page = ($columnLetter - 1) % 26;
+            $columnLetter = intval(($columnLetter - $page) / 26);
+            $letter = chr(65 + $page) . $letter;
         }
 
         return $letter;
     }
 
-    public static function getExcelRepresantation(&$report)
+    public static function getExcelRepresantation(Report &$report)
     {
         // Create new PHPExcel object
         $objPHPExcel = new PHPExcel();
@@ -34,9 +39,9 @@ abstract class XlsReportBase extends Format implements FormatInterface
                                      ->setSubject("")
                                      ->setDescription("");
 
-        foreach ($report->options['DataSets'] as $i => $dataset) {
-            $objPHPExcel->createSheet($i);
-            self::addSheet($objPHPExcel, $dataset, $i);
+        foreach ($report->options['DataSets'] as $datasetIndex => $dataset) {
+            $objPHPExcel->createSheet($datasetIndex);
+            self::addSheet($objPHPExcel, $dataset, $datasetIndex);
         }
 
         // Set the active sheet to the first one
@@ -68,8 +73,8 @@ abstract class XlsReportBase extends Format implements FormatInterface
 
         $objPHPExcel->setActiveSheetIndex($i)->fromArray($rows, null, 'A1');
         $objPHPExcel->getActiveSheet()->setAutoFilter('A1:'.self::columnLetter($cols).count($rows));
-        for ($a = 1; $a <= $cols; $a++) {
-            $objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($a))->setAutoSize(true);
+        for ($columnLeter = 1; $columnLeter <= $cols; $columnLeter++) {
+            $objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($columnLeter))->setAutoSize(true);
         }
 
         if (isset($dataset['title'])) {

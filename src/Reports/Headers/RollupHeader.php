@@ -6,6 +6,9 @@ use PhpReports\ReportValue;
 
 class RollupHeader extends HeaderBase
 {
+    /**
+     * @var array
+     */
     public static $validation = [
         'columns' => [
             'required' => true,

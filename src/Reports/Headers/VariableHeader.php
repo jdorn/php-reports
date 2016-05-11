@@ -3,6 +3,9 @@ namespace PhpReports\Headers;
 
 class VariableHeader extends HeaderBase
 {
+    /**
+     * @var array
+     */
     public static $validation = [
         'name' => [
             'required' => true,

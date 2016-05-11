@@ -1,9 +1,15 @@
 <?php
 namespace PhpReports\Formats;
 
+use PhpReports\Report;
+use flight\net\Request;
+
 class ChartReportFormat extends Format implements FormatInterface
 {
-    public static function display(&$report, &$request)
+    /**
+     * @{inheritDoc}
+     */
+    public static function display(Report &$report, Request &$request = null)
     {
         if (!$report->options['has_charts']) {
             return;

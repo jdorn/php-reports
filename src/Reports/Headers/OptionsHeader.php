@@ -3,6 +3,9 @@ namespace PhpReports\Headers;
 
 class OptionsHeader extends HeaderBase
 {
+    /**
+     * @var array
+     */
     public static $validation = [
         'limit' => [
             'type' => 'number',
@@ -78,6 +81,9 @@ class OptionsHeader extends HeaderBase
         ],
     ];
 
+    /**
+     * @{inheritDoc}
+     */
     public static function init($params, &$report)
     {
         //legacy support for the 'ttl' cache parameter

@@ -1,12 +1,15 @@
 <?php
 namespace PhpReports\Formats;
 
+use PhpReports\Report;
+use flight\net\Request;
+
 class XmlReportFormat extends Format implements FormatInterface
 {
     /**
      * @{inheritDoc}
      */
-    public static function display(&$report, &$request)
+    public static function display(Report &$report, Request &$request = null)
     {
         header("Content-type: application/xml");
         header("Pragma: no-cache");
@@ -26,15 +29,15 @@ class XmlReportFormat extends Format implements FormatInterface
                 $datasets = explode(',', $datasets);
             }
         } else {
-            $i = 0;
+            $datasetIndex = 0;
             if (isset($_GET['dataset'])) {
-                $i = $_GET['dataset'];
+                $datasetIndex = $_GET['dataset'];
             } elseif (isset($report->options['default_dataset'])) {
-                $i = $report->options['default_dataset'];
+                $datasetIndex = $report->options['default_dataset'];
             }
-            $i = intval($i);
+            $datasetIndex = intval($datasetIndex);
 
-            $datasets = [$i];
+            $datasets = [$datasetIndex];
         }
 
         echo $report->renderReportPage('xml/report', [

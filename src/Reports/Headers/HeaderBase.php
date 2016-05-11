@@ -2,12 +2,16 @@
 namespace PhpReports\Headers;
 
 use PhpReports\PhpReports;
+use PhpReports\Report;
 
 class HeaderBase
 {
+    /**
+     * @var array
+     */
     protected static $validation = [];
 
-    public static function parse($key, $value, &$report)
+    public static function parse($key, $value, Report &$report)
     {
         $params = null;
 

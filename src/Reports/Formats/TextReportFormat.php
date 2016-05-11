@@ -1,12 +1,15 @@
 <?php
 namespace PhpReports\Formats;
 
+use PhpReports\Report;
+use flight\net\Request;
+
 class TextReportFormat extends Format implements FormatInterface
 {
     /**
      * @{inheritDoc}
      */
-    public static function display(&$report, &$request)
+    public static function display(Report &$report, Request &$request = null)
     {
         header("Content-type: text/plain");
         header("Pragma: no-cache");
@@ -59,15 +62,16 @@ class TextReportFormat extends Format implements FormatInterface
                 $value = $value->getValue();
 
                 $length = strlen($value);
+                // get largest result size
                 if ($length > $sizes[$key]) {
                     $sizes[$key] = $length;
-                } // get largest result size
+                }
             }
         }
 
         //top of output
         foreach ($sizes as $length) {
-            echo "+".str_pad("", $length + 2, "-");
+            echo "+" .str_pad("", $length + 2, "-");
         }
         echo "+\n";
 
@@ -83,7 +87,7 @@ class TextReportFormat extends Format implements FormatInterface
 
         //line under column names
         foreach ($sizes as $length) {
-            echo "+".str_pad("", $length + 2, "-");
+            echo "+" . str_pad("", $length + 2, "-");
         }
         echo "+\n";
 
@@ -101,7 +105,7 @@ class TextReportFormat extends Format implements FormatInterface
 
         //bottom of output
         foreach ($sizes as $length) {
-            echo "+".str_pad("", $length + 2, "-");
+            echo "+" . str_pad("", $length + 2, "-");
         }
         echo "+\n";
     }

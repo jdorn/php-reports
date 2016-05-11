@@ -1,6 +1,8 @@
 <?php
 namespace PhpReports\Formats;
 
+use PhpReports\Report;
+use flight\net\Request;
 use PHPExcel_IOFactory;
 
 class XlsxReportFormat extends XlsReportBase implements FormatInterface
@@ -8,7 +10,7 @@ class XlsxReportFormat extends XlsReportBase implements FormatInterface
     /**
      * @{inheritDoc}
      */
-    public static function display(&$report, &$request)
+    public static function display(Report &$report, Request &$request = null)
     {
         // First let set up some headers
         $file_name = preg_replace(['/[\s]+/', '/[^0-9a-zA-Z\-_\.]/'], ['_', ''], $report->options['Name']);
