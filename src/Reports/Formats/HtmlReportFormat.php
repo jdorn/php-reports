@@ -24,7 +24,7 @@ class HtmlReportFormat extends Format implements FormatInterface
         }
 
         try {
-            $additional_vars = array();
+            $additional_vars = [];
             if (isset($request->query['no_charts'])) {
                 $additional_vars['no_charts'] = true;
             }
@@ -36,12 +36,12 @@ class HtmlReportFormat extends Format implements FormatInterface
                 $template = 'html/blank_page';
             }
 
-            $vars = array(
+            $vars = [
                 'title' => $report->report,
                 'header' => '<h2>There was an error running your report</h2>',
                 'error' => $e->getMessage(),
-                'content' => "<h2>Report Query</h2>".$report->options['Query_Formatted'],
-            );
+                'content' => "<h2>Report Query</h2>" . $report->options['Query_Formatted'],
+            ];
 
             echo PhpReports::render($template, $vars);
         }

@@ -94,7 +94,7 @@ class AdoPivotReportType extends Type
             throw new \Exception("Unable to get variable options: ".$report->conn->ErrorMsg());
         }
 
-        $options = array();
+        $options = [];
 
         if (isset($params['all']) && $params['all']) {
             $options[] = 'ALL';

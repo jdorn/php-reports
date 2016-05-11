@@ -11,7 +11,7 @@ class CsvReportFormat extends Format implements FormatInterface
         //always use cache for CSV reports
         $report->use_cache = true;
 
-        $file_name = preg_replace(array('/[\s]+/', '/[^0-9a-zA-Z\-_\.]/'), ['_', ''], $report->options['Name']);
+        $file_name = preg_replace(['/[\s]+/', '/[^0-9a-zA-Z\-_\.]/'], ['_', ''], $report->options['Name']);
 
         header("Content-type: application/csv");
         header("Content-Disposition: attachment; filename=".$file_name.".csv");

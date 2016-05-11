@@ -42,15 +42,15 @@ class PhpReports
         //the load order for templates is: "templates/local", "templates/default", "templates"
         //this means loading the template "html/report.twig" will load the local first and then the default
         //if you want to extend a default template from within a local template, you can do {% extends "default/html/report.twig" %} and it will fall back to the last loader
-        $template_dirs = array('../templates/default','../templates');
+        $template_dirs = ['../templates/default', '../templates'];
         if (file_exists('../templates/local')) {
             array_unshift($template_dirs, '../templates/local');
         }
 
-        $loader = new \Twig_Loader_Chain(array(
+        $loader = new \Twig_Loader_Chain([
             new \Twig_Loader_Filesystem($template_dirs),
             new \Twig_Loader_String(),
-        ));
+        ]);
 
         self::$twig = new \Twig_Environment($loader);
         self::$twig->addFunction(new \Twig_SimpleFunction('dbdate', 'PhpReports::dbdate'));
@@ -67,7 +67,7 @@ class PhpReports
 
         self::$twig->addFilter('var_dump', new \Twig_Filter_Function('var_dump'));
 
-        self::$twig_string = new \Twig_Environment(new \Twig_Loader_String(), array('autoescape' => false));
+        self::$twig_string = new \Twig_Environment(new \Twig_Loader_String(), ['autoescape' => false]);
         self::$twig_string->addFunction(new \Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
         \FileSystemCache::$cacheDir = self::$config['cacheDir'];
@@ -291,18 +291,18 @@ class PhpReports
             return strcmp($a['title'], $b['title']);
         });
 
-        echo self::render('html/dashboard_list', array(
+        echo self::render('html/dashboard_list', [
             'dashboards' => $dashboards,
-        ));
+        ]);
     }
 
     public static function displayDashboard($dashboard)
     {
         $content = self::getDashboard($dashboard);
 
-        echo self::render('html/dashboard', array(
+        echo self::render('html/dashboard', [
             'dashboard' => $content,
-        ));
+        ]);
     }
 
     public static function getDashboards()
@@ -331,7 +331,7 @@ class PhpReports
     public static function getRecentReports()
     {
         $recently_run = \FileSystemCache::retrieve(\FileSystemCache::generateCacheKey('recently_run'));
-        $recent = array();
+        $recent = [];
         if ($recently_run !== false) {
             $i = 0;
             foreach ($recently_run as $report) {
@@ -358,13 +358,13 @@ class PhpReports
     public static function getReportListJSON($reports = null)
     {
         if ($reports === null) {
-            $errors = array();
+            $errors = [];
             $reports = self::getReports(self::$config['reportDir'].'/', $errors);
         }
 
         //weight by popular reports
         $recently_run = \FileSystemCache::retrieve(\FileSystemCache::generateCacheKey('recently_run'));
-        $popular = array();
+        $popular = [];
         if ($recently_run !== false) {
             foreach ($recently_run as $report) {
                 if (!isset($popular[$report])) {
@@ -374,7 +374,7 @@ class PhpReports
                 }
             }
         }
-        $parts = array();
+        $parts = [];
 
         foreach ($reports as $report) {
             if ($report['is_dir'] && $report['children']) {
@@ -410,11 +410,11 @@ class PhpReports
                     $popularity = 0;
                 }
 
-                $parts[] = json_encode(array(
+                $parts[] = json_encode([
                     'name' => $report['Name'],
                     'url' => $report['url'],
                     'popularity' => $popularity,
-                ));
+                ]);
             }
         }
 
@@ -423,7 +423,7 @@ class PhpReports
 
     protected static function getReportHeaders($report)
     {
-        $cacheKey = \FileSystemCache::generateCacheKey(array(self::$request->base, $report), 'report_headers');
+        $cacheKey = \FileSystemCache::generateCacheKey([self::$request->base, $report], 'report_headers');
 
         //check if report data is cached and newer than when the report file was created
         //the url parameter ?nocache will bypass this and not use cache
@@ -446,9 +446,9 @@ class PhpReports
             $data['report'] = $report;
             $data['url'] = self::$request->base.'/report/html/?report='.$report;
             $data['is_dir'] = false;
-            $data['Id'] = str_replace(array('_', '-', '/', ' ', '.'), array('', '', '_', '-', '_'), trim($report, '/'));
+            $data['Id'] = str_replace(['_', '-', '/', ' ', '.'], ['', '', '_', '-', '_'], trim($report, '/'));
             if (!isset($data['Name'])) {
-                $data['Name'] = ucwords(str_replace(array('_', '-'), ' ', basename($report)));
+                $data['Name'] = ucwords(str_replace(['_', '-'], ' ', basename($report)));
             }
 
             //store parsed report in cache
@@ -463,7 +463,7 @@ class PhpReports
         $base = self::$config['reportDir'].'/';
 
         $reports = glob($dir.'*', GLOB_NOSORT);
-        $return = array();
+        $return = [];
         foreach ($reports as $key => $report) {
             $title = $description = false;
 
@@ -475,7 +475,7 @@ class PhpReports
                     $description = file_get_contents($report.'/README.txt');
                 }
 
-                $id = str_replace(array('_', '-', '/', ' '), array('', '', '_', '-'), trim(substr($report, strlen($base)), '/'));
+                $id = str_replace(['_', '-', '/', ' '], ['', '', '_', '-'], trim(substr($report, strlen($base)), '/'));
 
                 $children = self::getReports($report.'/', $errors);
 
@@ -488,15 +488,15 @@ class PhpReports
                     }
                 }
 
-                $return[] = array(
-                    'Name' => ucwords(str_replace(array('_', '-'), ' ', basename($report))),
+                $return[] = [
+                    'Name' => ucwords(str_replace(['_', '-'], ' ', basename($report))),
                     'Title' => $title,
                     'Id' => $id,
                     'Description' => $description,
                     'is_dir' => true,
                     'children' => $children,
                     'count' => $count,
-                );
+                ];
             } else {
                 //files to skip
                 if (strpos(basename($report), '.') === false) {
@@ -515,12 +515,12 @@ class PhpReports
                     $return[] = $data;
                 } catch (\Exception $e) {
                     if (!$errors) {
-                        $errors = array();
+                        $errors = [];
                     }
-                    $errors[] = array(
+                    $errors[] = [
                         'report' => $name,
                         'exception' => $e,
-                    );
+                    ];
                 }
             }
         }
@@ -552,22 +552,22 @@ class PhpReports
     public static function emailReport()
     {
         if (!isset($_REQUEST['email']) || !filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL)) {
-            echo json_encode(array('error' => 'Valid email address required'));
+            echo json_encode(['error' => 'Valid email address required']);
 
             return;
         }
         if (!isset($_REQUEST['url'])) {
-            echo json_encode(array('error' => 'Report url required'));
+            echo json_encode(['error' => 'Report url required']);
 
             return;
         }
         if (!isset(PhpReports::$config['mail_settings']['enabled']) || !PhpReports::$config['mail_settings']['enabled']) {
-            echo json_encode(array('error' => 'Email is disabled on this server'));
+            echo json_encode(['error' => 'Email is disabled on this server']);
 
             return;
         }
         if (!isset(PhpReports::$config['mail_settings']['from'])) {
-            echo json_encode(array('error' => 'Email settings have not been properly configured on this server'));
+            echo json_encode(['error' => 'Email settings have not been properly configured on this server']);
 
             return;
         }
@@ -616,21 +616,21 @@ class PhpReports
             // Send the message
             $result = $mailer->send($message);
         } catch (\Exception $e) {
-            echo json_encode(array(
+            echo json_encode([
                 'error' => $e->getMessage(),
-            ));
+            ]);
 
             return;
         }
 
         if ($result) {
-            echo json_encode(array(
+            echo json_encode([
                 'success' => true,
-            ));
+            ]);
         } else {
-            echo json_encode(array(
+            echo json_encode([
                 'error' => 'Failed to send email to requested recipient',
-            ));
+            ]);
         }
     }
 
@@ -640,7 +640,7 @@ class PhpReports
     protected static function getMailTransport()
     {
         if (!isset(PhpReports::$config['mail_settings'])) {
-            PhpReports::$config['mail_settings'] = array();
+            PhpReports::$config['mail_settings'] = [];
         }
         if (!isset(PhpReports::$config['mail_settings']['method'])) {
             PhpReports::$config['mail_settings']['method'] = 'mail';
@@ -680,70 +680,6 @@ class PhpReports
     }
 
     /**
-     * Autoloader methods
-     */
-    // public static function loader($className)
-    // {
-    //     if (!isset(self::$loader_cache)) {
-    //         self::buildLoaderCache();
-    //     }
-
-    //     if (isset(self::$loader_cache[$className])) {
-    //         require_once self::$loader_cache[$className];
-
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-    // public static function buildLoaderCache()
-    // {
-    //     self::load('classes/local');
-    //     self::load('classes', array('classes/local'));
-    //     self::load('lib');
-    // }
-    // public static function load($dir, $skip = array())
-    // {
-    //     $files = glob($dir.'/*.php');
-    //     $dirs = glob($dir.'/*', GLOB_ONLYDIR);
-
-    //     foreach ($files as $file) {
-    //         //for file names same as class name
-    //         $className = basename($file, '.php');
-    //         if (!isset(self::$loader_cache[$className])) {
-    //             self::$loader_cache[$className] = $file;
-    //         }
-
-    //         //for PEAR style: Path_To_Class.php
-    //         $parts = explode('/', substr($file, 0, -4));
-    //         array_shift($parts);
-    //         $className = implode('_', $parts);
-    //         //if any of the directories in the path are lowercase, it isn't in PEAR format
-    //         if (preg_match('/(^|_)[a-z]/', $className)) {
-    //             continue;
-    //         }
-    //         if (!isset(self::$loader_cache[$className])) {
-    //             self::$loader_cache[$className] = $file;
-    //         }
-    //     }
-
-    //     foreach ($dirs as $dir2) {
-    //         //directories to skip
-    //         if ($dir2[0] === '.') {
-    //             continue;
-    //         }
-    //         if (in_array($dir2, $skip)) {
-    //             continue;
-    //         }
-    //         if (in_array(basename($dir2), array('tests', 'test', 'example', 'examples', 'bin'))) {
-    //             continue;
-    //         }
-
-    //         self::load($dir2, $skip);
-    //     }
-    // }
-
-    /**
      * A more lenient json_decode than the built-in PHP one.
      * It supports strict JSON as well as javascript syntax (i.e. unquoted/single quoted keys, single quoted values, trailing commmas)
      */
@@ -756,7 +692,7 @@ class PhpReports
         $json = preg_replace_callback('/\'(([^\']|\\\\\')*)\'\s*:/', create_function('$matches', 'return "json_encode(stripslashes(\'$matches[1]\')).\':\'";'), $json);
 
         //remove any line breaks in the code
-        $json = str_replace(array("\n", "\r"), "", $json);
+        $json = str_replace(["\n", "\r"], "", $json);
 
         //replace non-quoted keys with double quoted keys
         $json = preg_replace('#(?<pre>\{|\[|,)\s*(?<key>(?:\w|_)+)\s*:#im', '$1"$2":', $json);

@@ -103,7 +103,7 @@ class Report
             }
         }
 
-        return array();
+        return [];
     }
 
     public function getEnvironment()
@@ -618,10 +618,10 @@ class Report
 
             $first = !$rows;
 
-            $rows[] = array(
+            $rows[] = [
                 'values' => $rowval,
                 'first' => $first,
-            );
+            ];
         }
 
         $this->options['DataSets'][$dataset]['rows'] = $rows;

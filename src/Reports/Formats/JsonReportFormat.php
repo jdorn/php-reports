@@ -1,6 +1,9 @@
 <?php
 class JsonReportFormat extends ReportFormatBase
 {
+    /**
+     * @{inheritDoc}
+     */
     public static function display(&$report, &$request)
     {
         header("Content-type: application/json");
@@ -14,15 +17,14 @@ class JsonReportFormat extends ReportFormatBase
             return;
         }
 
-        $result = array();
+        $result = [];
         if (isset($_GET['datasets'])) {
             $datasets = $_GET['datasets'];
             // If all the datasets should be included
             if ($datasets === 'all') {
                 $datasets = array_keys($report->options['DataSets']);
-            }
-            // If just a single dataset was specified, make it an array
-            elseif (!is_array($datasets)) {
+            } elseif (!is_array($datasets)) {
+                // If just a single dataset was specified, make it an array
                 $datasets = explode(',', $datasets);
             }
 
@@ -51,14 +53,14 @@ class JsonReportFormat extends ReportFormatBase
 
     public static function getDataSet($i, &$report)
     {
-        $dataset = array();
+        $dataset = [];
         foreach ($report->options['DataSets'][$i] as $k => $v) {
             $dataset[$k] = $v;
         }
 
-        $rows = array();
+        $rows = [];
         foreach ($dataset['rows'] as $i => $row) {
-            $tmp = array();
+            $tmp = [];
             foreach ($row['values'] as $key => $value) {
                 $tmp[$value->key] = $value->getValue();
             }

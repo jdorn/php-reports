@@ -12,7 +12,7 @@ class XmlReportFormat extends Format implements FormatInterface
         header("Pragma: no-cache");
         header("Expires: 0");
 
-        $datasets = array();
+        $datasets = [];
         $dataset_format = false;
 
         if (isset($_GET['datasets'])) {
