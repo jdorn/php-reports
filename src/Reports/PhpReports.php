@@ -173,7 +173,7 @@ class PhpReports
     {
         $default = [
             'base' => self::$request->base,
-            'report_list_url' => self::$request->base.'/',
+            'report_list_url' => self::$request->base . '/',
             'request' => self::$request,
             'querystring' => (array_key_exists('QUERY_STRING', $_SERVER) ? $_SERVER['QUERY_STRING'] : null),
             'config' => self::$config,
