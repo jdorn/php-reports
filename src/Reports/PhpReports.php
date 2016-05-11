@@ -716,5 +716,3 @@ class PhpReports
         return $output;
     }
 }
-
-PhpReports::init();

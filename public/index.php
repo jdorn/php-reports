@@ -103,4 +103,6 @@ Flight::route('/email', function () {
 Flight::set('flight.handle_errors', false);
 Flight::set('flight.log_errors', true);
 
+PhpReports::init();
+
 Flight::start();
