@@ -683,6 +683,9 @@ class PhpReports
     /**
      * A more lenient json_decode than the built-in PHP one.
      * It supports strict JSON as well as javascript syntax (i.e. unquoted/single quoted keys, single quoted values, trailing commmas)
+     * @param string $json
+     * @param boolean $assoc
+     * @return array
      */
     public static function json_decode($json, $assoc = false)
     {
@@ -704,6 +707,10 @@ class PhpReports
         return json_decode($json, $assoc);
     }
 
+    /**
+     * @param string $url
+     * @return string $output
+     */
     protected static function urlDownload($url)
     {
         $ch = curl_init();
