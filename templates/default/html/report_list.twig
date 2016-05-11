@@ -6,7 +6,7 @@
 
 {% block stylesheets %}
 	{{ parent() }}
-	<link rel="stylesheet" href="{{base}}/public/css/report_list.css" />
+	<link rel="stylesheet" href="{{base}}/css/report_list.css" />
 {% endblock %}
 
 {% block header %}
@@ -30,7 +30,7 @@
 			{% if report_errors is not empty %}
                 <div class="well well-small">
                     <div>
-                        <img src="{{base}}/public/images/errorIcon.gif" />
+                        <img src="{{base}}/images/errorIcon.gif" />
                         {{ report_errors|length }} reports contain errors
                         <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#report_errors_holder">See all errors</button>
                     </div>

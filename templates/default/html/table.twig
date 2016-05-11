@@ -54,7 +54,7 @@
 				{% for value in row.values %}
 				{% if value.is_header is defined and value.is_header %}{% set tag = 'th' %}{% else %}{% set tag = 'td' %}{% endif %}
 				<{{ tag }} class="{{ value.class }}">
-                    {{ value.getValue(true)|raw }}
+          {{ value.getValue(true)|raw }}
 				</{{ tag }}>
 				{% endfor %}
 			</tr>
@@ -98,11 +98,11 @@
 						</div>
 					</td>
 				{% endif %}
-                {% for value in row.values %}
-                <td class="{{value.class}}{% if dataset.selectable and value.key == dataset.selectable %} selectable{% endif %}">
-                    {{ value.getValue(true)|raw }}
-                </td>
-                {% endfor %}
+        {% for value in row.values %}
+        	<td class="{{value.class}}{% if dataset.selectable and value.key == dataset.selectable %} selectable{% endif %}">
+            {{ value.getValue(true)|raw }}
+        	</td>
+        {% endfor %}
 			</tr>
 			{% endfor %}
 		</tbody>

@@ -16,7 +16,7 @@
 }
 #table_of_contents {
     bottom: 0;
-    top: 50px;
+    top: 100px;
     position: fixed;
     overflow-y: auto;
 }

@@ -5,7 +5,7 @@
 {% else %}
 	{% set Name = report %}
 {% endif %}
-	
+
 {% block title %}
 	{{ Name }}
 {% endblock %}
@@ -49,11 +49,11 @@
 
 {% block javascripts %}
 {{ parent() }}
-<script src="{{ base }}/public/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{ base }}/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
-	var editor = ace.edit("editor");    
+	var editor = ace.edit("editor");
 	editor.setTheme("ace/theme/eclipse");
-	
+
 	//set the mode
 	{% if options.Type == 'Mysql' %}
     editor.getSession().setMode("ace/mode/sql");
@@ -64,7 +64,7 @@
     {% else %}
 	editor.getSession().setMode("ace/mode/{{extension}}");
     {% endif %}
-    
+
     $("#preview_button").click(function() {
 		//open a modal with diff output
 		$.post(
@@ -80,10 +80,10 @@
 			},
 			'html'
 		);
-		
+
 		return false;
     });
-    
+
     $("#save_button").click(function() {
 		//save report
 		$.post(
@@ -99,10 +99,10 @@
 		).error(function() {
 			$("#error_holder").html("There was a problem saving the report.").show(200).delay(3000).hide(200);
 		});
-		
+
 		return false;
     });
-    
+
     $("#close_preview").click(function() {
 		$("#preview_holder").hide(200);
 		return false;
@@ -136,7 +136,7 @@
 		<a name='preview_changes'></a>
 		<a href='#' id='close_preview'>hide</a>
 	</h3>
-	
+
 	<div id='preview_area'></div>
 </div>
 {% endblock %}

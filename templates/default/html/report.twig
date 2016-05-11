@@ -6,14 +6,14 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel='stylesheet' href='{{base}}/public/css/report.css' />
+    <link rel='stylesheet' href='{{base}}/css/report.css' />
     {% if not nodata %}
-        <link rel='stylesheet' href='{{base}}/public/css/jquery.dataTables.css' />
+        <link rel='stylesheet' href='{{base}}/css/jquery.dataTables.css' />
     {% endif %}
-    <link rel="stylesheet" type="text/css" href="{{base}}/public/css/daterangepicker-bs3.css" />
-    <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/public/css/datepicker.css" />
-    <link rel="stylesheet" type="text/css" href="{{base}}/public/css/bootstrap-multiselect.css" />
-    <link rel="stylesheet" type="text/css" href="{{base}}/public/css/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/daterangepicker-bs3.css" />
+    <link rel="stylesheet" media="screen" type="text/css" href="{{base}}/css/datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/prettify.css" />
     <style>
     /*.daterangepicker_holder {
         background: white;
@@ -35,19 +35,19 @@
 {% block javascripts %}
     {{ parent() }}
     {% if has_charts %}
-        <script type="text/javascript" src="{{base}}/public/js/jquery.browser.js"></script>
-        <script type="text/javascript" src="{{base}}/public/js/jquery.iframe-auto-height.plugin.1.9.3.js"></script>
+        <script type="text/javascript" src="{{base}}/js/jquery.browser.js"></script>
+        <script type="text/javascript" src="{{base}}/js/jquery.iframe-auto-height.plugin.1.9.3.js"></script>
     {% endif %}
     {% if not nodata %}
-        <script type='text/javascript' src='{{base}}/public/js/jquery.dataTables.min.js'></script>
+        <script type='text/javascript' src='{{base}}/js/jquery.dataTables.min.js'></script>
     {% endif %}
-    <script type="text/javascript" src="{{base}}/public/js/moment-with-langs-2.5.1.min.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/daterangepicker-1.3.2.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/bootstrap-datepicker.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/bootstrap-multiselect.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/jquery.stickytableheaders.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/prettify.js"></script>
-    <script type="text/javascript" src="{{base}}/public/js/lang-sql.js"></script>
+    <script type="text/javascript" src="{{base}}/js/moment-with-langs-2.5.1.min.js"></script>
+    <script type="text/javascript" src="{{base}}/js/daterangepicker-1.3.2.js"></script>
+    <script type="text/javascript" src="{{base}}/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="{{base}}/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="{{base}}/js/jquery.stickytableheaders.js"></script>
+    <script type="text/javascript" src="{{base}}/js/prettify.js"></script>
+    <script type="text/javascript" src="{{base}}/js/lang-sql.js"></script>
     <script type="text/javascript">
         $("#content").on('click','a[data-role="button"]',function(e) {
             e.preventDefault();
@@ -60,7 +60,7 @@
     {% if Description %}
         <p id='report_description'>{{Description|raw}}</p>
     {% endif %}
-    
+
     {% if Variables is not empty %}
         {% include "html/variable_form.twig" %}
     {% endif %}
@@ -173,7 +173,7 @@
             {% endif %}
         {% endblock %}
         </div>
-    
+
         {% if config.mail_settings.enabled %}
             <div class='alert alert-success' style='display: none;' id='email-report-success-message'>
                 {% block email_report_success_message %}
@@ -205,7 +205,7 @@
                     <div><strong>Maximum Time: </strong> {{time_estimate.max}}</div>
                     <div><strong>Median: </strong> {{time_estimate.median}}</div>
                     <div><strong>Average: </strong> {{time_estimate.average}}</div>
-                    <div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>    
+                    <div><strong>Standard Deviation: </strong> {{time_estimate.stdev}}</div>
                 </div>
             </div>
         {% endif %}

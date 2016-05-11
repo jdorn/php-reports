@@ -1,46 +1,46 @@
 {% extends "html/chart_page.twig" %}
 
 {% block content %}
-	{% for chart in Charts %}
-	<div id='chart_div_{{chart.num}}' style='{% if chart.width %}width:{{chart.width}};{% endif %}{% if chart.height %}height:{{chart.height}};{% endif %}'></div>
-	{% endfor %}
-	
-	<script type="text/javascript">
-	function drawCharts() {
-		{% for chart in Charts %}
-			var data_{{chart.num}} = new google.visualization.DataTable();
-					
-			{% for key,value in chart.Rows[0].values %}
-                {% if chart.roles[key] %} 
+    {% for chart in Charts %}
+    <div id='chart_div_{{chart.num}}' style='{% if chart.width %}width:{{chart.width}};{% endif %}{% if chart.height %}height:{{chart.height}};{% endif %}'></div>
+    {% endfor %}
+
+    <script type="text/javascript">
+    function drawCharts() {
+        {% for chart in Charts %}
+            var data_{{chart.num}} = new google.visualization.DataTable();
+
+            {% for key,value in chart.Rows[0].values %}
+                {% if chart.roles[key] %}
                     data_{{chart.num}}.addColumn({{chart.roles[key]|json_encode|raw}});
                 {% else %}
                     data_{{chart.num}}.addColumn("{{chart.datatypes[key]}}","{{chart.Rows[0].values[key].key}}");
                 {% endif %}
-			{% endfor %}
-		
-			var rows = [
-				{% for row in chart.Rows %}[
-					{% for value in row.values %}
-						{%- if value.datatype == "date" or value.datatype == "datetime" -%}
-						new Date("{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}")
-						{%- elseif value.datatype == "timeofday" -%}
-						[{{ (value.getValue()|slice(0,2))*1 }}, {{ (value.getValue()|slice(3,2))*1 }}, {{ (value.getValue()|slice(6,2))*1 }}, 0]
-						{%- elseif value.datatype == "null" -%}
-						null
-						{%- elseif value.datatype == "number" -%}
-						{{ value.getValue() }}
-						{%- else -%}
-						"{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}"
-						{%- endif %}
-						{%- if not loop.last %},{% endif -%}
-					{% endfor %}
-					
-				]{% if not loop.last %},{% endif %}
+            {% endfor %}
 
-				{% endfor %}];
+            var rows = [
+                {% for row in chart.Rows %}[
+                    {% for value in row.values %}
+                        {%- if value.datatype == "date" or value.datatype == "datetime" -%}
+                        new Date("{{ value.getValue()|replace({'\\':'\\\\','"':'\\"' })|raw }}")
+                        {%- elseif value.datatype == "timeofday" -%}
+                        [{{ (value.getValue()|slice(0,2))*1 }}, {{ (value.getValue()|slice(3,2))*1 }}, {{ (value.getValue()|slice(6,2))*1 }}, 0]
+                        {%- elseif value.datatype == "null" -%}
+                        null
+                        {%- elseif value.datatype == "number" -%}
+                        {{ value.getValue() }}
+                        {%- else -%}
+                        "{{ value.chart_value|replace({'\\':'\\\\','"':'\\"' })|raw }}"
+                        {%- endif %}
+                        {%- if not loop.last %},{% endif -%}
+                    {% endfor %}
 
-		
-			data_{{chart.num}}.addRows(rows);
+                ]{% if not loop.last %},{% endif %}
+
+                {% endfor %}];
+
+
+            data_{{chart.num}}.addRows(rows);
 
             // create columns array
             var columns_{{chart.num}} = [];
@@ -53,37 +53,37 @@
             }
 
             var options_{{chart.num}} = {
-				title: '{{chart.title}}',
-				{% if chart.markers %}
-					displayMode: 'markers',
-					colorAxis: {colors: ['blue', 'red']},
-					sizeAxis: {minValue: 1,  maxSize:  10},
-				{% endif %}
-				displayAnnotations: true,
+                title: '{{chart.title}}',
+                {% if chart.markers %}
+                    displayMode: 'markers',
+                    colorAxis: {colors: ['blue', 'red']},
+                    sizeAxis: {minValue: 1,  maxSize:  10},
+                {% endif %}
+                displayAnnotations: true,
                 series: series_{{chart.num}},
-				colors: [],
-				wmode: 'transparent'
-			};
+                colors: [],
+                wmode: 'transparent'
+            };
 
         {% if chart.options %}
         {% for k,v in chart.options %}
             options_{{ chart.num}}["{{ k }}"] = {{ v|json_encode|raw }};
         {% endfor %}
         {% endif %}
-			
-			{% for color in chart.colors %}
-				options_{{chart.num}}.colors.push('{{color}}');
-			{% endfor %}
+
+            {% for color in chart.colors %}
+                options_{{chart.num}}.colors.push('{{color}}');
+            {% endfor %}
 
 
-			if(!options_{{chart.num}}.colors.length) {
-				delete options_{{chart.num}}.colors;
-			}
+            if(!options_{{chart.num}}.colors.length) {
+                delete options_{{chart.num}}.colors;
+            }
 
         {% if chart.type == "Timeline" %}
             var chart_{{chart.num}} = new links.Timeline(document.getElementById('chart_div_{{chart.num}}'));
         {% else %}
-			var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
+            var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
         {% endif %}
 
             google.visualization.events.addListener(chart_{{chart.num}}, 'select', function () {
@@ -99,8 +99,8 @@
             });
         {% endif %}
             chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
-		{% endfor %}
-	}
+        {% endfor %}
+    }
 
     function select2hide (chart, data, options, columns, series) {
         var sel = chart.getSelection();
@@ -133,6 +133,6 @@
         }
     }
 
-	google.setOnLoadCallback(drawCharts);
-	</script>
+    google.setOnLoadCallback(drawCharts);
+    </script>
 {% endblock %}

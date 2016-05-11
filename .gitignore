@@ -1,6 +1,8 @@
 .idea/
 config/config.php
 reports/
+!src/Reports/
+dashboards/
 cache/
 classes/local/*.php
 templates/local
