@@ -69,7 +69,8 @@ class ReportValue {
 			else return $value;
 		}
 		elseif($type === 'string') {
-			return utf8_encode($value);
+			if(mb_check_encoding($value, 'UTF-8')) return $value;
+			else return utf8_encode($value);
 		}
 	}
 	
