@@ -8,7 +8,7 @@ class JsonReportFormat extends ReportFormatBase {
 		//run the report
 		$report->run();
 		
-        if(!$report->options['DataSets']) return;
+		if(!$report->options['DataSets']) return;
 
 		$result = array();
 		if(isset($_GET['datasets'])) {
@@ -46,17 +46,20 @@ class JsonReportFormat extends ReportFormatBase {
 	
 	public static function getDataSet($i, &$report) {
 		$dataset = array();
-		if(isset($report->options['DataSets'][$i]['title'])) {
-			$dataset['title'] = $report->options['DataSets'][$i]['title'];
+		foreach($report->options['DataSets'][$i] as $k=>$v) {
+			$dataset[$k] = $v;
 		}
-		$dataset['rows'] = array();
-		foreach($report->options['DataSets'][$i]['rows'] as $i=>$row) {
+
+		$rows = array();
+		foreach($dataset['rows'] as $i=>$row) {
 			$tmp = array();
 			foreach($row['values'] as $key=>$value){
 				$tmp[$value->key] = $value->getValue();
 			}
-			$dataset['rows'][] = $tmp;
+			$rows[] = $tmp;
 		}
+		$dataset['rows'] = $rows;
+
 		return $dataset;
 	}
 }

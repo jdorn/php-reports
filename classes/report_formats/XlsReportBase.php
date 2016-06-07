@@ -3,7 +3,8 @@ abstract class XlsReportBase extends ReportFormatBase {
 	private static function columnLetter($c){
 		$c = intval($c);
 		if ($c <= 0) return '';
-
+		$letter = '';
+		
 		while($c != 0){
 			$p = ($c - 1) % 26;
 			$c = intval(($c - $p) / 26);
@@ -25,7 +26,7 @@ abstract class XlsReportBase extends ReportFormatBase {
 									 ->setDescription("");
 		
 		foreach($report->options['DataSets'] as $i=>$dataset) {
-			if(!$i) $objPHPExcel->createSheet($i);
+			$objPHPExcel->createSheet($i);
 			self::addSheet($objPHPExcel,$dataset,$i);
 		}
 		

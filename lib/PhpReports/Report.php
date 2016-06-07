@@ -171,7 +171,7 @@ class Report {
 			$has_name_value = preg_match('/^\s*[A-Z0-9_\-]+\s*\:/',$line);
 		
 			//if this is the first header and not in the format name:value, assume it is the report name
-			if(!$has_name_value && $name === null && !$this->options['Name']) {
+			if(!$has_name_value && $name === null && (!isset($this->options['Name']) || !$this->options['Name'])) {
 				$this->parseHeader('Info',array('name'=>$line));
 			}
 			else {
@@ -411,8 +411,27 @@ class Report {
 				)
 			);
 		}
-		
-		$this->options['DataSets'] = $datasets;
+
+		// Only include a subset of datasets
+		$include = array_keys($datasets);
+		if(isset($_GET['dataset'])) {
+			$include = array($_GET['dataset']);
+		}
+		elseif(isset($_GET['datasets'])) {
+			// If just a single dataset was specified, make it an array
+			if(!is_array($_GET['datasets'])) {
+				$include = explode(',',$_GET['datasets']);
+			}
+			else {
+				$include = $_GET['datasets'];
+			}
+		}
+
+		$this->options['DataSets'] = array();
+		foreach($include as $i) {
+			if(!isset($datasets[$i])) continue;
+			$this->options['DataSets'][$i] = $datasets[$i];
+		}
 
 		$this->parseDynamicHeaders();
 	}
@@ -470,8 +489,10 @@ class Report {
 		foreach($this->options['DataSets'] as $i=>$dataset) {
 			$this->prepareRows($i);
 		}
-		$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
-		$this->options['Count'] = $this->options['DataSets'][0]['count'];
+		if(isset($this->options['DataSets'][0])) {
+			$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
+			$this->options['Count'] = $this->options['DataSets'][0]['count'];
+		}
 	}
 	protected function prepareRows($dataset) {
 		$rows = array();

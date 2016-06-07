@@ -10,7 +10,26 @@ class ChartHeader extends HeaderBase {
 		),
 		'type'=>array(
 			'type'=>'enum',
-			'values'=>array('LineChart','GeoChart','AnnotatedTimeLine','BarChart','ColumnChart','Timeline'),
+			'values'=>array(
+				'LineChart',
+				'GeoChart',
+				'AnnotatedTimeLine',
+				'BarChart',
+				'ColumnChart',
+				'Timeline',
+				'AreaChart',
+				'Histogram',
+				'ComboChart',
+				'BubbleChart',
+				'CandlestickChart',
+				'Gauge',
+				'Map',
+				'PieChart',
+				'Sankey',
+				'ScatterChart',
+				'SteppedAreaChart',
+				'WordTree',
+			),
 			'default'=>'LineChart'
 		),
 		'title'=>array(
@@ -69,14 +88,18 @@ class ChartHeader extends HeaderBase {
 			'type'=>'array',
 			'default'=>array()
 		),
+		'roles'=>array(
+			'type'=>'object',
+			'default'=>array()
+		),
 		'markers'=>array(
 			'type'=>'boolean',
 			'default'=>false
 		),
-        'omit-columns'=>array(
-            'type'=>'array',
-            'default'=>array()
-        ),
+    'omit-columns'=>array(
+        'type'=>'array',
+        'default'=>array()
+    ),
 		'options'=>array(
 			'type'=>'object',
 			'default'=>array()
@@ -84,6 +107,8 @@ class ChartHeader extends HeaderBase {
 	);
 	
 	public static function init($params, &$report) {
+		$report->exportHeader('Chart',$params);
+
 		if(!isset($params['type'])) {
 			$params['type'] = 'LineChart';
 		}
@@ -104,6 +129,7 @@ class ChartHeader extends HeaderBase {
 		$report->options['Charts'][] = $params;
 		
 		$report->options['has_charts'] = true;
+
 	}
 	protected static function fixDimension($dim) {		
 		if(preg_match('/^[0-9]+$/',$dim)) $dim .= "px";
@@ -314,9 +340,9 @@ class ChartHeader extends HeaderBase {
 		if(is_null($value)) return null;
 		elseif($value === '') return null;
 		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';
-		elseif($temp = strtotime($value)) {
-			if(preg_match('/^[0-2][0-9]:/',$value)) return 'timeofday';
-			elseif(date('H:i:s',$temp) === '00:00:00') return 'date';
+		elseif(preg_match('/^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/',$value)) return 'timeofday';
+		elseif(preg_match('/^[0-9]+(\/|-)[0-9]+/',$value) && strtotime($value)) {
+			if(date('H:i:s',strtotime($value))==='00:00:00') return 'date';
 			else return 'datetime';
 		}
 		else return 'string';
@@ -363,9 +389,14 @@ class ChartHeader extends HeaderBase {
 			$params['columns'] = array(1,2);
 		}
 		else {
-			$rows = $report->options['DataSets'][$dataset]['rows'];
+			$rows = array();
+			if(isset($report->options['DataSets'])) {
+				$rows = $report->options['DataSets'][$dataset]['rows'];
+			}
 
-			if(!$params['columns']) $params['columns'] = range(1,count($rows[0]['values']));
+			if(count($rows)) {
+				if(!$params['columns']) $params['columns'] = range(1,count($rows[0]['values']));
+			}
 		}
 		
 		self::getRowInfo($rows, $params, $num, $report);

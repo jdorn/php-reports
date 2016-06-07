@@ -16,10 +16,13 @@
 $(function() {
 {% for dataset in DataSets %} 
     {% if not dataset.vertical %}
-	$('#result_table_{{loop.index}}').dataTable({
+	$('#result_table_{{loop.index}}').DataTable({
 		bPaginate: false,
 		aaSorting: [],
-		"sDom": "<'row'<'col-md-6'i><'col-md-6'f>r>t"
+		"sDom": "<'row'<'col-md-6'fi>r>t"
+	});
+	$('#result_table_{{loop.index}}').stickyTableHeaders({
+		fixedOffset: $('.navbar-fixed-top')
 	});
 	{% endif %}
 	

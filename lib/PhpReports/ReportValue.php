@@ -47,7 +47,7 @@ class ReportValue {
 		$this->type = $this->_getType();
 	}
 	
-	protected function _getType($value) {
+	protected function _getType($value=null) {
 		if(is_null($value)) return null;
 		elseif(trim($value) === '') return null;
 		elseif(preg_match('/^([$%(\-+\s])*([0-9,]+(\.[0-9]+)?|\.[0-9]+)([$%(\-+\s])*$/',$value)) return 'number';

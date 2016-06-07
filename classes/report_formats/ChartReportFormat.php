@@ -4,7 +4,7 @@ class ChartReportFormat extends ReportFormatBase {
 		if(!$report->options['has_charts']) return;
 		
 		//always use cache for chart reports
-		$report->use_cache = true;
+		//$report->use_cache = true;
 		
 		$result = $report->renderReportPage('html/chart_report');
 		

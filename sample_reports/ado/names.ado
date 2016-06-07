@@ -12,7 +12,7 @@
 --      database_options: {
 --          table: "blocked_accounts",
 --          column: "batch",
---          all: "false"
+--          all: false
 --      }
 -- }
 

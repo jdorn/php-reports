@@ -103,7 +103,7 @@ class OptionsHeader extends HeaderBase {
 			$report->options[$key] = $value;
 			
 			//if the value is different from the default, it can be exported
-			if($value && $value !== self::$validation[$key]['default']) {
+			if(!isset(self::$validation[$key]['default']) || ($value && $value !== self::$validation[$key]['default'])) {
 				//only export some of the options
 				if(in_array($key,array('access','Cache'),true)) {
 					$report->exportHeader('Options',array($key=>$value));

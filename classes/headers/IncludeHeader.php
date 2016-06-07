@@ -31,7 +31,7 @@ class IncludeHeader extends HeaderBase {
 		
 		//parse any exported headers from the included report
 		foreach($included_report->exported_headers as $header) {
-			$report->parseHeader($line['name'],$line['params']);
+			$report->parseHeader($header['name'],$header['params']);
 		}
 		
 		if(!isset($report->options['Includes'])) $report->options['Includes'] = array();

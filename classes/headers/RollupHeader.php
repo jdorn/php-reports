@@ -39,7 +39,7 @@ class RollupHeader extends HeaderBase {
 		// Now that we know how many datasets we have, expand out Rollup headers with dataset->true
 		$new_rollups = array();
 		foreach($report->options['Rollup'] as $i=>$rollup) {
-			if($rollup['dataset']===true) {
+			if($rollup['dataset']===true && isset($report->options['DataSets'])) {
 				$copy = $rollup;
 				foreach($report->options['DataSets'] as $i=>$dataset) {
 					$copy['dataset'] = $i;
@@ -57,10 +57,14 @@ class RollupHeader extends HeaderBase {
 			// If we already got twig parameters for this dataset, skip it
 			if(isset($twig_params[$rollup['dataset']])) continue;
 			$twig_params[$rollup['dataset']] = array();
-			foreach($report->options['DataSets'][$rollup['dataset']]['rows'] as $row) {
-				foreach($row['values'] as $value) {
-					if(!isset($twig_params[$rollup['dataset']][$value->key])) $twig_params[$rollup['dataset']][$value->key] = array('values'=>array());
-					$twig_params[$rollup['dataset']][$value->key]['values'][] = $value->getValue();
+			if(isset($report->options['DataSets'])) {
+				if(isset($report->options['DataSets'][$rollup['dataset']])) {
+					foreach($report->options['DataSets'][$rollup['dataset']]['rows'] as $row) {
+						foreach($row['values'] as $value) {
+							if(!isset($twig_params[$rollup['dataset']][$value->key])) $twig_params[$rollup['dataset']][$value->key] = array('values'=>array());
+							$twig_params[$rollup['dataset']][$value->key]['values'][] = $value->getValue();
+						}
+					}
 				}
 			}
 		}
@@ -74,14 +78,25 @@ class RollupHeader extends HeaderBase {
 				
 				$params['sum'] = array_sum($real_values);
 				$params['count'] = count($real_values);
-				$params['mean'] = $params['average'] = $params['sum'] / $params['count'];			
-				$params['median'] = ($params['count']%2)? ($real_values[$params['count']/2] + $real_values[$params['count']/2+1])/2 : $real_values[ceil($params['count']/2)];
-				$params['min'] = $real_values[0];
-				$params['max'] = $real_values[$params['count']-1];
+				if($params['count']) {
+					$params['mean'] = $params['average'] = $params['sum'] / $params['count'];
+					$params['median'] = ($params['count']%2)? ($real_values[$params['count']/2-1] + $real_values[$params['count']/2])/2 : $real_values[floor($params['count']/2)];
+					$params['min'] = $real_values[0];
+					$params['max'] = $real_values[$params['count']-1];
+				}
+				else {
+					$params['mean'] = $params['average'] = $params['median'] = $params['min'] = $params['max'] = 0;
+				}
 				
 				$devs = array();
-				foreach($real_values as $v) $devs[] = pow($v - $params['mean'], 2);
-				$params['stdev'] = sqrt(array_sum($devs) / (count($devs) - 1));
+				if (empty($real_values)) {
+					$params['stdev'] = 0;
+				} else 	if (function_exists('stats_standard_deviation')) {
+					$params['stdev'] = stats_standard_deviation($real_values);
+				} else {
+					foreach($real_values as $v) $devs[] = pow($v - $params['mean'], 2);
+					$params['stdev'] = sqrt(array_sum($devs) / (count($devs)));
+				}
 			}
 		}
 		

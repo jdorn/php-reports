@@ -20,9 +20,9 @@
 			{% if error %}
 				<div class='alert alert-danger'>
 					{% if error.message is defined %}
-						{{error.message}}
+						{{error.message|raw}}
 					{% else %}
-						{{error}}
+						{{error|raw}}
 					{% endif %}
 				</div>
 			{% endif %}

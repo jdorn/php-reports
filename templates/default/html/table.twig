@@ -1,7 +1,31 @@
-{% if not nodata %}
 {% for dataset in DataSets %}
-    {% if dataset.title %}<h3>{{dataset.title}}</h3>
-    {% endif %}
+    {% if dataset.title %}<h3>{{dataset.title}}</h3>{% endif %}
+	{% if DataSets|length > 1 %}
+		{% block table_download_link %}
+			{% set dataset_id = loop.index - 1 %}
+			{% if config.report_formats|length > 1 %}
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+						<i class='icon-download'></i> Download/show as <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						{% for format in config.report_formats|keys %}
+							{% if config.report_formats[format] == 'divider' %}
+								<li class="divider"></li>
+							{% else %}
+								<li><a href='{{base}}/report/{{format}}/?dataset={{ dataset_id }}&{{report_querystring}}' class='report_link'>{{config.report_formats[format]}}</a></li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</div>
+			{% else %}
+				<a href='{{base}}/report/{{config.report_formats|keys[0]}}/?{{report_querystring}}' class='report_link btn'>
+					<i class='icon-download'></i> Download {{config.report_formats[config.report_formats|keys[0]]}}
+				</a>
+			{% endif %}
+		{% endblock %}
+	{% endif %}
+	{% if not Formatting[loop.index-1].nodata %}
 	<table{% if not inline_email %} id='result_table_{{loop.index}}' class='result_table table table-bordered table-striped'{% else %} border="1" cellspacing="0"{% endif %}>
 		{% if dataset.vertical %}
 		<thead>
@@ -84,5 +108,5 @@
 		</tbody>
 		{% endif %}
 	</table>
+	{% endif %}
 {% endfor %}
-{% endif %}

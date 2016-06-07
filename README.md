@@ -22,7 +22,7 @@ Basic Introduction
 
 Reports are organized and grouped in directories.  Each report is it's own file.
 
-A report consists of headers containing meta-data (e.g. name and description) 
+A report consists of headers containing meta-data (e.g. name and description)
 and the actual report (SQL queries, javascript, or PHP code).
 
 All reports return rows of data which are then displayed in a sortable/searchable HTML table.
@@ -54,10 +54,10 @@ Here's a MongoDB report:
 
 ```js
 // List of All Foods
-// MONGODATABASE: MyDatabase
+// OPTIONS: {"mongodatabase": "MyDatabase"}
 // VARIABLE: {
-//   "name": "include_inactive", 
-//   "display": "Include Inactive?", 
+//   "name": "include_inactive",
+//   "display": "Include Inactive?",
 //   "type": "select",
 //   "options": ["yes","no"]
 // }
@@ -75,7 +75,7 @@ printjson(result);
 
 As you can see, the structure is very similar.  MongoDB reports use javascript style comments for the headers, but everything else remains the same.
 
-The MONGODATABASE header, if specified, will populate the 'db' variable.
+You can populate the 'db' variable by specifying the "mongodatabase" option.
 
 
 Here's a PHP Report:

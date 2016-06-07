@@ -1,6 +1,7 @@
 #report_list a[name] {
-    padding-top: 10px;
-    margin-top: -30px;
+	padding: 0;
+	margin: 0;
+	height: 5px;
     visibility: hidden;
 }
 #report_list h2.no_title {

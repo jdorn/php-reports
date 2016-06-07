@@ -71,9 +71,11 @@ class PhpReportType extends ReportTypeBase {
 		$report->options['Query_Formatted'] .= '<pre class="prettyprint lang-php linenums:'.$linenum.'">'.$code.'</pre>';
 
 		ob_start();
+		ini_set('display_errors','Off');
 		eval('?>'.$eval);
 		$result = ob_get_contents();
 		ob_end_clean();
+		ini_set('display_errors','On');
 
 		$result = trim($result);
 		

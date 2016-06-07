@@ -4,7 +4,7 @@ body {
 .database_message {
 	color: #999;
 }
-#result_table td .bar{
+.result_table td .bar{
 	height: 18px; 
 	display:inline-block; 
 	margin-right: 5px; 
@@ -18,6 +18,10 @@ body {
 	background: linear-gradient(top, #6bba70 0%,#255e2b 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6bba70', endColorstr='#255e2b',GradientType=0 ); /* IE6-9 */
 }
+.result_table thead th {
+	background-color: white;
+}
+
 .currency {
 	text-align:right;
 }
