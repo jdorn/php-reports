@@ -28,7 +28,7 @@ if (isset ( $_GET ["report"] )) {
 			"report" => $_GET ["report"]
 	);
 	$check_result = _call_admin_report_api ( "api_report_check_session", $params )->result;
-	if ($check_result != '' && $check_result != 'OK') {
+	if ($check_result != 'OK') {
 		if (isset ( $_SERVER ['HTTP_HOST'] )) {
 			$base_url = isset ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) !== 'off' ? 'https' : 'http';
 			$base_url .= '://' . $_SERVER ['HTTP_HOST'];
