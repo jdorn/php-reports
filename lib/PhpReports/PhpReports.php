@@ -648,10 +648,12 @@ class PhpReports {
 	 */
 	public static function json_decode($json, $assoc=false) {
 		//replace single quoted values
-		$json = preg_replace('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/e', "':'.json_encode(stripslashes('$1')).'$3'", $json);
+		$callback = function ($matches) { return  ':'.json_encode(stripslashes('$matches[1]')).'$matches[3]'; } ;
+		$json = preg_replace_callback('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/', $callback, $json);
 
 		//replace single quoted keys
-		$json = preg_replace('/\'(([^\']|\\\\\')*)\'\s*:/e', "json_encode(stripslashes('$1')).':'", $json);
+		$callback = function ($matches) { return  json_encode(stripslashes('$matches[1]')).':'; } ;
+		$json = preg_replace_callback('/\'(([^\']|\\\\\')*)\'\s*:/', $callback, $json);
 
 		//remove any line breaks in the code
 		$json = str_replace(array("\n","\r"),"",$json);
