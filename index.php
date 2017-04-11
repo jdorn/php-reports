@@ -32,11 +32,13 @@ if (isset ( $_GET ["report"] )) {
 		if (isset ( $_SERVER ['HTTP_HOST'] )) {
 			$base_url = isset ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) !== 'off' ? 'https' : 'http';
 			$base_url .= '://' . $_SERVER ['HTTP_HOST'];
+			$domain = $base_url ;
 			$base_url .= str_replace ( basename ( $_SERVER ['SCRIPT_NAME'] ), '', $_SERVER ["REQUEST_URI"] );
 		} 
 
 		else {
 			$base_url = 'http://localhost/';
+			$domain = $base_url ;
 		}
 		if( $check_result == 'report_no_premission' ) {
 			header( "Location: {$domain}/error/error_401" ) ;
