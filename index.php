@@ -38,10 +38,14 @@ if (isset ( $_GET ["report"] )) {
 		else {
 			$base_url = 'http://localhost/';
 		}
-		$uri = '/login?redirect_url=' . urlencode ( $base_url ) . "&err_key=" . $check_result;
-		$http_response_code = "302";
-		header ( "Location: " . $uri, TRUE, $http_response_code );
-		exit ();
+		if( $check_result == 'report_no_premission' ) {
+			header( "Location: {$domain}/error/error_401" ) ;
+		}else{
+			$uri = '/login?redirect_url=' . urlencode ( $base_url ) . "&err_key=" . $check_result;
+			$http_response_code = "302";
+			header ( "Location: " . $uri, TRUE, $http_response_code );
+			exit ();
+		}
 	}
 }
 
