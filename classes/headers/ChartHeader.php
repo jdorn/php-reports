@@ -31,6 +31,9 @@ class ChartHeader extends HeaderBase {
 				'WordTree',
 				'Gauge',
 				'Gantt',
+				// Material charts
+				'Bar',
+				'Line',
 			),
 			'default'=>'LineChart'
 		),
