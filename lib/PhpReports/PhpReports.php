@@ -70,7 +70,8 @@ class PhpReports {
 		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 
 		if(!isset($_SESSION['environment']) || !isset(self::$config['environments'][$_SESSION['environment']])) {
-			$_SESSION['environment'] = array_shift(array_keys(self::$config['environments']));
+		    $tmp = array_keys(self::$config['environments']);
+			$_SESSION['environment'] = array_shift($tmp);
 		}
 
 		// Extend twig.
@@ -201,11 +202,11 @@ class PhpReports {
 		}
 		catch(Exception $e) {
 			echo self::render('html/page',array(
-				'title'=>$report->report,
+				'title'=>'Report: '.$report,
 				'header'=>'<h2>'.$error_header.'</h2>',
 				'error'=>$e->getMessage(),
 				'content'=>$content,
-				'breadcrumb'=>array('Report List'=>'', $report->report => true)
+				'breadcrumb'=>array('Report List'=>'')
 			));
 		}
 	}
@@ -437,7 +438,8 @@ class PhpReports {
 			else {
 				//files to skip
 				if(strpos(basename($report),'.') === false) continue;
-				$ext = array_pop(explode('.',$report));
+				$ext = explode('.',$report);
+				$ext = array_pop($ext);
 				if(!isset(self::$config['default_file_extension_mapping'][$ext])) continue;
 
 				$name = substr($report,strlen($base));
@@ -648,10 +650,10 @@ class PhpReports {
 	 */
 	public static function json_decode($json, $assoc=false) {
 		//replace single quoted values
-		$json = preg_replace('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/e', "':'.json_encode(stripslashes('$1')).'$3'", $json);
+		$json = preg_replace_callback('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/', function($matches) { return ':'.json_encode(stripslashes($matches[1])).$matches[3]; }, $json);
 
 		//replace single quoted keys
-		$json = preg_replace('/\'(([^\']|\\\\\')*)\'\s*:/e', "json_encode(stripslashes('$1')).':'", $json);
+		$json = preg_replace_callback('/\'(([^\']|\\\\\')*)\'\s*:/', function($matches) {return json_encode(stripslashes($matches[1])).':';}, $json);
 
 		//remove any line breaks in the code
 		$json = str_replace(array("\n","\r"),"",$json);
