@@ -94,6 +94,15 @@ class PdoReportType extends ReportTypeBase {
 		$report->conn = new PDO($dsn,$username,$password);
 
 		$report->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		if(isset($config['charset']) && $config['charset']!==null) {
+			$pos = strpos($dsn, ':');
+			$driver = strtolower(substr($dsn, 0, $pos));
+			if(in_array($driver, array('mysql','pgsql'))) {
+				$report->conn->exec('SET NAMES ' . $report->conn->quote($config['charset']));
+			}
+		}
+
 	}
 
 	public static function closeConnection(&$report) {
