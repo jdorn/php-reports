@@ -42,6 +42,7 @@ if (isset ( $_GET ["report"] )) {
 		}
 		if( $check_result == 'report_no_premission' ) {
 			header( "Location: {$domain}/error/error_401" ) ;
+			exit ();
 		}else{
 			$uri = '/login?redirect_url=' . urlencode ( $base_url ) . "&err_key=" . $check_result;
 			$http_response_code = "302";
