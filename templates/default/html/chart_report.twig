@@ -75,10 +75,19 @@
 				options_{{chart.num}}.colors.push('{{color}}');
 			{% endfor %}
 
-
 			if(!options_{{chart.num}}.colors.length) {
 				delete options_{{chart.num}}.colors;
 			}
+
+		if(Array.isArray(options_{{ chart.num }}.series)) {
+			var t = options_{{ chart.num }}.series;
+			var n = {};
+			for(var i=0;i<t.length;i++) {
+			    n[i+''] = t[i];
+			}
+			options_{{ chart.num }}.series = n;
+		}
+
 
         {% if chart.type == "Timeline" %}
             var chart_{{chart.num}} = new links.Timeline(document.getElementById('chart_div_{{chart.num}}'));
