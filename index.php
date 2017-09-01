@@ -37,7 +37,7 @@ if (isset ( $_GET ["report"] )) {
 		} 
 
 		else {
-			$base_url = 'http://localhost/';
+			$base_url = 'https://localhost/';
 			$domain = $base_url ;
 		}
 		if( $check_result == 'report_no_premission' ) {
