@@ -24,10 +24,12 @@ abstract class XlsReportBase extends ReportFormatBase {
 									 ->setTitle("")
 									 ->setSubject("")
 									 ->setDescription("");
-		
-		foreach($report->options['DataSets'] as $i=>$dataset) {
+
+		$i = 0;
+		foreach($report->options['DataSets'] as $dataset) {
 			$objPHPExcel->createSheet($i);
 			self::addSheet($objPHPExcel,$dataset,$i);
+			$i++;
 		}
 		
 		// Set the active sheet to the first one
@@ -60,9 +62,17 @@ abstract class XlsReportBase extends ReportFormatBase {
 		for ($a = 1; $a <= $cols; $a++) {
 			$objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($a))->setAutoSize(true);
 		}
-		
-		if(isset($dataset['title'])) $objPHPExcel->getActiveSheet()->setTitle($dataset['title']);
-		
+
+		if(isset($dataset['title'])) {
+			// Some characters are not allowed in Excel sheet titles
+			$title = preg_replace('#[\\/*[\]:?]#','',$dataset['title']);
+
+			// Max title length is 31 characters
+			$title = substr($title, 0, 31);
+
+			$objPHPExcel->getActiveSheet()->setTitle($title);
+		}
+
 		return $objPHPExcel;
 	}
 }
