@@ -202,7 +202,7 @@ class PhpReports {
 		}
 		catch(Exception $e) {
 			echo self::render('html/page',array(
-				'title'=>'Report: '.$report,
+				'title'=>'Report',
 				'header'=>'<h2>'.$error_header.'</h2>',
 				'error'=>$e->getMessage(),
 				'content'=>$content,
