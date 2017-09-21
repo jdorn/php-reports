@@ -2,7 +2,7 @@
 session_start();
 
 function _call_admin_report_api($method, $params = array()) {
-	$url = 'http://' . $_SERVER ['SERVER_NAME'] . ':' . $_SERVER ["SERVER_PORT"] . '/admin_report/' . $method;
+	$url = 'https://' . $_SERVER ['SERVER_NAME'] . ':' . $_SERVER ["SERVER_PORT"] . '/admin_report/' . $method;
 	$fields_string = '';
 	foreach ( $params as $key => $value ) {
 		$fields_string .= $key . '=' . urlencode ( $value ) . '&';
@@ -37,7 +37,7 @@ if (isset ( $_GET ["report"] )) {
 		} 
 
 		else {
-			$base_url = 'http://localhost/';
+			$base_url = 'https://localhost/';
 			$domain = $base_url ;
 		}
 		if( $check_result == 'report_no_premission' ) {
