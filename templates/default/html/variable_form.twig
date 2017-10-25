@@ -55,7 +55,7 @@
                                 {% elseif var.type == "date" %}
                                     <div class="input-append date datepicker_holder" data-date="{{var.value|date('Y-m-d')}}" data-date-format="yyyy-mm-dd">
                                         <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value|date('Y-m-d H:i:s')}}' />
-                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                        <span><i class="add-on glyphicon glyphicon-calendar"></i></span>
                                     </div>
                                 {% else %}
                                     <input type='text' name='macros[{{var.key}}]' id="var_{{ var.key }}" value='{{var.value}}' />
