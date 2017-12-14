@@ -87,21 +87,34 @@ Here's a PHP Report:
 //INCLUDE: /stripe.php
 //VARIABLE: {"name": "count", "display": "Number to Display"}
 
-if($count > 100 || $count < 1) throw new Exception("Count must be between 1 and 100");
+if ($count > 100 || $count < 1) {
+    throw new Exception("Count must be between 1 and 100");
+}
 
-$charges = Stripe_Charge::all(array("count" => $count));
 
+// Retrieve a list of charges based on count
+$charges = \Stripe\Charge::all(array("limit" => $count));
+
+// Create an array of the above charge information
 $rows = array();
-foreach($charges as $charge) {
+
+// Loop through each charge
+foreach ($charges->data as $charge) {
+
+    // Get the required charge information and assign to variables
     $rows[] = array(
-        'Charge Id'=>$charge->id,
-        'Amount'=>number_format($charge->amount/100,2),
-        'Date'=>date('Y-m-d',$charge->created)
-    );
+
+    'ID' => $charge->id,
+    'Description' => $charge->description,
+    'Created' => gmdate('Y-m-d H:i', $charge->created), // Format the time
+    'Amount' => $charge->amount/100, // Convert amount from cents to dollars
+    'Currency' => $charge->currency
+);
+
 }
 
 echo json_encode($rows);
-?>
+
 ```
 Again, the header format is very similar.  
 
@@ -117,7 +130,7 @@ The INCLUDE header includes another report within the running one.  Below is exa
 require_once('lib/Stripe/Stripe.php');
 
 //set the Stripe api key
-Stripe::setApiKey("123456");
+\Stripe\Stripe::setApiKey("123456");
 ?>
 ```
 
