@@ -831,7 +831,8 @@ SELECT * FROM MyTable;</pre>
 		    <td>array or object</td>
 		    <td>
 		      If type is "select", these are the options that populate the select box.
-		      Can be an array or object with key value pairs.
+		      Can be an array or object with key value pairs in this format: <br>
+		      <code>[{"value": 123, "display": "Option 1"}, {"value": 42, "display": "Option 2"}]</code><br>
 		      If type is anything other than "select", this option is ignored.
 		    </td>
 		    <td><code>[]</code></td>
