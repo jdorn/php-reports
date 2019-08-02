@@ -1,5 +1,6 @@
 <?php
 session_start();
+define ( 'CURL_WEEE_AGENT', 'curl Weee v1.0' );
 
 function _call_admin_report_api($method, $params = array()) {
 	$url = 'https://' . $_SERVER ['SERVER_NAME'] . ':' . $_SERVER ["SERVER_PORT"] . '/admin_report/' . $method;
@@ -10,6 +11,7 @@ function _call_admin_report_api($method, $params = array()) {
 	rtrim ( $fields_string, '&' );
 	$ch = curl_init ();
 	curl_setopt ( $ch, CURLOPT_URL, $url );
+	curl_setopt ( $ch, CURLOPT_USERAGENT, CURL_WEEE_AGENT );
 	curl_setopt ( $ch, CURLOPT_POST, count ( $params ) );
 	curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields_string );
 	curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
