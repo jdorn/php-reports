@@ -13,9 +13,9 @@
     "require": {
         "php": ">=5.3",
         "ext-pdo": "*",
-        "twig/twig": "1.*",
+        "twig/twig": "1.37.1",
         "swiftmailer/swiftmailer": "5.*",
-        "mikecao/flight": "dev-master",
+        "mikecao/flight": "1.3.7",
         "jdorn/sql-formatter": "dev-master",
         "jdorn/file-system-cache": "dev-master",
         "phpoffice/phpexcel": "dev-develop",
