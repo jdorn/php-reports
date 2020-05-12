@@ -18,13 +18,13 @@
 
 		{% block notice_area %}
 			{% if error %}
-				<div class='alert alert-danger'>
-					{% if error.message is defined %}
+				<pre class='alert alert-danger'>
+					{%- if error.message is defined -%}
 						{{error.message|raw}}
-					{% else %}
+					{%- else -%}
 						{{error|raw}}
-					{% endif %}
-				</div>
+					{%- endif -%}
+				</pre>
 			{% endif %}
 
 			{% if notice %}

@@ -95,12 +95,21 @@ class MongoReportType extends ReportTypeBase {
         fclose($pipes[2]);
 
         $exitCode = proc_close($process);
+
+        // Annoying bug in MongoDB causes some debug messages to be output to stdout and also ignore "--quiet"
+        // Filter out anything that matches the debug pattern and move to $err
+        $debugInfoRegex = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T.*/m';
+        if(preg_match_all($debugInfoRegex, $result, $matches)) {
+            $result = trim(preg_replace($debugInfoRegex, '', $result));
+            $err .= "\n".implode("\n",$matches[0]);
+        }
+
         if($exitCode > 0) {
-            throw new Exception($exitCode.': '.$err);
+            throw new Exception('Exit code: '.$exitCode."\n\n".$result."\n".$err);
         }
 		
 		$json = json_decode($result, true);
-		if($json === NULL) throw new Exception($result.' '.$err);
+		if($json === NULL) throw new Exception('Exit code: '.$exitCode."\n\n".$result."\n".$err);
 		
 		return $json;
 	}
