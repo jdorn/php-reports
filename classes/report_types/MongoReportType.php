@@ -82,13 +82,25 @@ class MongoReportType extends ReportTypeBase {
 		$command .= escapeshellarg($eval);
 		$report->options['Query'] = '$ '.$commandSanitized.escapeshellarg($eval);
 
-		//include stderr so we can capture shell errors (like "command mongo not found")
-		$result = shell_exec($command.' 2>&1');
-		
-		$result = trim($result);
+        $process = proc_open($command, [
+            0 => ["pipe","r"],
+            1 => ["pipe","w"],
+            2 => ["pipe","w"]
+        ], $pipes);
+
+        $result = trim(stream_get_contents($pipes[1]));
+        fclose($pipes[1]);
+
+        $err = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+        if($exitCode > 0) {
+            throw new Exception($exitCode.': '.$err);
+        }
 		
 		$json = json_decode($result, true);
-		if($json === NULL) throw new Exception($result);
+		if($json === NULL) throw new Exception($result.' '.$err);
 		
 		return $json;
 	}
