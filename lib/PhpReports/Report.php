@@ -116,7 +116,7 @@ class Report {
 	}
 
 	protected function retrieveFromCache() {
-		if(!$this->use_cache) {
+		if(!$this->use_cache || isset($_GET['nocache'])) {
 			return false;
 		}
 		
