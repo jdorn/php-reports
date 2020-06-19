@@ -4,11 +4,11 @@ class PhpReports {
 	public static $request;
 	public static $twig;
 	public static $twig_string;
-	
+
 	public static $vars;
-	
+
 	private static $loader_cache;
-	
+
 	public static function init($config = 'config/config.php') {
 		//set up our autoloader
 		spl_autoload_register(array('PhpReports','loader'),true,true);
@@ -25,33 +25,33 @@ class PhpReports {
 
 		$default_config = include('config/config.php.sample');
 		$config = include($config);
-	
+
 		self::$config = array_merge($default_config, $config);
-		
+
 		self::$request = Flight::request();
 
-        $path = self::$request->base;
-		
+		$path = self::$request->base;
+
 		if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
 			$protocol = 'https://';
 		} else {
 			$protocol = 'http://';
 		}
 		self::$request->base = $protocol.rtrim($_SERVER['HTTP_HOST'].self::$request->base,'/');
-		
+
 		//the load order for templates is: "templates/local", "templates/default", "templates"
 		//this means loading the template "html/report.twig" will load the local first and then the default
 		//if you want to extend a default template from within a local template, you can do {% extends "default/html/report.twig" %} and it will fall back to the last loader
 		$template_dirs = array('templates/default','templates');
 		if(file_exists('templates/local')) array_unshift($template_dirs, 'templates/local');
-		
+
 		$loader = new Twig_Loader_Chain(array(
-			new Twig_Loader_Filesystem($template_dirs), 
+			new Twig_Loader_Filesystem($template_dirs),
 			new Twig_Loader_String()
 		));
 		self::$twig = new Twig_Environment($loader);
 		self::$twig->addFunction(new Twig_SimpleFunction('dbdate', 'PhpReports::dbdate'));
-    self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+		self::$twig->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
 		if(isset($_COOKIE['reports-theme']) && $_COOKIE['reports-theme']) {
 			$theme = $_COOKIE['reports-theme'];
@@ -59,49 +59,56 @@ class PhpReports {
 		else {
 			$theme = self::$config['bootstrap_theme'];
 		}
-        self::$twig->addGlobal('theme', $theme);
-        self::$twig->addGlobal('path', $path);
+		self::$twig->addGlobal('theme', $theme);
+		self::$twig->addGlobal('path', $path);
 
 		self::$twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
 
 		self::$twig_string = new Twig_Environment(new Twig_Loader_String(), array('autoescape'=>false));
-        self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
+		self::$twig_string->addFunction(new Twig_SimpleFunction('sqlin', 'PhpReports::generateSqlIN'));
 
-        FileSystemCache::$cacheDir = self::$config['cacheDir'];
+		FileSystemCache::$cacheDir = self::$config['cacheDir'];
 
 		if(!isset($_SESSION['environment']) || !isset(self::$config['environments'][$_SESSION['environment']])) {
-			$_SESSION['environment'] = array_shift(array_keys(self::$config['environments']));
+		    $tmp = array_keys(self::$config['environments']);
+			$_SESSION['environment'] = array_shift($tmp);
+		}
+
+		// Extend twig.
+		if (isset($config['twig_init_function']) && is_callable($config['twig_init_function'])) {
+			$config['twig_init_function'](self::$twig);
+			$config['twig_init_function'](self::$twig_string);
 		}
 	}
-	
+
 	public static function setVar($key,$value) {
 		if(!self::$vars) self::$vars = array();
-		
+
 		self::$vars[$key] = $value;
 	}
 	public static function getVar($key, $default=null) {
 		if(isset(self::$vars[$key])) return self::$vars[$key];
 		else return $default;
 	}
-	
-	public static function dbdate($time, $database=null, $format=null) {		
+
+	public static function dbdate($time, $database=null, $format=null) {
 		$report = self::getVar('Report',null);
 		if(!$report) return strtotime('Y-m-d H:i:s',strtotime($time));
-		
+
 		//if a variable name was passed in
 		$var = null;
 		if(isset($report->options['Variables'][$time])) {
 			$var = $report->options['Variables'][$time];
 			$time = $report->macros[$time];
 		}
-		
+
 		$time = strtotime($time);
-		
+
 		$environment = $report->getEnvironment();
-		
+
 		//determine time offset
 		$offset = 0;
-		
+
 		if($database) {
 			if(isset($environment[$database]['time_offset'])) $offset = $environment[$database]['time_offset'];
 		}
@@ -109,12 +116,12 @@ class PhpReports {
 			$database = $report->getDatabase();
 			if(isset($database['time_offset'])) $offset = $database['time_offset'];
 		}
-		
+
 		//if the time needs to be adjusted
 		if($offset) {
 			$time = strtotime((($offset > 0)? '+' : '-').abs($offset).' hours',$time);
 		}
-		
+
 		//determine output format
 		if($format) {
 			$time = date($format,$time);
@@ -126,24 +133,24 @@ class PhpReports {
 		else {
 			$time = date('Y-m-d H:i:s',$time);
 		}
-		
+
 		return $time;
 	}
 
-    public static function generateSqlIN($column, $values, $or_null = false) {
-        $sql = "$column IN (";
-        foreach ($values as $value) {
-            $sql .= is_numeric($value) ? $value : "'$value'";
-            if ($value !== end($values)) {
-                $sql .= ', ';
-            }
-        }
-        $sql .= ")";
-        if ($or_null) {
-            $sql.= " OR $column IS NULL";
-        }
-        return $sql;
-    }
+	public static function generateSqlIN($column, $values, $or_null = false) {
+		$sql = "$column IN (";
+		foreach ($values as $value) {
+			$sql .= is_numeric($value) ? $value : "'$value'";
+			if ($value !== end($values)) {
+				$sql .= ', ';
+			}
+		}
+		$sql .= ")";
+		if ($or_null) {
+			$sql.= " OR $column IS NULL";
+		}
+		return $sql;
+	}
 
 	public static function render($template, $macros) {
 		$default = array(
@@ -157,28 +164,28 @@ class PhpReports {
 			'session'=>$_SESSION
 		);
 		$macros = array_merge($default,$macros);
-		
+
 		//if a template path like 'html/report' is given, add the twig file extension
 		if(preg_match('/^[a-zA-Z_\-0-9\/]+$/',$template)) $template .= '.twig';
 		return self::$twig->render($template,$macros);
 	}
-	
+
 	public static function renderString($template, $macros) {
 			return self::$twig_string->render($template,$macros);
 	}
-	
-	public static function displayReport($report,$type) {		
+
+	public static function displayReport($report,$type) {
 		$classname = ucfirst(strtolower($type)).'ReportFormat';
-		
+
 		$error_header = 'An error occurred while running your report';
 		$content = '';
-		
+
 		try {
 			if(!class_exists($classname)) {
 				$error_header = 'Unknown report format';
 				throw new Exception("Unknown report format '$type'");
 			}
-			
+
 			try {
 				$report = $classname::prepareReport($report);
 			}
@@ -186,7 +193,7 @@ class PhpReports {
 				$error_header = 'An error occurred while preparing your report';
 				throw $e;
 			}
-			
+
 			$classname::display($report,self::$request);
 
 			if(isset($report->options['Query_Formatted'])) {
@@ -195,21 +202,21 @@ class PhpReports {
 		}
 		catch(Exception $e) {
 			echo self::render('html/page',array(
-				'title'=>$report->report,
+				'title'=>'Report',
 				'header'=>'<h2>'.$error_header.'</h2>',
 				'error'=>$e->getMessage(),
 				'content'=>$content,
-				'breadcrumb'=>array('Report List'=>'', $report->report => true)
+				'breadcrumb'=>array('Report List'=>'')
 			));
 		}
 	}
-	
+
 	public static function editReport($report) {
 		$template_vars = array();
-		
+
 		try {
 			$report = ReportFormatBase::prepareReport($report);
-			
+
 			$template_vars = array(
 				'report'=>$report->report,
 				'options'=>$report->options,
@@ -227,7 +234,7 @@ class PhpReports {
 				'error'=>$e
 			);
 		}
-		
+
 		if(isset($_POST['preview'])) {
 			echo "<pre>".SimpleDiff::htmlDiffSummary($template_vars['contents'],$_POST['contents'])."</pre>";
 		}
@@ -238,7 +245,7 @@ class PhpReports {
 			echo self::render('html/report_editor',$template_vars);
 		}
 	}
-	
+
 	public static function listReports() {
 		$errors = array();
 
@@ -250,48 +257,48 @@ class PhpReports {
 		$start = microtime(true);
 		echo self::render('html/report_list',$template_vars);
 	}
-	
+
 	public static function listDashboards() {
 		$dashboards = self::getDashboards();
-		
+
 		uasort($dashboards,function($a,$b) {
 			return strcmp($a['title'],$b['title']);
 		});
-		
+
 		echo self::render('html/dashboard_list',array(
 			'dashboards'=>$dashboards
 		));
 	}
-	
+
 	public static function displayDashboard($dashboard) {
 		$content = self::getDashboard($dashboard);
-		
+
 		echo self::render('html/dashboard',array(
 			'dashboard'=>$content
 		));
 	}
-	
+
 	public static function getDashboards() {
 		$dashboards = glob(PhpReports::$config['dashboardDir'].'/*.json');
-		
+
 		$ret = array();
 		foreach($dashboards as $key=>$value) {
 			$name = basename($value,'.json');
 			$ret[$name] = self::getDashboard($name);
 		}
-		
+
 		return $ret;
 	}
-	
+
 	public static function getDashboard($dashboard) {
 		$file = PhpReports::$config['dashboardDir'].'/'.$dashboard.'.json';
 		if(!file_exists($file)) {
 			throw new Exception("Unknown dashboard - ".$dashboard);
 		}
-		
+
 		return json_decode(file_get_contents($file),true);
 	}
-	
+
 	public static function getRecentReports() {
 		$recently_run = FileSystemCache::retrieve(FileSystemCache::generateCacheKey('recently_run'));
 		$recent = array();
@@ -358,20 +365,23 @@ class PhpReports {
 				));
 			}
 		}
-		
+
 		return '['.trim(implode(',',$parts),',').']';
 	}
 
 	protected static function getReportHeaders($report) {
-		$cacheKey = FileSystemCache::generateCacheKey($report,'report_headers');
+		$cacheKey = FileSystemCache::generateCacheKey(array(self::$request->base, $report),'report_headers');
 
 		//check if report data is cached and newer than when the report file was created
 		//the url parameter ?nocache will bypass this and not use cache
 		$data =false;
-		if(!isset($_REQUEST['nocache'])) {
-			$m = @filemtime(Report::getFileLocation($report));
 
-			$data = FileSystemCache::retrieve($cacheKey, $m);
+		$loc = Report::getFileLocation($report);
+		if(!file_exists($loc)) {
+			return false;
+		}
+		if(!isset($_REQUEST['nocache'])) {
+			$data = FileSystemCache::retrieve($cacheKey, filemtime($loc));
 		}
 
 		//report data not cached, need to parse it
@@ -392,7 +402,7 @@ class PhpReports {
 
 		return $data;
 	}
-	
+
 	protected static function getReports($dir, &$errors = null) {
 		$base = self::$config['reportDir'].'/';
 
@@ -400,21 +410,21 @@ class PhpReports {
 		$return = array();
 		foreach($reports as $key=>$report) {
 			$title = $description = false;
-			
+
 			if(is_dir($report)) {
 				if(file_exists($report.'/TITLE.txt')) $title = file_get_contents($report.'/TITLE.txt');
 				if(file_exists($report.'/README.txt')) $description = file_get_contents($report.'/README.txt');
-				
+
 				$id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
-				
+
 				$children = self::getReports($report.'/', $errors);
-				
+
 				$count = 0;
 				foreach($children as $child) {
 					if(isset($child['count'])) $count += $child['count'];
 					else $count++;
 				}
-				
+
 				$return[] = array(
 					'Name'=>ucwords(str_replace(array('_','-'),' ',basename($report))),
 					'Title'=>$title,
@@ -428,7 +438,8 @@ class PhpReports {
 			else {
 				//files to skip
 				if(strpos(basename($report),'.') === false) continue;
-				$ext = array_pop(explode('.',$report));
+				$ext = explode('.',$report);
+				$ext = array_pop($ext);
 				if(!isset(self::$config['default_file_extension_mapping'][$ext])) continue;
 
 				$name = substr($report,strlen($base));
@@ -446,7 +457,7 @@ class PhpReports {
 				}
 			}
 		}
-		
+
 		usort($return,function(&$a,&$b) {
 			if($a['is_dir'] && !$b['is_dir']) return 1;
 			elseif($b['is_dir'] && !$a['is_dir']) return -1;
@@ -454,17 +465,17 @@ class PhpReports {
 			if(empty($a['Title']) && empty($b['Title'])) return strcmp($a['Name'],$b['Name']);
 			elseif(empty($a['Title'])) return 1;
 			elseif(empty($b['Title'])) return -1;
-			
+
 			return strcmp($a['Title'], $b['Title']);
 		});
-		
+
 		return $return;
 	}
-	
+
 	/**
 	 * Emails a report given a TO address, a subject, and a message
 	 */
-	public static function emailReport() {		
+	public static function emailReport() {
 		if(!isset($_REQUEST['email']) || !filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL)) {
 			echo json_encode(array('error'=>'Valid email address required'));
 			return;
@@ -481,7 +492,7 @@ class PhpReports {
 			echo json_encode(array('error'=>'Email settings have not been properly configured on this server'));
 			return;
 		}
-		
+
 		$from = PhpReports::$config['mail_settings']['from'];
 		$subject = $_REQUEST['subject']? $_REQUEST['subject'] : 'Database Report';
 		$body = $_REQUEST['message']? $_REQUEST['message'] : "You've been sent a database report!";
@@ -490,12 +501,12 @@ class PhpReports {
 		$csv_link = str_replace('report/html/?','report/csv/?',$link);
 		$table_link = str_replace('report/html/?','report/table/?',$link);
 		$text_link = str_replace('report/html/?','report/text/?',$link);
-		
+
 		// Get the CSV file attachment and the inline HTML table
 		$csv = self::urlDownload($csv_link);
 		$table = self::urlDownload($table_link);
 		$text = self::urlDownload($text_link);
-		
+
 		$email_text = $body."\n\n".$text."\n\nView the report online at $link";
 		$email_html = "<p>$body</p>$table<p>View the report online at <a href=\"".htmlentities($link)."\">".htmlentities($link)."</a></p>";
 
@@ -509,15 +520,15 @@ class PhpReports {
 		  //html body
 		  ->addPart($email_html, 'text/html')
 		;
-		
+
 		$attachment = Swift_Attachment::newInstance()
 			->setFilename('report.csv')
 			->setContentType('text/csv')
 			->setBody($csv)
 		;
-		
+
 		$message->attach($attachment);
-		
+
 		// Create the Transport
 		$transport = self::getMailTransport();
 		$mailer = Swift_Mailer::newInstance($transport);
@@ -532,7 +543,7 @@ class PhpReports {
 			));
 			return;
 		}
-		
+
 		if($result) {
 			echo json_encode(array(
 				'success'=>true
@@ -544,14 +555,14 @@ class PhpReports {
 			));
 		}
 	}
-	
+
 	/**
 	 * Determines the email transport to use based on the configuration settings
 	 */
 	protected static function getMailTransport() {
 		if(!isset(PhpReports::$config['mail_settings'])) PhpReports::$config['mail_settings'] = array();
 		if(!isset(PhpReports::$config['mail_settings']['method'])) PhpReports::$config['mail_settings']['method'] = 'mail';
-		
+
 		switch(PhpReports::$config['mail_settings']['method']) {
 			case 'mail':
 				return Swift_MailTransport::newInstance();
@@ -565,32 +576,32 @@ class PhpReports {
 					PhpReports::$config['mail_settings']['server'],
 					isset(PhpReports::$config['mail_settings']['port'])? PhpReports::$config['mail_settings']['port'] : 25
 				);
-				
+
 				//if username/password
 				if(isset(PhpReports::$config['mail_settings']['username'])) {
 					$transport->setUsername(PhpReports::$config['mail_settings']['username']);
 					$transport->setPassword(PhpReports::$config['mail_settings']['password']);
 				}
-				
+
 				//if using encryption
 				if(isset(PhpReports::$config['mail_settings']['encryption'])) {
 					$transport->setEncryption(PhpReports::$config['mail_settings']['encryption']);
 				}
-				
+
 				return $transport;
 			default:
 				throw new Exception("Mail method must be either 'mail', 'sendmail', or 'smtp'");
 		}
 	}
-	
+
 	/**
 	 * Autoloader methods
 	 */
-	public static function loader($className) {		
+	public static function loader($className) {
 		if(!isset(self::$loader_cache)) {
 			self::buildLoaderCache();
 		}
-		
+
 		if(isset(self::$loader_cache[$className])) {
 			require_once(self::$loader_cache[$className]);
 			return true;
@@ -607,13 +618,13 @@ class PhpReports {
 	public static function load($dir, $skip=array()) {
 		$files = glob($dir.'/*.php');
 		$dirs = glob($dir.'/*',GLOB_ONLYDIR);
-		
-		
+
+
 		foreach($files as $file) {
 			//for file names same as class name
 			$className = basename($file,'.php');
 			if(!isset(self::$loader_cache[$className])) self::$loader_cache[$className] = $file;
-			
+
 			//for PEAR style: Path_To_Class.php
 			$parts = explode('/',substr($file,0,-4));
 			array_shift($parts);
@@ -622,46 +633,46 @@ class PhpReports {
 			if(preg_match('/(^|_)[a-z]/',$className)) continue;
 			if(!isset(self::$loader_cache[$className])) self::$loader_cache[$className] = $file;
 		}
-		
+
 		foreach($dirs as $dir2) {
 			//directories to skip
 			if($dir2[0]==='.') continue;
 			if(in_array($dir2,$skip)) continue;
 			if(in_array(basename($dir2),array('tests','test','example','examples','bin'))) continue;
-			
+
 			self::load($dir2,$skip);
 		}
 	}
-	
+
 	/**
 	 * A more lenient json_decode than the built-in PHP one.
 	 * It supports strict JSON as well as javascript syntax (i.e. unquoted/single quoted keys, single quoted values, trailing commmas)
 	 */
 	public static function json_decode($json, $assoc=false) {
 		//replace single quoted values
-		$json = preg_replace('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/e', "':'.json_encode(stripslashes('$1')).'$3'", $json);
-		
+		$json = preg_replace_callback('/:\s*\'(([^\']|\\\\\')*)\'\s*([},])/', function($matches) { return ':'.json_encode(stripslashes($matches[1])).$matches[3]; }, $json);
+
 		//replace single quoted keys
-		$json = preg_replace('/\'(([^\']|\\\\\')*)\'\s*:/e', "json_encode(stripslashes('$1')).':'", $json);
-		
+		$json = preg_replace_callback('/\'(([^\']|\\\\\')*)\'\s*:/', function($matches) {return json_encode(stripslashes($matches[1])).':';}, $json);
+
 		//remove any line breaks in the code
 		$json = str_replace(array("\n","\r"),"",$json);
-		
+
 		//replace non-quoted keys with double quoted keys
 		$json = preg_replace('#(?<pre>\{|\[|,)\s*(?<key>(?:\w|_)+)\s*:#im', '$1"$2":', $json);
-		
+
 		//remove trailing comma
 		$json = preg_replace('/,\s*\}/','}',$json);
-		
+
 		return json_decode($json, $assoc);
 	}
-	
+
 	protected static function urlDownload($url) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		
+
 		$output = curl_exec($ch);
 		curl_close($ch);
 

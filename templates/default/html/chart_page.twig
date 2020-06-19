@@ -1,12 +1,18 @@
 {% extends "html/blank_page.twig" %}
 {% block javascripts %}
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="{{base}}/public/js/jquery-2.0.3.min.js"></script>
 	<script>
-	google.load("visualization", "1", {packages:["corechart","geochart","annotatedtimeline"]});
+  google.charts.load('current', {packages:["corechart","geochart","annotatedtimeline","gauge","gantt","bar","line"]});
 	</script>
     <script src="{{ base }}/public/js/timeline.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ base }}/public/css/timeline.css">
+    <style>
+	#content > div > table {
+	    margin-left: auto !important;
+	    margin-right: auto !important;
+	}
+    </style>
 {% endblock %}
 {% block stylesheets %}
 {{ parent() }}

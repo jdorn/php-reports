@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "04da3bb8014696a4b84a4a1ab9b981cc",
+    "content-hash": "ff3d65b96641c6a40ec0ca839382c62b",
     "packages": [
         {
             "name": "adodb/adodb-php",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "506c69bd3020f9a2ee6dc5bfdd31375626fa4e38"
+                "reference": "7d941967aa1b81d636f5b6e1f3549b2fc95248b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/506c69bd3020f9a2ee6dc5bfdd31375626fa4e38",
-                "reference": "506c69bd3020f9a2ee6dc5bfdd31375626fa4e38",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/7d941967aa1b81d636f5b6e1f3549b2fc95248b9",
+                "reference": "7d941967aa1b81d636f5b6e1f3549b2fc95248b9",
                 "shasum": ""
             },
             "require": {
@@ -31,8 +31,8 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-2.1",
-                " BSD-2-Clause"
+                "BSD-3-Clause",
+                "LGPL-2.1"
             ],
             "authors": [
                 {
@@ -43,14 +43,86 @@
                 {
                     "name": "Damien Regad",
                     "role": "Current maintainer"
+                },
+                {
+                    "name": "Mark Newnham",
+                    "role": "Developer"
                 }
             ],
             "description": "ADOdb is a PHP database abstraction layer library",
             "homepage": "http://adodb.sourceforge.net/",
             "keywords": [
-                "database"
+                "abstraction",
+                "database",
+                "layer",
+                "library",
+                "php"
             ],
-            "time": "2015-11-14 15:27:05"
+            "time": "2016-04-10 15:59:20"
+        },
+        {
+            "name": "alcaeus/mongo-php-adapter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/alcaeus/mongo-php-adapter.git",
+                "reference": "72870346ae8bf53f8238593dc1dfe73efdc1c77a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/72870346ae8bf53f8238593dc1dfe73efdc1c77a",
+                "reference": "72870346ae8bf53f8238593dc1dfe73efdc1c77a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-hash": "*",
+                "ext-mongodb": "^1.2.0",
+                "mongodb/mongodb": "^1.0.1",
+                "php": "^5.6 || ^7.0"
+            },
+            "provide": {
+                "ext-mongo": "1.6.14"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7 || ^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Mongo": "lib/Mongo"
+                },
+                "psr-4": {
+                    "Alcaeus\\MongoDbAdapter\\": "lib/Alcaeus/MongoDbAdapter"
+                },
+                "files": [
+                    "lib/Mongo/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "alcaeus",
+                    "email": "alcaeus@alcaeus.org"
+                },
+                {
+                    "name": "Olivier Lechevalier",
+                    "email": "olivier.lechevalier@gmail.com"
+                }
+            ],
+            "description": "Adapter to provide ext-mongo interface on top of mongo-php-libary",
+            "keywords": [
+                "database",
+                "mongodb"
+            ],
+            "time": "2017-05-13 19:34:12"
         },
         {
             "name": "google/apiclient",
@@ -95,7 +167,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2014-09-30 19:33:59"
+            "time": "2014-09-30T19:33:59+00:00"
         },
         {
             "name": "jdorn/file-system-cache",
@@ -202,7 +274,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/lespoilus/spyc.git",
+                "url": "git@github.com:lespoilus/spyc.git",
                 "reference": "5a5bacdef1e514bdbb30701f13d9867140a6a21b"
             },
             "dist": {
@@ -238,7 +310,7 @@
                 "yml",
                 "zf2"
             ],
-            "time": "2012-10-15 11:52:47"
+            "time": "2012-10-15T11:52:47+00:00"
         },
         {
             "name": "mikecao/flight",
@@ -246,12 +318,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikecao/flight.git",
-                "reference": "1feeb95ff2f31fd93749bd0ea74c1ffedf884d33"
+                "reference": "7f402f805aa6daf66cd0863b8ca6e46472ba21af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mikecao/flight/zipball/1feeb95ff2f31fd93749bd0ea74c1ffedf884d33",
-                "reference": "1feeb95ff2f31fd93749bd0ea74c1ffedf884d33",
+                "url": "https://api.github.com/repos/mikecao/flight/zipball/7f402f805aa6daf66cd0863b8ca6e46472ba21af",
+                "reference": "7f402f805aa6daf66cd0863b8ca6e46472ba21af",
                 "shasum": ""
             },
             "require": {
@@ -281,7 +353,70 @@
             ],
             "description": "Flight is a fast, simple, extensible framework for PHP. Flight enables you to quickly and easily build RESTful web applications.",
             "homepage": "http://flightphp.com",
-            "time": "2015-09-26 08:01:38"
+            "time": "2016-03-28 19:25:27"
+        },
+        {
+            "name": "mongodb/mongodb",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mongodb/mongo-php-library.git",
+                "reference": "55e871bfff66f1f6cbe936309ba9f8eb2ca4f273"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/55e871bfff66f1f6cbe936309ba9f8eb2ca4f273",
+                "reference": "55e871bfff66f1f6cbe936309ba9f8eb2ca4f273",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mongodb": "^1.2.0",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MongoDB\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
+                },
+                {
+                    "name": "Hannes Magnusson",
+                    "email": "bjori@mongodb.com"
+                },
+                {
+                    "name": "Derick Rethans",
+                    "email": "github@derickrethans.nl"
+                }
+            ],
+            "description": "MongoDB driver library",
+            "homepage": "https://jira.mongodb.org/browse/PHPLIB",
+            "keywords": [
+                "database",
+                "driver",
+                "mongodb",
+                "persistence"
+            ],
+            "time": "2017-05-25 14:13:41"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -289,19 +424,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "ba04463cc954264546d94c109e6cb903b01abe41"
+                "reference": "7fa160905bec24ae5fdf7c98db7a4e1925a4acfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/ba04463cc954264546d94c109e6cb903b01abe41",
-                "reference": "ba04463cc954264546d94c109e6cb903b01abe41",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/7fa160905bec24ae5fdf7c98db7a4e1925a4acfa",
+                "reference": "7fa160905bec24ae5fdf7c98db7a4e1925a4acfa",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
-                "php": ">=5.2.0"
+                "php": "^5.2|^7.0"
             },
             "require-dev": {
                 "squizlabs/php_codesniffer": "2.*"
@@ -342,7 +477,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2015-10-15 22:07:22"
+            "time": "2016-03-22 13:35:28"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -350,12 +485,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "6522539daf0a7bdada1cc2dccb7ec37dc0712136"
+                "reference": "fffbc0e2a7e376dbb0a4b5f2ff6847330f20ccf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/6522539daf0a7bdada1cc2dccb7ec37dc0712136",
-                "reference": "6522539daf0a7bdada1cc2dccb7ec37dc0712136",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/fffbc0e2a7e376dbb0a4b5f2ff6847330f20ccf9",
+                "reference": "fffbc0e2a7e376dbb0a4b5f2ff6847330f20ccf9",
                 "shasum": ""
             },
             "require": {
@@ -395,7 +530,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2015-09-04 05:47:20"
+            "time": "2016-01-03 15:42:47"
         },
         {
             "name": "twig/twig",
@@ -403,12 +538,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "db93842e80d758f6c74c3e1f1f088badb3fc84f0"
+                "reference": "3d0afc03892719b7eaa5f2b8d93260a79f8c578e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/db93842e80d758f6c74c3e1f1f088badb3fc84f0",
-                "reference": "db93842e80d758f6c74c3e1f1f088badb3fc84f0",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/3d0afc03892719b7eaa5f2b8d93260a79f8c578e",
+                "reference": "3d0afc03892719b7eaa5f2b8d93260a79f8c578e",
                 "shasum": ""
             },
             "require": {
@@ -421,7 +556,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.23-dev"
+                    "dev-master": "1.24-dev"
                 }
             },
             "autoload": {
@@ -456,7 +591,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-11-17 12:22:13"
+            "time": "2016-04-01 06:54:57"
         }
     ],
     "packages-dev": [],
@@ -469,10 +604,14 @@
         "phpoffice/phpexcel": 20,
         "adodb/adodb-php": 20,
         "lespoilus/spyc": 20,
-        "google/apiclient": 10
+        "google/apiclient": 10,
+        "alcaeus/mongo-php-adapter": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.3",
+        "ext-pdo": "*"
+    },
     "platform-dev": []
 }

@@ -120,7 +120,7 @@ class Report {
 			return false;
 		}
 		
-		return FileSystemCache::retrieve($this->getCacheKey(),'results', $this->filemtime);
+		return FileSystemCache::retrieve($this->getCacheKey(),$this->filemtime);
 	}
 	
 	protected function storeInCache() {
@@ -132,7 +132,7 @@ class Report {
 			$ttl = 600;
 		}
 		
-		FileSystemCache::store($this->getCacheKey(), $this->options, 'results', $ttl);
+		FileSystemCache::store($this->getCacheKey(), $this->options, $ttl);
 	}
 	
 	protected function parseHeaders() {
@@ -205,7 +205,8 @@ class Report {
 		
 		//try to infer report type from file extension
 		if(!isset($this->options['Type'])) {
-			$file_type = array_pop(explode('.',$this->report));
+			$tmp = explode('.',$this->report);
+			$file_type = array_pop($tmp);
 			
 			if(!isset(PhpReports::$config['default_file_extension_mapping'][$file_type])) {
 				throw new Exception("Unknown report type - ".$this->report);
@@ -489,8 +490,10 @@ class Report {
 		foreach($this->options['DataSets'] as $i=>$dataset) {
 			$this->prepareRows($i);
 		}
-		$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
-		$this->options['Count'] = $this->options['DataSets'][0]['count'];
+		if(isset($this->options['DataSets'][0])) {
+			$this->options['Rows'] = $this->options['DataSets'][0]['rows'];
+			$this->options['Count'] = $this->options['DataSets'][0]['count'];
+		}
 	}
 	protected function prepareRows($dataset) {
 		$rows = array();

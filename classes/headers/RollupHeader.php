@@ -80,7 +80,23 @@ class RollupHeader extends HeaderBase {
 				$params['count'] = count($real_values);
 				if($params['count']) {
 					$params['mean'] = $params['average'] = $params['sum'] / $params['count'];
-					$params['median'] = ($params['count']%2)? ($real_values[$params['count']/2-1] + $real_values[$params['count']/2])/2 : $real_values[floor($params['count']/2)];
+
+					// Median for odd number of rows
+					if($params['count']%2) {
+						$params['median'] = $real_values[floor($params['count']/2)];
+					}
+					// Median for even number of rows
+					else {
+						// If the 2 middle entries are numeric, average them
+						if(is_numeric($real_values[$params['count']/2-1]) && is_numeric($real_values[$params['count']/2])) {
+							$params['median'] = ($real_values[$params['count']/2-1] + $real_values[$params['count']/2])/2;
+						}
+						// If they are not numeric, pick one of the middle entries
+						else {
+							$params['median'] = $real_values[$params['count']/2-1];
+						}
+					}
+
 					$params['min'] = $real_values[0];
 					$params['max'] = $real_values[$params['count']-1];
 				}

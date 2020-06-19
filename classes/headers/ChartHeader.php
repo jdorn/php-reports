@@ -29,6 +29,11 @@ class ChartHeader extends HeaderBase {
 				'ScatterChart',
 				'SteppedAreaChart',
 				'WordTree',
+				'Gauge',
+				'Gantt',
+				// Material charts
+				'Bar',
+				'Line',
 			),
 			'default'=>'LineChart'
 		),

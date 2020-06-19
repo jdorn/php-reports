@@ -43,7 +43,7 @@
                                     <input type='hidden' name='macros[{{var.key}}][start]' id='var_{{var.key}}_start' value='{{var.value.start|date('Y-m-d H:i:s')}}' />
                                     <input type='hidden' name='macros[{{var.key}}][end]' id='var_{{var.key}}_end' value='{{var.value.end|date('Y-m-d H:i:s')}}' />
                                     <div class="daterangepicker_holder btn btn-default pull-left" data-var="{{var.key}}">
-                                            <i class="icon-calendar icon-large"></i>
+                                            <i class="glyphicon glyphicon-calendar"></i>
                                             <span>
                                                 {% if var.value.start and var.value.end %}
                                                     {{ var.value.start|date('F j, Y') }} - {{ var.value.end|date('F j, Y') }}
@@ -88,11 +88,22 @@ $(function() {
 						var values = [];
 						inputs.each(function() {
 							if(($(this).attr('name')||'').match(/^macros/)) {
+							    // For dropdowns, use the display name instead of the value
+							    if($('option:selected',$(this)).length) {
+								var t = [];
+								$('option:selected',$(this)).each(function() {
+								    t.push($(this).text());
+								});
+								values.push(t.join(' | '));
+							    }
+							    // Otherwise, show the value
+							    else {
 								values.push($(this).val());
+							    }
 							}
 						});
 						if(values.length) {
-							t.push(label+': <em>'+values.join(' - ')+'</em>');
+							t.push('<strong>'+label+'</strong>: <em>'+values.join(' - ')+'</em>');
 						}
 				});
         var text = ' : '+t.join(', ');

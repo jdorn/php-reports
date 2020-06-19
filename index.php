@@ -1,4 +1,9 @@
 <?php
+// for build-in php server serve the requested resource as-is.
+if (php_sapi_name() == 'cli-server' && preg_match('/\.(?:png|jpg|jpeg|gif|css|js)$/', $_SERVER["REQUEST_URI"])) {
+    return false;
+}
+
 session_start();
 define ( 'CURL_WEEE_AGENT', 'curl Weee v1.0' );
 

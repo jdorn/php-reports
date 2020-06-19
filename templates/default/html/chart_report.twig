@@ -75,64 +75,33 @@
 				options_{{chart.num}}.colors.push('{{color}}');
 			{% endfor %}
 
-
 			if(!options_{{chart.num}}.colors.length) {
 				delete options_{{chart.num}}.colors;
 			}
 
+		if(Array.isArray(options_{{ chart.num }}.series)) {
+			var t = options_{{ chart.num }}.series;
+			var n = {};
+			for(var i=0;i<t.length;i++) {
+			    n[i+''] = t[i];
+			}
+			options_{{ chart.num }}.series = n;
+		}
+
+
         {% if chart.type == "Timeline" %}
             var chart_{{chart.num}} = new links.Timeline(document.getElementById('chart_div_{{chart.num}}'));
+        {% elseif chart.type == "Bar" or chart.type == "Line" %}
+          var chart_{{chart.num}} = new google.charts.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
+          options_{{chart.num}} = google.charts.{{chart.type}}.convertOptions(options_{{chart.num}});
         {% else %}
-			var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
+          var chart_{{chart.num}} = new google.visualization.{{chart.type}}(document.getElementById('chart_div_{{chart.num}}'));
         {% endif %}
 
-            google.visualization.events.addListener(chart_{{chart.num}}, 'select', function () {
-                select2hide(chart_{{chart.num}}, data_{{chart.num}}, options_{{chart.num}}, columns_{{chart.num}}, series_{{chart.num}});
-            });
-
-        {% if chart.type == "BarChart" %}
-            google.visualization.events.addListener(chart_{{chart.num}}, 'ready', function () {
-                    $('#chart_div_{{chart.num}}').find('text[text-anchor=end]').each(function () {
-                        $(this).attr('x', 25);
-                        $(this).attr('text-anchor', 'front');
-                    });
-            });
-        {% endif %}
-            chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
+        chart_{{chart.num}}.draw(data_{{chart.num}}, options_{{chart.num}});
 		{% endfor %}
 	}
 
-    function select2hide (chart, data, options, columns, series) {
-        var sel = chart.getSelection();
-        // if selection length is 0, we deselected an element
-        if (sel.length > 0) {
-            // if row is undefined, we clicked on the legend
-            if (sel[0].row == null) {
-                var col = sel[0].column;
-                if (columns[col] == col) {
-                    // hide the data series
-                    columns[col] = {
-                        label: data.getColumnLabel(col),
-                        type: data.getColumnType(col),
-                        calc: function () {
-                            return null;
-                        }
-                    };
-
-                    // grey out the legend entry
-                    series[col - 1].color = '#CCCCCC';
-                } else {
-                    // show the data series
-                    columns[col] = col;
-                    series[col - 1].color = null;
-                }
-                var view = new google.visualization.DataView(data);
-                view.setColumns(columns);
-                chart.draw(view, options);
-            }
-        }
-    }
-
-	google.setOnLoadCallback(drawCharts);
+	google.charts.setOnLoadCallback(drawCharts);
 	</script>
 {% endblock %}

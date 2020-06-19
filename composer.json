@@ -11,6 +11,8 @@
         }
     ],
     "require": {
+        "php": ">=5.3",
+        "ext-pdo": "*",
         "twig/twig": "1.*",
         "swiftmailer/swiftmailer": "5.*",
         "mikecao/flight": "dev-master",
@@ -19,7 +21,8 @@
         "phpoffice/phpexcel": "dev-develop",
         "adodb/adodb-php": "dev-master",
         "lespoilus/spyc": "dev-master",
-        "google/apiclient": "1.0.*@beta"
+        "google/apiclient": "1.0.*@beta",
+        "alcaeus/mongo-php-adapter": "^1.1@dev"
     },
     "autoload": {
         "files": [
