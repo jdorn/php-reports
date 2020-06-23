@@ -92,7 +92,11 @@ class PdoReportType extends ReportTypeBase {
 		}
 
 		$report->conn = new PDO($dsn,$username,$password);
-
+		
+		$report->conn->query( "set character_set_client='utf8'" );
+		$report->conn->query( "set character_set_results='utf8'" );
+		$report->conn->query( "set collation_connection='utf8_general_ci'" );
+		
 		$report->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 
@@ -103,11 +107,18 @@ class PdoReportType extends ReportTypeBase {
 	}
 
 	public static function getVariableOptions($params, &$report) {
-		$displayColumn = $params['column'];
-		if(isset($params['display'])) $displayColumn = $params['display'];
+		if ($params ['columns']) {
+			$select = preg_replace ( "/value/", "val", $params ['columns'], 1 );
+			$select = preg_replace ( "/display/", "disp", $select, 1 );
+			$query = 'SELECT ' . $select . ' FROM ' . $params ['table'];
+		} else {
+			$displayColumn = $params ['column'];
+			if (isset ( $params ['display'] ))
+				$displayColumn = $params ['display'];
 
-		$query = 'SELECT DISTINCT `'.$params['column'].'` as val, `'.$displayColumn.'` as disp FROM '.$params['table'];
-
+			$query = 'SELECT DISTINCT `' . $params ['column'] . '` as val, `' . $displayColumn . '` as disp FROM ' . $params ['table'];
+		}
+		
 		if(isset($params['where'])) {
 			$query .= ' WHERE '.$params['where'];
 		}
