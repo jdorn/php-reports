@@ -68,9 +68,10 @@ class ReportValue {
 			if($date) return date($date,strtotime($value));
 			else return $value;
 		}
-		elseif($type === 'string') {
-			return utf8_encode($value);
-		}
+		elseif($type === 'string') {            
+			if ( false === mb_check_encoding($value, 'UTF-8') ) return $value = utf8_encode($value);  
+			else return $value;
+		  }		
 	}
 	
 	public function getValue($html = false, $date = false) {

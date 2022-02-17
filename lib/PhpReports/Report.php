@@ -330,9 +330,10 @@ class Report {
 				
 				if($params['type'] === 'select') {
 					$params['is_select'] = true;
-					
 					foreach($params['options'] as $key=>$option) {
-						if(!is_array($option)) {
+						if(!is_array($option)) {							
+							if ( false === mb_check_encoding($key, 'UTF-8') ) $key = utf8_encode($key);
+							if ( false === mb_check_encoding($option, 'UTF-8') ) $option = utf8_encode($option);
 							$params['options'][$key] = array(
 								'display'=>$option,
 								'value'=>$option
