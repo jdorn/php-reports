@@ -16,9 +16,8 @@
         "twig/twig": "1.*",
         "swiftmailer/swiftmailer": "5.*",
         "mikecao/flight": "dev-master",
-        "jdorn/sql-formatter": "dev-master",
         "jdorn/file-system-cache": "dev-master",
-        "phpoffice/phpexcel": "dev-develop",
+        "phpoffice/phpexcel": "*",
         "adodb/adodb-php": "dev-master",
         "lespoilus/spyc": "dev-master",
         "google/apiclient": "1.0.*@beta",
@@ -29,7 +28,8 @@
             "lib/adodb/pivottable.inc.php"
         ],
         "classmap": [
-            "vendor/jdorn/file-system-cache/"
+            "vendor/jdorn/file-system-cache/",
+	    "vendor/jdorn/sql-formatter/"
         ]
     },
     "minimum-stability": "dev"

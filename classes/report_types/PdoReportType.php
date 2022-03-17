@@ -101,12 +101,26 @@ class PdoReportType extends ReportTypeBase {
 		$report->conn = null;
 		unset($report->conn);
 	}
-
+	
+	private static function getDriver(&$report) {
+		$environments = PhpReports::$config['environments'];
+		$config = $environments[$report->options['Environment']][$report->options['Database']];
+		if(isset($config["dsn"])) {
+			preg_match('/^(.*)?:/', $config["dsn"], $m);
+			$driver = isset($m[1])?$m[1] : static::$default_driver;
+		} else { $driver = static::$default_driver; }
+		return $driver;
+	}
+	
 	public static function getVariableOptions($params, &$report) {
 		$displayColumn = $params['column'];
 		if(isset($params['display'])) $displayColumn = $params['display'];
-
-		$query = 'SELECT DISTINCT `'.$params['column'].'` as val, `'.$displayColumn.'` as disp FROM '.$params['table'];
+		if(PdoReportType::getDriver($report)=='pgsql') {
+			$sc='"';
+		} else {			
+			$sc='`';
+		}
+		$query = 'SELECT DISTINCT '.$sc.$params['column'].$sc.' as val, '.$sc.$displayColumn.$sc.' as disp FROM '.$params['table'];
 
 		if(isset($params['where'])) {
 			$query .= ' WHERE '.$params['where'];
