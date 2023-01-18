@@ -41,27 +41,31 @@ abstract class XlsReportBase extends ReportFormatBase {
 		$rows = array();
 		$row = array();
 		$cols = 0;
-		$first_row = $dataset['rows'][0];
-		foreach($first_row['values'] as $key=>$value){
-			array_push($row, $value->key);
-			$cols++;
-		}
-		array_push($rows, $row);
-		$row = array();
 
-		foreach($dataset['rows'] as $r) {
-			foreach($r['values'] as $key=>$value){
-				array_push($row, $value->getValue());
-			}
-			array_push($rows, $row);
-			$row = array();
-		}
+        $objPHPExcel->setActiveSheetIndex($i);
+        if (! empty($dataset['rows'])){
+            $first_row = $dataset['rows'][0];
+            foreach($first_row['values'] as $key=>$value){
+                array_push($row, $value->key);
+                $cols++;
+            }
+            array_push($rows, $row);
+            $row = array();
 
-		$objPHPExcel->setActiveSheetIndex($i)->fromArray($rows, NULL, 'A1');
-		$objPHPExcel->getActiveSheet()->setAutoFilter('A1:'.self::columnLetter($cols).count($rows));
-		for ($a = 1; $a <= $cols; $a++) {
-			$objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($a))->setAutoSize(true);
-		}
+            foreach($dataset['rows'] as $r) {
+                foreach($r['values'] as $key=>$value){
+                    array_push($row, $value->getValue());
+                }
+                array_push($rows, $row);
+                $row = array();
+            }
+
+            $objPHPExcel->getActiveSheet()->fromArray($rows, NULL, 'A1');
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A1:'.self::columnLetter($cols).count($rows));
+            for ($a = 1; $a <= $cols; $a++) {
+                $objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($a))->setAutoSize(true);
+            }
+        }
 
 		if(isset($dataset['title'])) {
 			// Some characters are not allowed in Excel sheet titles
